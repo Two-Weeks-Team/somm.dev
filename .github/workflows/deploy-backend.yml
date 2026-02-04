@@ -7,9 +7,39 @@ on:
       - 'backend/**'
       - '.github/workflows/deploy-backend.yml'
 
+permissions:
+  contents: read
+  id-token: write
+
 jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.12'
+        cache: 'pip'
+
+    - name: Install dependencies
+      working-directory: ./backend
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Run tests
+      working-directory: ./backend
+      run: pytest --tb=short
+
+    - name: Build Docker image
+      working-directory: ./backend
+      run: docker build -t somm-backend:latest .
+
   deploy:
     runs-on: ubuntu-latest
+    needs: test
     if: github.ref == 'refs/heads/main'
 
     steps:
@@ -17,16 +47,18 @@ jobs:
 
     - name: Deploy to Fly.io
       uses: superfly/flyctl-actions/setup-flyctl@master
+      with:
+        flyctl-version: latest
 
     - name: Deploy
       working-directory: ./backend
       env:
         FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       run: flyctl deploy --remote-only
-      continue-on-error: true
 
-    - name: Deploy to Railway (fallback)
-      if: failure()
+    - name: Verify deployment
+      env:
+        FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
       run: |
-        echo "Fly.io deployment failed. Please deploy manually or configure Railway."
-        exit 0
+        flyctl status
+        flyctl logs --instance --no-tail

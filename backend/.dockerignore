@@ -1,0 +1,69 @@
+# Python bytecode
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+
+# Python environments
+venv/
+env/
+ENV/
+.venv/
+.env/
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/*
+env/*
+ENV/env/*
+.env
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Testing
+.pytest_cache
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Documentation
+docs/_build/
+*.rst
+
+# Local configuration
+*.local
+
+# OS files
+Thumbs.db
+.DS_Store

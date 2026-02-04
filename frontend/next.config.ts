@@ -1,21 +1,19 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  output: 'export',
+  distDir: 'dist',
   reactStrictMode: true,
-
   typedRoutes: true,
-
   images: {
+    unoptimized: true,
     formats: ["image/webp", "image/avif"],
     minimumCacheTTL: 60,
   },
-
   compress: true,
-
   turbopack: {
     root: ".",
   },
-
   async headers() {
     return [
       {
@@ -29,11 +27,9 @@ const nextConfig: NextConfig = {
       },
     ];
   },
-
   async redirects() {
     return [];
   },
-
   async rewrites() {
     return {
       beforeFiles: [],
