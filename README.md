@@ -1,67 +1,242 @@
-# Somm.dev
+# 🍷 Somm.dev
 
-Next.js 16 + Python(FastAPI) 풀스택 프로젝트
+> **AI Code Evaluation with Sommelier Sophistication**
 
-## 프로젝트 구조
+Somm.dev is a Multi-Agentic AI code evaluation platform that brings the expertise of a master sommelier to your repositories. Six specialized AI agents analyze your code from every angle—structure, quality, security, innovation—and deliver a comprehensive evaluation report with actionable recommendations.
 
-```
-somm.dev/
-├── frontend/          # Next.js 16 + TypeScript + Tailwind CSS
-├── backend/           # Python FastAPI
-└── README.md
-```
+**Live:** https://www.somm.dev
 
-## 시작하기
+---
 
-### Frontend (Next.js)
+## 🚀 Quick Start
 
 ```bash
+# Clone repository
+git clone https://github.com/yourusername/somm.dev.git
+cd somm.dev
+
+# Start backend
+cd backend
+source venv/bin/activate
+uvicorn app.main:app --reload --port 8000
+
+# Start frontend (new terminal)
 cd frontend
 npm install
 npm run dev
+
+# Open browser
+open http://localhost:3000
 ```
-- 개발 서버: http://localhost:3000
 
-### Backend (Python)
+---
 
-```bash
-cd backend
+## 📁 Project Structure
 
-# 가상환경 생성
-python3 -m venv venv
-source venv/bin/activate  # macOS/Linux
-# venv\Scripts\activate  # Windows
-
-# 의존성 설치
-pip install -r requirements.txt
-
-# 서버 실행
-python main.py
 ```
-- API 서버: http://localhost:8000
-- API 문서: http://localhost:8000/docs
+somm.dev/
+├── frontend/               # Next.js 16 + TypeScript + Tailwind CSS
+│   ├── src/
+│   │   ├── app/           # App Router pages
+│   │   ├── components/    # React components
+│   │   └── lib/           # Utilities
+│   └── package.json
+│
+├── backend/                # Python FastAPI + LangGraph
+│   ├── app/
+│   │   ├── api/routes/    # REST API endpoints
+│   │   ├── graph/         # LangGraph evaluation pipeline
+│   │   │   ├── nodes/     # 6 Sommelier AI agents
+│   │   │   ├── state.py   # Graph state definition
+│   │   │   └── graph.py   # Graph orchestration
+│   │   ├── prompts/       # LangChain prompts
+│   │   │   └── criteria/  # 4 evaluation criteria modes
+│   │   ├── models/        # Pydantic models
+│   │   └── services/      # Business logic
+│   ├── requirements.txt
+│   └── .env
+│
+├── docs/                   # Comprehensive documentation
+│   ├── ARCHITECTURE.md           # System architecture & LangGraph design
+│   ├── EVALUATION_PIPELINE.md    # Multi-agent evaluation flow
+│   ├── EVALUATION_CRITERIA.md    # 4 criteria modes (basic/hackathon/academic/custom)
+│   ├── IMPLEMENTATION_PLAN.md    # Step-by-step implementation guide
+│   └── BRANDING_GUIDE.md         # Brand identity & design system
+│
+└── README.md
+```
 
-## 기술 스택
+---
+
+## 🛠️ Technology Stack
 
 ### Frontend
-- Next.js 16
-- React 19
-- TypeScript
-- Tailwind CSS
-- ESLint
+- **Next.js 16** - React framework with App Router
+- **React 19** - UI library
+- **TypeScript** - Type safety
+- **Tailwind CSS 4** - Utility-first styling
+- **Lucide React** - Icon library
 
 ### Backend
-- Python 3.12+ (3.14 ready)
-- FastAPI
-- Uvicorn
-- Pydantic
+- **Python 3.12+** - Language
+- **FastAPI** - Web framework
+- **LangChain** - LLM orchestration framework
+- **LangGraph** - Multi-agent workflow orchestration
+- **Gemini 3 Flash** - LLM via LangChain
+- **MongoDB** - Database
+- **SSE** - Real-time streaming
 
-## API 엔드포인트
+---
 
-- `GET /` - Health check
-- `GET /health` - Health check
-- `POST /api/echo` - Echo test endpoint
+## 🎯 The Six Sommeliers
 
-## 라이선스
+Somm.dev uses **six specialized AI agents** built with LangGraph to evaluate your code:
 
-MIT
+| Sommelier | Role | Focus Area | Color | Technique |
+|-----------|------|------------|-------|-----------|
+| 🏛️ **Marcel** | Cellar Master | Structure & Metrics | #8B7355 | Repository organization |
+| 🎭 **Isabella** | Wine Critic | Code Quality | #C41E3A | Aesthetics & DX |
+| 🔍 **Heinrich** | Quality Inspector | Testing & Security | #2F4F4F | Risk assessment |
+| 🌱 **Sofia** | Vineyard Scout | Innovation & Tech | #DAA520 | Growth opportunities |
+| 🛠️ **Laurent** | Winemaker | Implementation | #228B22 | Code craftsmanship |
+| 🎯 **Jean-Pierre** | Master Sommelier | Final Synthesis | #4169E1 | Final verdict |
+
+**Architecture:** All 5 sommeliers (Marcel, Isabella, Heinrich, Sofia, Laurent) run in parallel using LangGraph's fan-out pattern, then Jean-Pierre synthesizes their results.
+
+---
+
+## 📊 Evaluation Criteria
+
+Somm.dev provides **4 customizable evaluation modes**:
+
+| Mode | Use Case | Weights |
+|------|----------|---------|
+| **Basic** | General code review | Code Quality (25%), Architecture (20%), Documentation (20%), Testing (20%), Security (15%) |
+| **Hackathon** | Gemini 3 Hackathon judging | Technical (40%), Innovation (30%), Impact (20%), Presentation (10%) |
+| **Academic** | Research projects | Novelty (25%), Methodology (25%), Reproducibility (20%), Documentation (20%), Impact (10%) |
+| **Custom** | Special requirements | User-defined criteria |
+
+---
+
+## 🏆 Scoring System
+
+Somm.dev evaluates repositories on a **0-100 point scale**:
+
+| Score | Badge | Description |
+|-------|-------|-------------|
+| 95-100 | 🏆 **Legendary** | Exceptional quality |
+| 90-94 | 🥇 **Grand Cru** | Outstanding |
+| 85-89 | 🥈 **Premier Cru** | Excellent |
+| 80-84 | 🥉 **Village** | Good |
+| 70-79 | 🏅 **Table** | Acceptable |
+| 60-69 | 🍷 **House Wine** | Light, enjoyable |
+| <60 | ⚠️ **Corked** | Below standards |
+
+---
+
+## 📡 API Endpoints
+
+### Core Evaluation APIs
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/evaluate` | POST | Start code evaluation |
+| `/api/evaluate/{id}/stream` | GET | SSE stream for progress |
+| `/api/evaluate/{id}/result` | GET | Get evaluation results |
+| `/api/history` | GET | User evaluation history |
+
+### Request Example
+```bash
+curl -X POST http://localhost:8000/api/evaluate \
+  -H "Content-Type: application/json" \
+  -d '{
+    "repo_url": "https://github.com/user/repo",
+    "criteria": "basic"
+  }'
+```
+
+### Response Example
+```json
+{
+  "evaluation_id": "eval_abc123",
+  "status": "pending",
+  "estimated_time": 30
+}
+```
+
+---
+
+## 📚 Documentation
+
+| Document | Description |
+|----------|-------------|
+| [ARCHITECTURE.md](./docs/ARCHITECTURE.md) | System architecture, LangGraph design patterns, data flow |
+| [EVALUATION_PIPELINE.md](./docs/EVALUATION_PIPELINE.md) | Multi-agent evaluation workflow, node implementations |
+| [EVALUATION_CRITERIA.md](./docs/EVALUATION_CRITERIA.md) | 4 evaluation modes with detailed criteria and prompts |
+| [IMPLEMENTATION_PLAN.md](./docs/IMPLEMENTATION_PLAN.md) | Step-by-step implementation guide (10-day plan) |
+| [BRANDING_GUIDE.md](./docs/BRANDING_GUIDE.md) | Brand identity, terminology, design system |
+
+---
+
+## 🎨 Design System
+
+### Colors
+```css
+--somm-burgundy: #722F37;      /* Primary */
+--somm-champagne: #F7E7CE;     /* Secondary */
+--somm-parchment: #FAF4E8;     /* Background */
+--somm-cellar: #2E4A3F;        /* Accent */
+```
+
+### Typography
+- **Headings:** Playfair Display (serif)
+- **Body:** Inter (sans-serif)
+
+---
+
+## 🚢 Deployment
+
+### Backend (Fly.io/Railway)
+```bash
+cd backend
+docker build -t somm-backend .
+fly deploy
+```
+
+### Frontend (Vercel)
+```bash
+cd frontend
+vercel --prod
+```
+
+---
+
+## 🧪 Testing
+
+```bash
+# Backend tests
+cd backend
+pytest
+
+# Frontend tests
+cd frontend
+npm test
+```
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit changes (`git commit -m 'feat: Add amazing feature'`)
+4. Push to branch (`git push origin feature/amazing-feature`)
+5. Open Pull Request
+
+---
+
+## 📝 License
+
+MIT © 2025 Somm.dev Team
+
+— The Somm.dev Team

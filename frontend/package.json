@@ -1,7 +1,8 @@
 {
-  "name": "frontend",
+  "name": "somm",
   "version": "0.1.0",
   "private": true,
+  "description": "Somm - AI Code Evaluation with Sommelier Sophistication",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -9,6 +10,7 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "lucide-react": "^0.563.0",
     "next": "16.1.6",
     "react": "19.2.3",
     "react-dom": "19.2.3"

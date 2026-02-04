@@ -1,65 +1,124 @@
-import Image from "next/image";
+import { Wine } from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+    <div className="min-h-screen bg-gradient-to-br from-[#FAF4E8] to-[#F7E7CE]">
+      <main className="mx-auto max-w-4xl px-6 py-20">
+        <div className="text-center">
+          <div className="mb-6 inline-flex items-center justify-center rounded-full bg-[#722F37] p-4">
+            <Wine className="h-12 w-12 text-[#F7E7CE]" />
+          </div>
+          <h1 className="mb-4 text-5xl font-bold text-[#722F37]">
+            Somm
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mb-2 text-2xl font-light text-[#722F37]/80">
+            AI Code Evaluation
+          </p>
+          <p className="mb-8 text-lg italic text-[#722F37]/60">
+            &ldquo;Every codebase has terroir. We&apos;re here to taste it.&rdquo;
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        <div className="mb-12 text-center">
+          <p className="text-xl text-gray-700">
+            Six AI sommeliers analyze your repositories from every angle—
+            <br />
+            structure, quality, security, and innovation.
+          </p>
+        </div>
+
+        <div className="mb-12 grid gap-6 md:grid-cols-3">
+          <div className="rounded-xl bg-white p-6 shadow-sm">
+            <div className="mb-3 text-3xl">🏛️</div>
+            <h3 className="mb-2 font-semibold text-[#722F37]">Marcel</h3>
+            <p className="text-sm text-gray-600">Structure & Metrics</p>
+          </div>
+          <div className="rounded-xl bg-white p-6 shadow-sm">
+            <div className="mb-3 text-3xl">🎭</div>
+            <h3 className="mb-2 font-semibold text-[#722F37]">Isabella</h3>
+            <p className="text-sm text-gray-600">Code Quality</p>
+          </div>
+          <div className="rounded-xl bg-white p-6 shadow-sm">
+            <div className="mb-3 text-3xl">🔍</div>
+            <h3 className="mb-2 font-semibold text-[#722F37]">Heinrich</h3>
+            <p className="text-sm text-gray-600">Security & Testing</p>
+          </div>
+          <div className="rounded-xl bg-white p-6 shadow-sm">
+            <div className="mb-3 text-3xl">🌱</div>
+            <h3 className="mb-2 font-semibold text-[#722F37]">Sofia</h3>
+            <p className="text-sm text-gray-600">Innovation</p>
+          </div>
+          <div className="rounded-xl bg-white p-6 shadow-sm">
+            <div className="mb-3 text-3xl">🛠️</div>
+            <h3 className="mb-2 font-semibold text-[#722F37]">Laurent</h3>
+            <p className="text-sm text-gray-600">Implementation</p>
+          </div>
+          <div className="rounded-xl bg-white p-6 shadow-sm">
+            <div className="mb-3 text-3xl">🎯</div>
+            <h3 className="mb-2 font-semibold text-[#722F37]">Jean-Pierre</h3>
+            <p className="text-sm text-gray-600">Final Verdict</p>
+          </div>
+        </div>
+
+        <div className="text-center">
+          <button className="rounded-full bg-[#722F37] px-8 py-4 text-lg font-semibold text-[#F7E7CE] transition-colors hover:bg-[#5A252C]">
+            Begin Your Evaluation
+          </button>
+          <p className="mt-4 text-sm text-gray-500">
+            Coming soon. Join the waitlist.
+          </p>
+        </div>
+
+        <div className="mt-16 rounded-xl bg-white p-8 shadow-sm">
+          <h2 className="mb-2 text-center text-2xl font-semibold text-[#722F37]">
+            Scoring System
+          </h2>
+          <p className="mb-6 text-center text-sm text-gray-600">
+            From legendary cellars to house wines — every codebase has its place
+          </p>
+          <div className="grid gap-4 text-center md:grid-cols-4">
+            <div className="rounded-lg bg-gradient-to-br from-yellow-100 to-yellow-50 p-4">
+              <div className="mb-1 text-2xl">🏆</div>
+              <div className="font-bold text-yellow-700">95-100</div>
+              <div className="text-sm text-yellow-600">Legendary</div>
+            </div>
+            <div className="rounded-lg bg-gradient-to-br from-gray-100 to-gray-50 p-4">
+              <div className="mb-1 text-2xl">🥇</div>
+              <div className="font-bold text-gray-700">90-94</div>
+              <div className="text-sm text-gray-600">Grand Cru</div>
+            </div>
+            <div className="rounded-lg bg-gradient-to-br from-orange-100 to-orange-50 p-4">
+              <div className="mb-1 text-2xl">🥈</div>
+              <div className="font-bold text-orange-700">85-89</div>
+              <div className="text-sm text-orange-600">Premier Cru</div>
+            </div>
+            <div className="rounded-lg bg-gradient-to-br from-green-100 to-green-50 p-4">
+              <div className="mb-1 text-2xl">🥉</div>
+              <div className="font-bold text-green-700">80-84</div>
+              <div className="text-sm text-green-600">Village</div>
+            </div>
+            <div className="rounded-lg bg-gradient-to-br from-blue-100 to-blue-50 p-4">
+              <div className="mb-1 text-2xl">🏅</div>
+              <div className="font-bold text-blue-700">70-79</div>
+              <div className="text-sm text-blue-600">Table</div>
+            </div>
+            <div className="rounded-lg bg-gradient-to-br from-purple-100 to-purple-50 p-4">
+              <div className="mb-1 text-2xl">🍷</div>
+              <div className="font-bold text-purple-700">60-69</div>
+              <div className="text-sm text-purple-600">House Wine</div>
+            </div>
+            <div className="rounded-lg bg-gradient-to-br from-red-100 to-red-50 p-4 md:col-span-2">
+              <div className="mb-1 text-2xl">⚠️</div>
+              <div className="font-bold text-red-700">&lt;60</div>
+              <div className="text-sm text-red-600">Corked</div>
+            </div>
+          </div>
         </div>
       </main>
+
+      <footer className="border-t border-[#722F37]/10 py-8 text-center text-sm text-gray-500">
+        <p>© 2025 Somm.dev — AI Code Sommelier</p>
+      </footer>
     </div>
   );
 }
