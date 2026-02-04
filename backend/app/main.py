@@ -10,12 +10,15 @@ from pydantic import BaseModel
 from typing import Optional
 
 from app.core.config import settings
+from app.database import connect_to_mongo, close_mongo_connection
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Application lifespan context manager for startup/shutdown events"""
+    await connect_to_mongo()
     yield
+    await close_mongo_connection()
 
 
 app = FastAPI(

@@ -18,6 +18,7 @@ class Settings(BaseSettings):
 
     # Database
     MONGODB_URI: str = "mongodb://localhost:27017/somm_db"
+    MONGO_DB: str = "somm"
 
     # LLM APIs
     GEMINI_API_KEY: str = ""
