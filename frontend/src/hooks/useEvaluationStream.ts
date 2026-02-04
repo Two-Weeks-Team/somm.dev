@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
-import { api } from '@/lib/api';
-import { SommelierResult, EvaluationStatus, SSEEvent } from '@/types';
+import { api } from '../lib/api';
+import { SommelierResult, EvaluationStatus, SSEEvent } from '../types';
 
 interface UseEvaluationStreamResult {
   status: EvaluationStatus;

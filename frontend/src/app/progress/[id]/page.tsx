@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { useEvaluationStream } from '@/hooks/useEvaluationStream';
+import { useEvaluationStream } from '../../../hooks/useEvaluationStream';
 import { Wine, CheckCircle2, Loader2, AlertTriangle } from 'lucide-react';
 
 export default function ProgressPage() {
