@@ -11,6 +11,7 @@ from typing import Optional
 
 from app.core.config import settings
 from app.database import connect_to_mongo, close_mongo_connection
+from app.api.routes import evaluate, history
 
 
 @asynccontextmanager
@@ -35,6 +36,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(evaluate.router)
+app.include_router(history.router)
 
 
 class HealthResponse(BaseModel):

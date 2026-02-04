@@ -20,7 +20,7 @@ class EvaluationRepository(BaseRepository[EvaluationInDB]):
     collection_name: str = "evaluations"
     model_cls = EvaluationInDB
 
-    async def create_evaluation(self, eval_data: EvaluationCreate) -> str:
+    async def create_evaluation(self, eval_data: dict | EvaluationCreate) -> str:
         """Create a new evaluation in the database.
 
         Args:
@@ -32,13 +32,22 @@ class EvaluationRepository(BaseRepository[EvaluationInDB]):
         from bson import ObjectId
 
         now = datetime.utcnow()
-        document = {
-            "_id": ObjectId(),
-            **eval_data.model_dump(),
-            "status": EvaluationStatus.pending,
-            "created_at": now,
-            "updated_at": now,
-        }
+        if isinstance(eval_data, EvaluationCreate):
+            document = {
+                "_id": ObjectId(),
+                **eval_data.model_dump(),
+                "status": EvaluationStatus.pending,
+                "created_at": now,
+                "updated_at": now,
+            }
+        else:
+            document = {
+                "_id": ObjectId(),
+                **eval_data,
+                "status": EvaluationStatus.pending,
+                "created_at": now,
+                "updated_at": now,
+            }
         result = await self.collection.insert_one(document)
         return str(result.inserted_id)
 

@@ -20,14 +20,11 @@ class ResultRepository(BaseRepository[ResultInDB]):
     collection_name: str = "results"
     model_cls = ResultInDB
 
-    async def create_result(
-        self, evaluation_id: str, final_evaluation_data: dict
-    ) -> str:
+    async def create_result(self, result_data: dict) -> str:
         """Create a new result in the database.
 
         Args:
-            evaluation_id: The ID of the associated evaluation.
-            final_evaluation_data: The final evaluation data.
+            result_data: The result data containing evaluation_id and final_evaluation.
 
         Returns:
             The created result ID as a string.
@@ -37,8 +34,7 @@ class ResultRepository(BaseRepository[ResultInDB]):
         now = datetime.utcnow()
         document = {
             "_id": ObjectId(),
-            "evaluation_id": evaluation_id,
-            "final_evaluation": final_evaluation_data,
+            **result_data,
             "created_at": now,
         }
         result = await self.collection.insert_one(document)
