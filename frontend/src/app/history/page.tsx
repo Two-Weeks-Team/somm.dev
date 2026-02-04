@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { api } from '@/lib/api';
-import { EvaluationHistoryItem } from '@/types';
+import { api } from '../../lib/api';
+import { EvaluationHistoryItem } from '../../types';
 import { Calendar, ChevronRight, Search, Loader2 } from 'lucide-react';
 
 export default function HistoryPage() {
