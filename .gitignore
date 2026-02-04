@@ -100,3 +100,4 @@ backend/ENV/
 # Sisyphus planning files
 .sisyphus/
 
+backend/.env.production
