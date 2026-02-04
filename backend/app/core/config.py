@@ -1,7 +1,7 @@
 """Application settings and configuration"""
 
 from pydantic_settings import BaseSettings
-from typing import List, Optional
+from typing import List
 
 
 class Settings(BaseSettings):

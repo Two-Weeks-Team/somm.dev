@@ -45,7 +45,7 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
 
             switch (type) {
               case 'status':
-                setStatus(data.status as EvaluationStatus);
+                setStatus((data as { status: EvaluationStatus }).status);
                 break;
               case 'sommelier':
                 setCompletedSommeliers((prev) => {

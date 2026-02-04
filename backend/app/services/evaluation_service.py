@@ -132,7 +132,7 @@ async def save_evaluation_results(
     overall_score = final_eval.get("overall_score", 0)
     rating_tier = get_rating_tier(overall_score)
 
-    from app.models.results import FinalEvaluation, ResultInDB
+    from app.models.results import FinalEvaluation
 
     final_evaluation = FinalEvaluation(
         overall_score=overall_score,
