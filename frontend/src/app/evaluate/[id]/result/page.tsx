@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { api } from '../../../../lib/api';
-import { EvaluationResult } from '../../../../types';
+import { api } from '@/lib/api';
+import { EvaluationResult } from '@/types';
 import { Wine, Award, Star, ArrowLeft, Share2, Download } from 'lucide-react';
 
 export default function ResultPage() {

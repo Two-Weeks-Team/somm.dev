@@ -2,9 +2,9 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { EvaluationForm } from '../../components/EvaluationForm';
-import { api } from '../../lib/api';
-import { CriteriaType } from '../../types';
+import { EvaluationForm } from '@/components/EvaluationForm';
+import { api } from '@/lib/api';
+import { CriteriaType } from '@/types';
 
 export default function EvaluatePage() {
   const router = useRouter();
