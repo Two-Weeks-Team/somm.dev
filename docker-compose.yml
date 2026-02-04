@@ -1,0 +1,57 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: somm-backend
+    ports:
+      - "8080:8000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - ENVIRONMENT=production
+      - DEBUG=false
+      - PORT=8000
+      - FRONTEND_URL=http://49.247.9.193:3000
+      - MONGODB_URI=mongodb://somm_dev_user:AUn5q8lWINorbgayEuS2Dte89aEZmvP5GSpv9f0vWHE=@49.247.2.211:27017/somm_dev?authSource=somm_dev
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+    networks:
+      - somm-network
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: somm-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://49.247.9.193:8080
+    restart: always
+    depends_on:
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+    networks:
+      - somm-network
+
+networks:
+  somm-network:
+    name: somm-network
+    driver: bridge
