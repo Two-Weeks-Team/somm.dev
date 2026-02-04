@@ -60,10 +60,13 @@ Located at `frontend/vercel.json`:
 Located at `frontend/next.config.ts`:
 
 - React Strict Mode enabled
-- Typed routes (experimental)
+- Typed routes (Next.js 16 native feature)
 - Image optimization (WebP, AVIF)
 - Compression enabled
+- Turbopack root configuration
 - Custom headers for security
+
+**Note:** `typedRoutes` has been moved from `experimental` to top-level in Next.js 16.
 
 ## Deployment Commands
 

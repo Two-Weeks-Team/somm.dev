@@ -3,9 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
 
-  experimental: {
-    typedRoutes: true,
-  },
+  typedRoutes: true,
 
   images: {
     formats: ["image/webp", "image/avif"],
@@ -13,6 +11,10 @@ const nextConfig: NextConfig = {
   },
 
   compress: true,
+
+  turbopack: {
+    root: ".",
+  },
 
   async headers() {
     return [
@@ -37,8 +39,6 @@ const nextConfig: NextConfig = {
       beforeFiles: [],
     };
   },
-
-  webpack: (config) => config,
 };
 
 export default nextConfig;
