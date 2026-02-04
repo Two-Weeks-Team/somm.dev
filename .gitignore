@@ -96,3 +96,7 @@ backend/venv/
 backend/.venv/
 backend/env/
 backend/ENV/
+
+# Sisyphus planning files
+.sisyphus/
+
