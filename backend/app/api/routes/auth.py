@@ -6,6 +6,7 @@ Security features:
 - Secure cookie handling
 """
 
+import logging
 import os
 import secrets
 import httpx
@@ -18,6 +19,8 @@ from jose import JWTError, jwt
 
 from app.database.repositories.user import UserRepository
 from app.database.connection import get_database
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -51,13 +54,23 @@ async def github_login():
     # 'repo' scope is required to access user's private repositories
     # This allows fetching the complete list of repositories for evaluation
     # Use BACKEND_URL for callback - GitHub calls backend directly, not through Vercel
+    redirect_uri = f"{BACKEND_URL}/auth/github/callback"
     github_oauth_url = (
         f"https://github.com/login/oauth/authorize"
         f"?client_id={GITHUB_CLIENT_ID}"
         f"&scope=repo,user:email,read:user"
-        f"&redirect_uri={BACKEND_URL}/auth/github/callback"
+        f"&redirect_uri={redirect_uri}"
         f"&state={state}"
     )
+
+    # Debug logging
+    logger.info("=" * 60)
+    logger.info("[GitHub OAuth] Login initiated")
+    logger.info(f"[GitHub OAuth] BACKEND_URL: {BACKEND_URL}")
+    logger.info(f"[GitHub OAuth] FRONTEND_URL: {FRONTEND_URL}")
+    logger.info(f"[GitHub OAuth] Generated redirect_uri: {redirect_uri}")
+    logger.info(f"[GitHub OAuth] Full OAuth URL: {github_oauth_url}")
+    logger.info("=" * 60)
 
     response = RedirectResponse(url=github_oauth_url)
     response.set_cookie(
@@ -96,6 +109,16 @@ async def github_callback(
         return response
 
     try:
+        # Use the same redirect_uri as in /github endpoint
+        token_redirect_uri = f"{BACKEND_URL}/auth/github/callback"
+
+        logger.info("=" * 60)
+        logger.info("[GitHub OAuth] Callback received")
+        logger.info(f"[GitHub OAuth] BACKEND_URL: {BACKEND_URL}")
+        logger.info(f"[GitHub OAuth] FRONTEND_URL: {FRONTEND_URL}")
+        logger.info(f"[GitHub OAuth] Token redirect_uri: {token_redirect_uri}")
+        logger.info("=" * 60)
+
         async with httpx.AsyncClient() as client:
             token_response = await client.post(
                 "https://github.com/login/oauth/access_token",
@@ -104,7 +127,7 @@ async def github_callback(
                     "client_id": GITHUB_CLIENT_ID,
                     "client_secret": GITHUB_CLIENT_SECRET,
                     "code": code,
-                    "redirect_uri": f"{FRONTEND_URL}/api/auth/github/callback",
+                    "redirect_uri": token_redirect_uri,
                 },
             )
             token_data = token_response.json()
