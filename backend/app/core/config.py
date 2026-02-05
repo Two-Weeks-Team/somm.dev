@@ -1,17 +1,28 @@
 """Application settings and configuration"""
 
+import secrets
 from pydantic_settings import BaseSettings
 from typing import List
 
 
+_DEFAULT_JWT_SECRET = secrets.token_urlsafe(32)
+
+
 class Settings(BaseSettings):
-    """Application settings loaded from environment variables"""
+    """Application settings loaded from environment variables
+
+    Security Note: JWT_SECRET_KEY MUST be set via environment variable in production.
+    The default random value is only for development convenience.
+    """
 
     APP_NAME: str = "Somm.dev API"
     API_V1_STR: str = "/api/v1"
 
-    # Environment
     ENVIRONMENT: str = "development"
+
+    JWT_SECRET_KEY: str = _DEFAULT_JWT_SECRET
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRATION_DAYS: int = 7
 
     # CORS settings
     FRONTEND_URL: str = "http://localhost:3000"

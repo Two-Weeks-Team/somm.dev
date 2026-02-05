@@ -18,6 +18,7 @@ from jose import JWTError, jwt
 
 from app.database.repositories.user import UserRepository
 from app.core.logging import logger
+from app.core.config import settings
 import sys
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -25,11 +26,7 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
 GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "https://www.somm.dev")
-# For OAuth callback, use backend URL directly (GitHub calls backend, not frontend)
 BACKEND_URL = os.getenv("BACKEND_URL", "http://49.247.9.193:2621")
-JWT_SECRET = os.getenv("JWT_SECRET_KEY", secrets.token_urlsafe(32))
-JWT_ALGORITHM = "HS256"
-JWT_EXPIRATION_DAYS = 7
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -37,9 +34,11 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     if expires_delta:
         expire = datetime.utcnow() + expires_delta
     else:
-        expire = datetime.utcnow() + timedelta(days=JWT_EXPIRATION_DAYS)
+        expire = datetime.utcnow() + timedelta(days=settings.JWT_EXPIRATION_DAYS)
     to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, JWT_SECRET, algorithm=JWT_ALGORITHM)
+    return jwt.encode(
+        to_encode, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
+    )
 
 
 @router.get("/github")
@@ -240,7 +239,9 @@ async def get_current_user(request: Request):
     token = auth_header.split(" ")[1]
 
     try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(
+            token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
+        )
         user_id = payload.get("sub")
 
         if not user_id:
@@ -280,7 +281,10 @@ async def refresh_token(request: Request):
 
     try:
         payload = jwt.decode(
-            token, JWT_SECRET, algorithms=[JWT_ALGORITHM], options={"verify_exp": False}
+            token,
+            settings.JWT_SECRET_KEY,
+            algorithms=[settings.JWT_ALGORITHM],
+            options={"verify_exp": False},
         )
 
         user_id = payload.get("sub")
