@@ -91,6 +91,11 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
     e.preventDefault();
     setValidationError(null);
 
+    if (!isAuthenticated) {
+      setValidationError("Please login to submit an evaluation.");
+      return;
+    }
+
     const error = validateUrl(repoUrl);
     if (error) {
       setValidationError(error);
@@ -188,7 +193,7 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
                 validateRepo(value);
               }}
               placeholder="https://github.com/username/repository"
-              className={`block w-full pl-10 pr-10 py-3 border rounded-lg focus:ring-[#722F37] focus:border-[#722F37] transition-colors ${
+              className={`block w-full pl-10 pr-10 py-3 border rounded-lg text-gray-900 placeholder:text-gray-400 focus:ring-[#722F37] focus:border-[#722F37] transition-colors ${
                 validationError || error || validation.status === 'invalid'
                   ? 'border-red-300 bg-red-50'
                   : validation.status === 'valid'
@@ -247,7 +252,7 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
 
       <button
         type="submit"
-        disabled={isLoading || !repoUrl}
+        disabled={isLoading || !repoUrl || !isAuthenticated}
         className="w-full flex items-center justify-center py-4 px-6 border border-transparent rounded-lg shadow-sm text-lg font-medium text-white bg-[#722F37] hover:bg-[#5a252c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#722F37] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
       >
         {isLoading ? (
