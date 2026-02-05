@@ -39,8 +39,8 @@ tree-sitter-typescript>=0.23.0
 radon>=6.0.0
 
 # Optional tree-sitter languages (fallback to regex if not available)
+# Note: tree-sitter-swift, tree-sitter-dart not available on PyPI
+# These languages will use regex fallback in CodebaseAnalyzer
 tree-sitter-go>=0.23.0
 tree-sitter-ruby>=0.23.0
 tree-sitter-kotlin>=0.1.0
-tree-sitter-swift>=0.6.0
-tree-sitter-dart-orchard>=0.6.0
