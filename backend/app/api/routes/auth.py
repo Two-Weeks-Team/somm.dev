@@ -69,9 +69,6 @@ async def github_callback(
     error: str = None,
     oauth_state: Optional[str] = Cookie(None),
 ):
-    response = RedirectResponse(url=f"{settings.FRONTEND_URL}/login")
-    response.delete_cookie("oauth_state")
-
     if error:
         response = RedirectResponse(url=f"{settings.FRONTEND_URL}/login?error={error}")
         response.delete_cookie("oauth_state")
