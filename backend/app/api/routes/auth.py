@@ -24,6 +24,8 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
 GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
 FRONTEND_URL = os.getenv("FRONTEND_URL", "https://www.somm.dev")
+# For OAuth callback, use backend URL directly (GitHub calls backend, not frontend)
+BACKEND_URL = os.getenv("BACKEND_URL", "http://49.247.9.193:2621")
 JWT_SECRET = os.getenv("JWT_SECRET_KEY", secrets.token_urlsafe(32))
 JWT_ALGORITHM = "HS256"
 JWT_EXPIRATION_DAYS = 7
@@ -48,11 +50,12 @@ async def github_login():
 
     # 'repo' scope is required to access user's private repositories
     # This allows fetching the complete list of repositories for evaluation
+    # Use BACKEND_URL for callback - GitHub calls backend directly, not through Vercel
     github_oauth_url = (
         f"https://github.com/login/oauth/authorize"
         f"?client_id={GITHUB_CLIENT_ID}"
         f"&scope=repo,user:email,read:user"
-        f"&redirect_uri={FRONTEND_URL}/api/auth/github/callback"
+        f"&redirect_uri={BACKEND_URL}/auth/github/callback"
         f"&state={state}"
     )
 
