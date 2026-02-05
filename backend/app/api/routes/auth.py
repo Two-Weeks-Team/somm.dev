@@ -6,7 +6,6 @@ Security features:
 - Secure cookie handling
 """
 
-import logging
 import os
 import secrets
 import httpx
@@ -19,8 +18,7 @@ from jose import JWTError, jwt
 
 from app.database.repositories.user import UserRepository
 from app.database.connection import get_database
-
-logger = logging.getLogger(__name__)
+from app.core.logging import logger
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
