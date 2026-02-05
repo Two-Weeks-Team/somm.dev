@@ -46,10 +46,12 @@ async def github_login():
 
     state = secrets.token_urlsafe(32)
 
+    # 'repo' scope is required to access user's private repositories
+    # This allows fetching the complete list of repositories for evaluation
     github_oauth_url = (
         f"https://github.com/login/oauth/authorize"
         f"?client_id={GITHUB_CLIENT_ID}"
-        f"&scope=user:email,read:user"
+        f"&scope=repo,user:email,read:user"
         f"&redirect_uri={FRONTEND_URL}/api/auth/github/callback"
         f"&state={state}"
     )
