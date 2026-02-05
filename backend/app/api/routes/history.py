@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from app.api.deps import get_current_user
 from app.services.evaluation_service import get_user_history
 
-router = APIRouter(prefix="/api/history", tags=["history"])
+router = APIRouter(prefix="/history", tags=["history"])
 
 
 class HistoryItem(BaseModel):
