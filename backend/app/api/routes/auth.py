@@ -175,10 +175,9 @@ async def github_callback(
             )
             print(f"[OAUTH DEBUG] Primary email: {primary_email}", file=sys.stderr)
 
-            db = get_database()
-            print("[OAUTH DEBUG] Got database", file=sys.stderr)
+            print("[OAUTH DEBUG] Creating UserRepository", file=sys.stderr)
 
-            user_repo = UserRepository(db)
+            user_repo = UserRepository()
             print("[OAUTH DEBUG] Got user_repo", file=sys.stderr)
 
             existing_user = await user_repo.get_by_github_id(str(user_data["id"]))
