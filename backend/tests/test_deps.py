@@ -23,10 +23,12 @@ class TestDecodeToken:
 
     def test_decode_valid_token(self):
         """Test decoding a valid JWT token."""
-        from app.api.deps import JWT_SECRET, JWT_ALGORITHM
+        from app.core.config import settings
 
         payload = {"sub": "user123", "github_id": "456"}
-        token = jwt.encode(payload, JWT_SECRET, algorithm=JWT_ALGORITHM)
+        token = jwt.encode(
+            payload, settings.JWT_SECRET_KEY, algorithm=settings.JWT_ALGORITHM
+        )
 
         decoded = decode_token(token)
 
