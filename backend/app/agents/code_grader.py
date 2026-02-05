@@ -39,25 +39,18 @@ class CodeGraderAgent:
 
         item_scores = {}
 
-        d1_result = self._evaluate_readme_quality(repo_context)
-        if d1_result:
-            item_scores["D1"] = self._to_item_score(d1_result)
+        evaluation_map = {
+            "D1": self._evaluate_readme_quality,
+            "D2": self._evaluate_code_comments,
+            "C4": self._evaluate_test_existence,
+            "B1": self._evaluate_tech_stack,
+            "B2": self._evaluate_system_architecture,
+        }
 
-        d2_result = self._evaluate_code_comments(repo_context)
-        if d2_result:
-            item_scores["D2"] = self._to_item_score(d2_result)
-
-        c4_result = self._evaluate_test_existence(repo_context)
-        if c4_result:
-            item_scores["C4"] = self._to_item_score(c4_result)
-
-        b1_result = self._evaluate_tech_stack(repo_context)
-        if b1_result:
-            item_scores["B1"] = self._to_item_score(b1_result)
-
-        b2_result = self._evaluate_system_architecture(repo_context)
-        if b2_result:
-            item_scores["B2"] = self._to_item_score(b2_result)
+        for item_code, method in evaluation_map.items():
+            result = method(repo_context)
+            if result:
+                item_scores[item_code] = self._to_item_score(result)
 
         return {
             "item_scores": item_scores,
