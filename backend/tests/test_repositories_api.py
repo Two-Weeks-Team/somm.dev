@@ -76,7 +76,8 @@ class TestGetRepositories:
                 MockGitHub.return_value = mock_github_instance
 
                 response = client.get(
-                    "/repositories", headers={"Authorization": f"Bearer {token}"}
+                    "/api/v1/repositories",
+                    headers={"Authorization": f"Bearer {token}"},
                 )
 
                 assert response.status_code == 200
@@ -115,7 +116,8 @@ class TestGetRepositories:
             MockCache.return_value = mock_cache_instance
 
             response = client.get(
-                "/repositories", headers={"Authorization": f"Bearer {token}"}
+                "/api/v1/repositories",
+                headers={"Authorization": f"Bearer {token}"},
             )
 
             assert response.status_code == 200
@@ -166,7 +168,7 @@ class TestRefreshRepositories:
                 MockGitHub.return_value = mock_github_instance
 
                 response = client.post(
-                    "/repositories/refresh",
+                    "/api/v1/repositories/refresh",
                     headers={"Authorization": f"Bearer {token}"},
                 )
 
