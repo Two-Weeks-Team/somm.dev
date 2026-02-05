@@ -66,3 +66,7 @@ class TestOldEndpointsRemoved:
     def test_old_history_prefix_removed(self):
         response = client.get("/api/history")
         assert response.status_code == 404, "Old /api/history should not exist"
+
+    def test_old_repositories_prefix_removed(self):
+        response = client.get("/repositories")
+        assert response.status_code == 404, "Old /repositories should not exist"
