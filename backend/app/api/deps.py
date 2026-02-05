@@ -1,7 +1,5 @@
 """API dependencies for authentication and common operations."""
 
-import os
-import secrets
 from typing import Optional
 
 from fastapi import HTTPException, Request, Depends
@@ -9,10 +7,7 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 
 from app.database.repositories.user import UserRepository
-
-
-JWT_SECRET = os.getenv("JWT_SECRET_KEY", secrets.token_urlsafe(32))
-JWT_ALGORITHM = "HS256"
+from app.core.config import settings
 
 security = HTTPBearer(auto_error=False)
 
@@ -48,7 +43,9 @@ def decode_token(token: str) -> dict:
         HTTPException: If token is invalid or expired.
     """
     try:
-        payload = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+        payload = jwt.decode(
+            token, settings.JWT_SECRET_KEY, algorithms=[settings.JWT_ALGORITHM]
+        )
         return payload
     except JWTError as e:
         raise HTTPException(
