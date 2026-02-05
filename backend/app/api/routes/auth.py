@@ -210,7 +210,7 @@ async def github_callback(
             print("[OAUTH DEBUG] Created JWT token", file=sys.stderr)
 
             response = RedirectResponse(
-                url=f"{FRONTEND_URL}/evaluate?token={jwt_token}"
+                url=f"{FRONTEND_URL}/evaluate#token={jwt_token}"
             )
             response.delete_cookie("oauth_state")
             print("[OAUTH DEBUG] Redirecting to frontend", file=sys.stderr)
