@@ -9,7 +9,6 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import JWTError, jwt
 
 from app.database.repositories.user import UserRepository
-from app.database.connection import get_database
 
 
 JWT_SECRET = os.getenv("JWT_SECRET_KEY", secrets.token_urlsafe(32))
@@ -105,8 +104,7 @@ async def get_current_user(
         )
 
     # Get user from database
-    db = get_database()
-    user_repo = UserRepository(db)
+    user_repo = UserRepository()
     user_doc = await user_repo.get_by_id(user_id)
 
     if not user_doc:
@@ -163,8 +161,7 @@ async def get_current_user_token(
     Raises:
         HTTPException: If token is not available (404).
     """
-    db = get_database()
-    user_repo = UserRepository(db)
+    user_repo = UserRepository()
     user_doc = await user_repo.get_by_id(user.id)
 
     if not user_doc:
