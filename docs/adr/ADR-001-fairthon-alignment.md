@@ -18,5 +18,5 @@ mandatory prerequisite.
 - Enables consistent review of scope and dependencies
 
 ## Links
-- docs/FAIRTHON_ALIGNMENT_PLAN.md
-- Issue #67
+- [FAIRTHON_ALIGNMENT_PLAN.md](../FAIRTHON_ALIGNMENT_PLAN.md)
+- #67

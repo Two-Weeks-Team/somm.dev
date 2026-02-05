@@ -1,9 +1,12 @@
 from pathlib import Path
 
+import pytest
+
 
 ROOT = Path(__file__).resolve().parents[2]
 DOCS = ROOT / "docs"
 ADR_DIR = DOCS / "adr"
+ADR_SECTIONS = ["Context", "Decision", "Alternatives", "Consequences", "Links"]
 
 
 def _read(path: Path) -> str:
@@ -15,20 +18,16 @@ def _assert_sections(content: str, sections: list[str]) -> None:
         assert f"## {section}" in content
 
 
-def test_adr_template_sections_exist():
-    content = _read(ADR_DIR / "ADR_TEMPLATE.md")
-    _assert_sections(
-        content,
-        ["Context", "Decision", "Alternatives", "Consequences", "Links"],
-    )
-
-
-def test_adr_001_sections_exist():
-    content = _read(ADR_DIR / "ADR-001-fairthon-alignment.md")
-    _assert_sections(
-        content,
-        ["Context", "Decision", "Alternatives", "Consequences", "Links"],
-    )
+@pytest.mark.parametrize(
+    "adr_file",
+    [
+        "ADR_TEMPLATE.md",
+        "ADR-001-fairthon-alignment.md",
+    ],
+)
+def test_adr_sections_exist(adr_file: str):
+    content = _read(ADR_DIR / adr_file)
+    _assert_sections(content, ADR_SECTIONS)
 
 
 def test_docs_index_references_adrs():
