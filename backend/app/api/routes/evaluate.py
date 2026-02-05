@@ -2,8 +2,8 @@
 
 This module provides endpoints for:
 - Starting new evaluations (POST /api/evaluate)
-- Streaming evaluation progress (GET /api/evaluate/{id}/stream)
-- Getting evaluation results (GET /api/evaluate/{id}/result)
+- Streaming evaluation progress (GET /api/evaluate/{evaluation_id}/stream)
+- Getting evaluation results (GET /api/evaluate/{evaluation_id}/result)
 """
 
 import asyncio
