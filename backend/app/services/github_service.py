@@ -229,8 +229,7 @@ class GitHubService:
             while True:
                 url = (
                     f"{GITHUB_API_BASE}/user/repos"
-                    f"?type=all"
-                    f"&affiliation=owner,collaborator,organization_member"
+                    f"?affiliation=owner,collaborator,organization_member"
                     f"&sort=pushed"
                     f"&direction=desc"
                     f"&per_page={per_page}"
