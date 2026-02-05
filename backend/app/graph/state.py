@@ -42,7 +42,9 @@ class EvaluationState(TypedDict):
         Annotated[Dict[str, Dict[str, Optional[int]]], merge_dicts]
     ]
     cost_usage: NotRequired[Annotated[Dict[str, Optional[float]], merge_dicts]]
-    trace_metadata: NotRequired[Annotated[Dict[str, Dict[str, str]], merge_dicts]]
+    trace_metadata: NotRequired[
+        Annotated[Dict[str, Dict[str, Optional[str]]], merge_dicts]
+    ]
 
     # Metadata
     started_at: NotRequired[str]
