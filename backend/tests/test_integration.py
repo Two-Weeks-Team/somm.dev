@@ -4,21 +4,26 @@ These tests verify the end-to-end flow of repository selection.
 Note: Tests requiring MongoDB are skipped if no database connection.
 """
 
-import os
 import pytest
 from datetime import datetime
 from unittest.mock import AsyncMock, MagicMock, patch
-
-# Set required env vars
-os.environ["JWT_SECRET_KEY"] = "test_secret_key_integration"
-os.environ["GITHUB_CLIENT_ID"] = "test_client_id"
-os.environ["GITHUB_CLIENT_SECRET"] = "test_client_secret"
-os.environ["FRONTEND_URL"] = "http://localhost:3000"
 
 from fastapi.testclient import TestClient
 from jose import jwt
 
 from app.main import app
+from app.core.config import settings
+
+
+@pytest.fixture(autouse=True)
+def mock_integration_settings():
+    with (
+        patch.object(settings, "GITHUB_CLIENT_ID", "test_client_id"),
+        patch.object(settings, "GITHUB_CLIENT_SECRET", "test_client_secret"),
+        patch.object(settings, "FRONTEND_URL", "http://localhost:3000"),
+        patch.object(settings, "JWT_SECRET_KEY", "test_secret_key_integration"),
+    ):
+        yield
 
 
 client = TestClient(app)

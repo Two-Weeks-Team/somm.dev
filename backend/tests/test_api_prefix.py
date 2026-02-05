@@ -38,9 +38,9 @@ class TestApiPrefixConfiguration:
 
 class TestAuthEndpointNotUnderV1:
     def test_auth_github_at_root(self):
-        response = client.get("/auth/github")
-        assert response.status_code != 404, (
-            "Auth github should be at /auth/github (not /api/v1)"
+        response = client.get("/auth/github", follow_redirects=False)
+        assert response.status_code in (307, 302), (
+            "Auth github should redirect (not 404)"
         )
 
     def test_auth_me_at_root(self):
