@@ -17,7 +17,6 @@ from fastapi.responses import RedirectResponse
 from jose import JWTError, jwt
 
 from app.database.repositories.user import UserRepository
-from app.database.connection import get_database
 from app.core.logging import logger
 import sys
 
@@ -247,8 +246,7 @@ async def get_current_user(request: Request):
         if not user_id:
             raise HTTPException(status_code=401, detail="Invalid token")
 
-        db = get_database()
-        user_repo = UserRepository(db)
+        user_repo = UserRepository()
         user = await user_repo.get_by_id(user_id)
 
         if not user:
