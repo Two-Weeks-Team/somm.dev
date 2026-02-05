@@ -7,12 +7,7 @@ from operator import add
 def merge_dicts(
     current: Optional[Dict[str, object]], incoming: Optional[Dict[str, object]]
 ) -> Dict[str, object]:
-    result: Dict[str, object] = {}
-    if current:
-        result.update(current)
-    if incoming:
-        result.update(incoming)
-    return result
+    return {**(current or {}), **(incoming or {})}
 
 
 class EvaluationState(TypedDict):
