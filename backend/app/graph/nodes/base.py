@@ -60,6 +60,25 @@ class BaseSommelierNode(ABC):
         """
         started_at = datetime.utcnow().isoformat()
         model_name = getattr(self.llm, "model", "gemini-1.5-flash")
+        observability = {
+            "completed_sommeliers": [self.name],
+            "token_usage": {
+                self.name: {
+                    "input_tokens": None,
+                    "output_tokens": None,
+                    "total_tokens": None,
+                }
+            },
+            "cost_usage": {self.name: None},
+            "trace_metadata": {
+                self.name: {
+                    "started_at": started_at,
+                    "completed_at": datetime.utcnow().isoformat(),
+                    "model": model_name,
+                    "provider": "gemini",
+                }
+            },
+        }
         try:
             prompt = self.get_prompt(state["evaluation_criteria"])
             chain = prompt | self.llm | self.parser
@@ -73,37 +92,12 @@ class BaseSommelierNode(ABC):
             )
             return {
                 f"{self.name}_result": result.dict(),
-                "completed_sommeliers": [self.name],
-                "token_usage": {
-                    self.name: {
-                        "input_tokens": None,
-                        "output_tokens": None,
-                        "total_tokens": None,
-                    }
-                },
-                "cost_usage": {self.name: None},
-                "trace_metadata": {
-                    self.name: {
-                        "started_at": started_at,
-                        "completed_at": datetime.utcnow().isoformat(),
-                        "model": model_name,
-                        "provider": "gemini",
-                    }
-                },
+                **observability,
             }
         except Exception as e:
+            observability["token_usage"] = {self.name: {}}
             return {
                 "errors": [f"{self.name} evaluation failed: {str(e)}"],
                 f"{self.name}_result": None,
-                "completed_sommeliers": [self.name],
-                "token_usage": {self.name: {}},
-                "cost_usage": {self.name: None},
-                "trace_metadata": {
-                    self.name: {
-                        "started_at": started_at,
-                        "completed_at": datetime.utcnow().isoformat(),
-                        "model": model_name,
-                        "provider": "gemini",
-                    }
-                },
+                **observability,
             }
