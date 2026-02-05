@@ -22,12 +22,12 @@ export default function ProgressPage() {
   }, [isComplete, id, router]);
 
   const sommeliers = [
-    { name: 'The Critic', role: 'Code Quality' },
-    { name: 'The Historian', role: 'Git History' },
-    { name: 'The Architect', role: 'Structure' },
-    { name: 'The Security Guard', role: 'Security' },
-    { name: 'The User Advocate', role: 'UX/UI' },
-    { name: 'The Performance Tuner', role: 'Performance' },
+    { name: 'Marcel', role: 'Structure & Metrics' },
+    { name: 'Isabella', role: 'Code Quality' },
+    { name: 'Heinrich', role: 'Security & Testing' },
+    { name: 'Sofia', role: 'Innovation' },
+    { name: 'Laurent', role: 'Implementation' },
+    { name: 'Jean-Pierre', role: 'Final Verdict' },
   ];
 
   return (
