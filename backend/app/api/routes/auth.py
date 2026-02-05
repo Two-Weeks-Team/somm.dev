@@ -107,14 +107,15 @@ async def github_callback(
         return response
 
     try:
-        # Use the same redirect_uri as in /github endpoint
-        token_redirect_uri = f"{BACKEND_URL}/auth/github/callback"
-
         logger.info("=" * 60)
         logger.info("[GitHub OAuth] Callback received")
         logger.info(f"[GitHub OAuth] BACKEND_URL: {BACKEND_URL}")
         logger.info(f"[GitHub OAuth] FRONTEND_URL: {FRONTEND_URL}")
-        logger.info(f"[GitHub OAuth] Token redirect_uri: {token_redirect_uri}")
+        logger.info(
+            f"[GitHub OAuth] Code: {code[:10]}..."
+            if code
+            else "[GitHub OAuth] Code: None"
+        )
         logger.info("=" * 60)
 
         async with httpx.AsyncClient() as client:
@@ -125,7 +126,6 @@ async def github_callback(
                     "client_id": GITHUB_CLIENT_ID,
                     "client_secret": GITHUB_CLIENT_SECRET,
                     "code": code,
-                    "redirect_uri": token_redirect_uri,
                 },
             )
             token_data = token_response.json()
