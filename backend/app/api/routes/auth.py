@@ -193,7 +193,7 @@ async def github_callback(
 
             if existing_user:
                 await user_repo.update(existing_user["_id"], user_info)
-                user_id = existing_user["_id"]
+                user_id = str(existing_user["_id"])
                 print(f"[OAUTH DEBUG] Updated user: {user_id}", file=sys.stderr)
             else:
                 user_info["created_at"] = datetime.utcnow()
