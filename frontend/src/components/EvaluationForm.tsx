@@ -3,8 +3,9 @@ import { CriteriaType } from '../types';
 import { CriteriaSelector } from './CriteriaSelector';
 import { RepositoryPicker } from './RepositoryPicker';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRepoValidation } from '@/hooks/useRepoValidation';
 import { api, Repository, AuthError } from '@/lib/api';
-import { Search, Loader2, AlertCircle, Github } from 'lucide-react';
+import { Search, Loader2, AlertCircle, Github, CheckCircle, Lock, XCircle } from 'lucide-react';
 
 interface EvaluationFormProps {
   onSubmit: (repoUrl: string, criteria: CriteriaType) => Promise<void>;
@@ -26,6 +27,7 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
   const [reposError, setReposError] = useState<string | null>(null);
 
   const { isAuthenticated, token, login } = useAuth();
+  const { validation, validateRepo, clearValidation } = useRepoValidation(500);
 
   useEffect(() => {
     if (activeTab === 'repos' && isAuthenticated && token) {
@@ -73,6 +75,7 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
     setSelectedRepoId(repo.id);
     setRepoUrl(repo.html_url);
     setValidationError(null);
+    clearValidation();
   };
 
   const validateUrl = (url: string) => {
@@ -177,16 +180,57 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
               id="repoUrl"
               value={repoUrl}
               onChange={(e) => {
-                setRepoUrl(e.target.value);
+                const value = e.target.value;
+                setRepoUrl(value);
                 if (validationError) setValidationError(null);
+                validateRepo(value);
               }}
               placeholder="https://github.com/username/repository"
-              className={`block w-full pl-10 pr-3 py-3 border rounded-lg focus:ring-[#722F37] focus:border-[#722F37] transition-colors ${
-                validationError || error ? 'border-red-300 bg-red-50' : 'border-gray-300'
+              className={`block w-full pl-10 pr-10 py-3 border rounded-lg focus:ring-[#722F37] focus:border-[#722F37] transition-colors ${
+                validationError || error || validation.status === 'invalid'
+                  ? 'border-red-300 bg-red-50'
+                  : validation.status === 'valid'
+                  ? 'border-green-300 bg-green-50'
+                  : 'border-gray-300'
               }`}
               disabled={isLoading}
             />
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center">
+              {validation.status === 'checking' && (
+                <Loader2 className="h-5 w-5 text-gray-400 animate-spin" />
+              )}
+              {validation.status === 'valid' && (
+                <CheckCircle className="h-5 w-5 text-green-500" />
+              )}
+              {validation.status === 'invalid' && (
+                <XCircle className="h-5 w-5 text-red-500" />
+              )}
+              {validation.status === 'private' && (
+                <Lock className="h-5 w-5 text-amber-500" />
+              )}
+              {validation.status === 'error' && (
+                <AlertCircle className="h-5 w-5 text-red-500" />
+              )}
+            </div>
           </div>
+          {validation.message && (
+            <div
+              className={`text-sm flex items-center gap-2 ${
+                validation.status === 'valid'
+                  ? 'text-green-600'
+                  : validation.status === 'private'
+                  ? 'text-amber-600'
+                  : 'text-red-600'
+              }`}
+            >
+              {validation.status === 'checking' && <Loader2 className="w-4 h-4 animate-spin" />}
+              {validation.status === 'valid' && <CheckCircle className="w-4 h-4" />}
+              {validation.status === 'invalid' && <XCircle className="w-4 h-4" />}
+              {validation.status === 'private' && <Lock className="w-4 h-4" />}
+              {validation.status === 'error' && <AlertCircle className="w-4 h-4" />}
+              {validation.message}
+            </div>
+          )}
         </div>
       )}
 
