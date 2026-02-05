@@ -108,3 +108,11 @@ Align somm.dev with fairthon's proven architecture patterns and LangGraph best p
 - Plan issues with labels and checklists
 - ADRs and updated docs
 - Phased implementation with tests and failure-path coverage
+
+## Plan Execution Checklist
+- [ ] Phase 0 completed and merged (ADR baseline)
+- [ ] Phase 1 completed and merged (state reducers + observability)
+- [ ] Phase 2 completed and merged (YAML techniques + filters)
+- [ ] Phase 3 completed and merged (multi-model + BYOK)
+- [ ] Phase 4 completed and merged (RAG enrichment)
+- [ ] Phase 5 completed and merged (trajectory + failure-path QA)
