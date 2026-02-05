@@ -48,6 +48,12 @@ class UserInDB(UserBase):
     hashed_password: Optional[str] = Field(
         default=None, description="Hashed password for future authentication"
     )
+    github_access_token: Optional[str] = Field(
+        default=None, description="GitHub OAuth access token for API calls"
+    )
+    token_updated_at: Optional[datetime] = Field(
+        default=None, description="Timestamp when the GitHub token was last updated"
+    )
     created_at: datetime = Field(..., description="User creation timestamp")
 
     class Config:
