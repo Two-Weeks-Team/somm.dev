@@ -24,10 +24,13 @@ async function fetchWithConfig(endpoint: string, options: RequestInit = {}) {
 
 export const api = {
   startEvaluation: async (repoUrl: string, criteria: CriteriaType): Promise<{ id: string }> => {
-    return fetchWithConfig('/api/evaluate', {
+    const response = await fetchWithConfig('/api/evaluate', {
       method: 'POST',
-      body: JSON.stringify({ repoUrl, criteria }),
+      body: JSON.stringify({ repo_url: repoUrl, criteria }),
     });
+    // Backend returns { evaluation_id, status, estimated_time }
+    // Frontend expects { id }
+    return { id: response.evaluation_id };
   },
 
   getEvaluationStream: (evaluationId: string, onMessage: (event: MessageEvent) => void, onError?: (error: Event) => void): EventSource => {
@@ -44,14 +47,37 @@ export const api = {
   },
 
   getEvaluationResult: async (evaluationId: string): Promise<EvaluationResult> => {
-    return fetchWithConfig(`/api/evaluate/${evaluationId}`);
+    const response = await fetchWithConfig(`/api/evaluate/${evaluationId}/result`);
+    // Transform backend response to frontend format
+    return {
+      id: response.evaluation_id,
+      repoUrl: '', // Will be populated from evaluation data
+      status: 'completed',
+      createdAt: response.created_at,
+      finalVerdict: response.final_evaluation?.summary || '',
+      totalScore: response.final_evaluation?.overall_score || 0,
+      tier: response.final_evaluation?.rating_tier || '',
+      results: response.final_evaluation?.sommelier_outputs || [],
+    };
   },
 
   getHistory: async (page: number = 1, limit: number = 10): Promise<{ items: EvaluationHistoryItem[], total: number }> => {
+    const skip = (page - 1) * limit;
     const queryParams = new URLSearchParams({
-      page: page.toString(),
+      skip: skip.toString(),
       limit: limit.toString(),
     });
-    return fetchWithConfig(`/api/history?${queryParams.toString()}`);
+    const response = await fetchWithConfig(`/api/history?${queryParams.toString()}`);
+
+    // Transform backend response to frontend format
+    const items = response.items.map((item: any) => ({
+      id: item.id,
+      repoUrl: item.repo_context?.repo_url || '',
+      createdAt: item.created_at,
+      status: item.status,
+      totalScore: item.score,
+    }));
+
+    return { items, total: response.total };
   },
 };
