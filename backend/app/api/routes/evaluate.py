@@ -1,9 +1,9 @@
 """Evaluate API routes for starting and monitoring evaluations.
 
 This module provides endpoints for:
-- Starting new evaluations (POST /evaluate)
-- Streaming evaluation progress (GET /{id}/stream)
-- Getting evaluation results (GET /{id}/result)
+- Starting new evaluations (POST /api/evaluate)
+- Streaming evaluation progress (GET /api/evaluate/{id}/stream)
+- Getting evaluation results (GET /api/evaluate/{id}/result)
 """
 
 import asyncio
@@ -20,7 +20,7 @@ from app.services.evaluation_service import (
 )
 from app.services.sse_manager import get_sse_manager
 
-router = APIRouter(prefix="/evaluate", tags=["evaluate"])
+router = APIRouter(prefix="/api/evaluate", tags=["evaluate"])
 
 
 class EvaluateRequest(BaseModel):
