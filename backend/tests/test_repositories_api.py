@@ -23,6 +23,7 @@ client = TestClient(app)
 def create_test_token(user_id: str = "test_user_id", github_id: str = "12345") -> str:
     """Create a test JWT token."""
     from app.api.deps import JWT_SECRET, JWT_ALGORITHM
+
     payload = {
         "sub": user_id,
         "github_id": github_id,
@@ -32,11 +33,11 @@ def create_test_token(user_id: str = "test_user_id", github_id: str = "12345") -
 
 
 class TestGetRepositories:
-    """Test suite for GET /api/repositories endpoint."""
+    """Test suite for GET /api/v1/repositories endpoint."""
 
     def test_get_repositories_requires_auth(self):
         """Test that endpoint requires authentication."""
-        response = client.get("/repositories")
+        response = client.get("/api/v1/repositories")
 
         assert response.status_code == 401
         assert "Not authenticated" in response.json()["detail"]
@@ -59,7 +60,9 @@ class TestGetRepositories:
             }
         ]
 
-        with patch("app.api.routes.repositories.RepositoryCacheRepository") as MockCache:
+        with patch(
+            "app.api.routes.repositories.RepositoryCacheRepository"
+        ) as MockCache:
             mock_cache_instance = MagicMock()
             mock_cache_instance.get_user_repos = AsyncMock(return_value=None)
             mock_cache_instance.set_user_repos = AsyncMock()
@@ -67,12 +70,14 @@ class TestGetRepositories:
 
             with patch("app.api.routes.repositories.GitHubService") as MockGitHub:
                 mock_github_instance = MagicMock()
-                mock_github_instance.list_user_repositories = AsyncMock(return_value=mock_repos)
+                mock_github_instance.list_user_repositories = AsyncMock(
+                    return_value=mock_repos
+                )
                 MockGitHub.return_value = mock_github_instance
 
                 response = client.get(
-                    "/repositories",
-                    headers={"Authorization": f"Bearer {token}"}
+                    "/api/v1/repositories",
+                    headers={"Authorization": f"Bearer {token}"},
                 )
 
                 assert response.status_code == 200
@@ -101,14 +106,18 @@ class TestGetRepositories:
             }
         ]
 
-        with patch("app.api.routes.repositories.RepositoryCacheRepository") as MockCache:
+        with patch(
+            "app.api.routes.repositories.RepositoryCacheRepository"
+        ) as MockCache:
             mock_cache_instance = MagicMock()
-            mock_cache_instance.get_user_repos = AsyncMock(return_value=mock_cached_repos)
+            mock_cache_instance.get_user_repos = AsyncMock(
+                return_value=mock_cached_repos
+            )
             MockCache.return_value = mock_cache_instance
 
             response = client.get(
-                "/repositories",
-                headers={"Authorization": f"Bearer {token}"}
+                "/api/v1/repositories",
+                headers={"Authorization": f"Bearer {token}"},
             )
 
             assert response.status_code == 200
@@ -118,11 +127,11 @@ class TestGetRepositories:
 
 
 class TestRefreshRepositories:
-    """Test suite for POST /api/repositories/refresh endpoint."""
+    """Test suite for POST /api/v1/repositories/refresh endpoint."""
 
     def test_refresh_repositories_requires_auth(self):
         """Test that refresh endpoint requires authentication."""
-        response = client.post("/repositories/refresh")
+        response = client.post("/api/v1/repositories/refresh")
 
         assert response.status_code == 401
 
@@ -143,7 +152,9 @@ class TestRefreshRepositories:
             }
         ]
 
-        with patch("app.api.routes.repositories.RepositoryCacheRepository") as MockCache:
+        with patch(
+            "app.api.routes.repositories.RepositoryCacheRepository"
+        ) as MockCache:
             mock_cache_instance = MagicMock()
             mock_cache_instance.clear_user_repos = AsyncMock(return_value=1)
             mock_cache_instance.set_user_repos = AsyncMock()
@@ -151,12 +162,14 @@ class TestRefreshRepositories:
 
             with patch("app.api.routes.repositories.GitHubService") as MockGitHub:
                 mock_github_instance = MagicMock()
-                mock_github_instance.list_user_repositories = AsyncMock(return_value=mock_repos)
+                mock_github_instance.list_user_repositories = AsyncMock(
+                    return_value=mock_repos
+                )
                 MockGitHub.return_value = mock_github_instance
 
                 response = client.post(
-                    "/repositories/refresh",
-                    headers={"Authorization": f"Bearer {token}"}
+                    "/api/v1/repositories/refresh",
+                    headers={"Authorization": f"Bearer {token}"},
                 )
 
                 assert response.status_code == 200
