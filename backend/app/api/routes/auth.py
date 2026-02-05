@@ -19,6 +19,7 @@ from jose import JWTError, jwt
 from app.database.repositories.user import UserRepository
 from app.database.connection import get_database
 from app.core.logging import logger
+import sys
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -118,6 +119,11 @@ async def github_callback(
         )
         logger.info("=" * 60)
 
+        print(
+            f"[OAUTH DEBUG] Callback received with code: {code[:10] if code else 'None'}...",
+            file=sys.stderr,
+        )
+
         async with httpx.AsyncClient() as client:
             token_response = await client.post(
                 "https://github.com/login/oauth/access_token",
@@ -130,8 +136,11 @@ async def github_callback(
             )
             token_data = token_response.json()
 
+            print(f"[OAUTH DEBUG] Token response: {token_data}", file=sys.stderr)
+
             if "access_token" not in token_data:
                 error_msg = token_data.get("error_description", "OAuth failed")
+                print(f"[OAUTH DEBUG] Error: {error_msg}", file=sys.stderr)
                 response = RedirectResponse(
                     url=f"{FRONTEND_URL}/login?error={error_msg}"
                 )
