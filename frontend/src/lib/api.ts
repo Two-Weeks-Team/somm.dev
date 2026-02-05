@@ -1,6 +1,6 @@
 import { EvaluationResult, EvaluationHistoryItem, CriteriaType } from '../types';
 
-const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
+const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.somm.dev';
 
 export class AuthError extends Error {
   constructor(message: string = 'Authentication required') {
