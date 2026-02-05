@@ -111,7 +111,8 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const oauthToken = urlParams.get('token');
+    const hashParams = new URLSearchParams(window.location.hash.replace('#', ''));
+    const oauthToken = urlParams.get('token') || hashParams.get('token');
     if (oauthToken) {
       login(oauthToken).then(() => {
         window.history.replaceState({}, document.title, window.location.pathname);
@@ -175,6 +176,11 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
         </div>
       ) : (
         <div className="space-y-4">
+          {!isAuthenticated && (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+              Login is required to submit a repository URL.
+            </div>
+          )}
           <label htmlFor="repoUrl" className="block text-lg font-semibold text-[#722F37]">
             Repository URL
           </label>
