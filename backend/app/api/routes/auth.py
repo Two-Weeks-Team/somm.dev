@@ -134,6 +134,10 @@ async def github_callback(
                 return response
 
             access_token = token_data["access_token"]
+            print(
+                f"[OAUTH DEBUG] Got access_token: {access_token[:10]}...",
+                file=sys.stderr,
+            )
 
             user_response = await client.get(
                 "https://api.github.com/user",
@@ -143,6 +147,7 @@ async def github_callback(
                 },
             )
             user_data = user_response.json()
+            print(f"[OAUTH DEBUG] Got user_data: {user_data}", file=sys.stderr)
 
             email_response = await client.get(
                 "https://api.github.com/user/emails",
@@ -152,15 +157,22 @@ async def github_callback(
                 },
             )
             emails = email_response.json()
+            print(f"[OAUTH DEBUG] Got emails: {emails}", file=sys.stderr)
+
             primary_email = next(
                 (e["email"] for e in emails if e.get("primary") and e.get("verified")),
                 user_data.get("email"),
             )
+            print(f"[OAUTH DEBUG] Primary email: {primary_email}", file=sys.stderr)
 
             db = get_database()
+            print("[OAUTH DEBUG] Got database", file=sys.stderr)
+
             user_repo = UserRepository(db)
+            print("[OAUTH DEBUG] Got user_repo", file=sys.stderr)
 
             existing_user = await user_repo.get_by_github_id(str(user_data["id"]))
+            print(f"[OAUTH DEBUG] Existing user: {existing_user}", file=sys.stderr)
 
             user_info = {
                 "github_id": str(user_data["id"]),
@@ -174,9 +186,11 @@ async def github_callback(
             if existing_user:
                 await user_repo.update(existing_user["_id"], user_info)
                 user_id = existing_user["_id"]
+                print(f"[OAUTH DEBUG] Updated user: {user_id}", file=sys.stderr)
             else:
                 user_info["created_at"] = datetime.utcnow()
                 user_id = await user_repo.create(user_info)
+                print(f"[OAUTH DEBUG] Created user: {user_id}", file=sys.stderr)
 
             jwt_token = create_access_token(
                 {
@@ -185,18 +199,25 @@ async def github_callback(
                     "username": user_data.get("login"),
                 }
             )
+            print("[OAUTH DEBUG] Created JWT token", file=sys.stderr)
 
             response = RedirectResponse(
                 url=f"{FRONTEND_URL}/auth/callback?token={jwt_token}"
             )
             response.delete_cookie("oauth_state")
+            print("[OAUTH DEBUG] Redirecting to frontend", file=sys.stderr)
             return response
 
-    except httpx.HTTPError:
+    except httpx.HTTPError as e:
+        print(f"[OAUTH DEBUG] HTTP Error: {e}", file=sys.stderr)
         response = RedirectResponse(url=f"{FRONTEND_URL}/login?error=github_api_error")
         response.delete_cookie("oauth_state")
         return response
-    except Exception:
+    except Exception as e:
+        print(f"[OAUTH DEBUG] Exception: {type(e).__name__}: {e}", file=sys.stderr)
+        import traceback
+
+        traceback.print_exc(file=sys.stderr)
         response = RedirectResponse(url=f"{FRONTEND_URL}/login?error=internal_error")
         response.delete_cookie("oauth_state")
         return response
