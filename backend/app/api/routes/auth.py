@@ -120,9 +120,19 @@ async def github_callback(
                     "code": code,
                 },
             )
-            token_data = token_response.json()
-
-            print(f"[OAUTH DEBUG] Token response: {token_data}", file=sys.stderr)
+            try:
+                token_data = token_response.json()
+                print(
+                    f"[OAUTH DEBUG] Token response parsed: {token_data}",
+                    file=sys.stderr,
+                )
+            except Exception as json_error:
+                print(f"[OAUTH DEBUG] JSON parse error: {json_error}", file=sys.stderr)
+                print(
+                    f"[OAUTH DEBUG] Raw response: {token_response.text}",
+                    file=sys.stderr,
+                )
+                raise
 
             if "access_token" not in token_data:
                 error_msg = token_data.get("error_description", "OAuth failed")
