@@ -1,4 +1,4 @@
-"""Authentication context for managing user session and tokens."""
+"use client";
 
 import React, {
   createContext,
