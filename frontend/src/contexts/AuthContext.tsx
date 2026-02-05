@@ -105,7 +105,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     loadToken();
   }, [loadToken]);
 
-  const login = async (newToken: string) => {
+  const login = useCallback(async (newToken: string) => {
     try {
       setError(null);
       const userData = await validateToken(newToken);
@@ -121,7 +121,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setError(err instanceof Error ? err.message : "Login failed");
       throw err;
     }
-  };
+  }, [validateToken]);
 
   const logout = useCallback(() => {
     localStorage.removeItem(TOKEN_KEY);
