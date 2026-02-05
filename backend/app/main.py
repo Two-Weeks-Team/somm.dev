@@ -37,10 +37,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(evaluate.router)
-app.include_router(history.router)
+# API v1 routes - centralized prefix management
+app.include_router(evaluate.router, prefix=settings.API_V1_STR)
+app.include_router(history.router, prefix=settings.API_V1_STR)
+app.include_router(repositories.router, prefix=settings.API_V1_STR)
+
+# Auth routes - kept at root level for OAuth callback compatibility
 app.include_router(auth.router)
-app.include_router(repositories.router)
 
 
 class HealthResponse(BaseModel):
