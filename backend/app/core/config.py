@@ -25,8 +25,8 @@ class Settings(BaseSettings):
     JWT_EXPIRATION_DAYS: int = 7
 
     # GitHub OAuth
-    GITHUB_CLIENT_ID: str = ""
-    GITHUB_CLIENT_SECRET: str = ""
+    GITHUB_CLIENT_ID: str
+    GITHUB_CLIENT_SECRET: str
 
     # URLs
     FRONTEND_URL: str = "https://www.somm.dev"
