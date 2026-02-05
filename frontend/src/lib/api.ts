@@ -2,12 +2,23 @@ import { EvaluationResult, EvaluationHistoryItem, CriteriaType } from '../types'
 
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8080';
 
-async function fetchWithConfig(endpoint: string, options: RequestInit = {}) {
+export class AuthError extends Error {
+  constructor(message: string = 'Authentication required') {
+    super(message);
+    this.name = 'AuthError';
+  }
+}
+
+async function fetchWithConfig(endpoint: string, options: RequestInit = {}, token?: string) {
   const url = `${BASE_API_URL}${endpoint}`;
-  const headers = {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    ...options.headers,
+    ...options.headers as Record<string, string>,
   };
+
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
 
   const response = await fetch(url, {
     ...options,
@@ -15,11 +26,44 @@ async function fetchWithConfig(endpoint: string, options: RequestInit = {}) {
   });
 
   if (!response.ok) {
+    if (response.status === 401) {
+      throw new AuthError('Authentication required. Please login again.');
+    }
     const errorData = await response.json().catch(() => ({}));
     throw new Error(errorData.message || `API Error: ${response.statusText}`);
   }
 
   return response.json();
+}
+
+export interface Repository {
+  id: number;
+  name: string;
+  full_name: string;
+  description: string | null;
+  private: boolean;
+  html_url: string;
+  default_branch: string;
+  stars: number;
+  forks: number;
+  language: string | null;
+  updated_at: string | null;
+  pushed_at: string | null;
+}
+
+export interface RepositoryListResponse {
+  repositories: Repository[];
+  total: number;
+  cached_at: string | null;
+}
+
+export interface User {
+  id: string;
+  github_id: string;
+  username: string;
+  email?: string;
+  avatar_url?: string;
+  created_at?: string;
 }
 
 export const api = {
@@ -79,5 +123,20 @@ export const api = {
     }));
 
     return { items, total: response.total };
+  },
+
+  // Authenticated API methods
+  getRepositories: async (token: string): Promise<RepositoryListResponse> => {
+    return fetchWithConfig('/repositories', {}, token);
+  },
+
+  refreshRepositories: async (token: string): Promise<RepositoryListResponse> => {
+    return fetchWithConfig('/repositories/refresh', {
+      method: 'POST',
+    }, token);
+  },
+
+  getCurrentUser: async (token: string): Promise<User> => {
+    return fetchWithConfig('/auth/me', {}, token);
   },
 };
