@@ -6,8 +6,8 @@ Security features:
 - Secure cookie handling
 """
 
-import os
 import secrets
+import sys
 import httpx
 from datetime import datetime, timedelta
 from typing import Optional
@@ -19,14 +19,8 @@ from jose import JWTError, jwt
 from app.database.repositories.user import UserRepository
 from app.core.logging import logger
 from app.core.config import settings
-import sys
 
 router = APIRouter(prefix="/auth", tags=["auth"])
-
-GITHUB_CLIENT_ID = os.getenv("GITHUB_CLIENT_ID")
-GITHUB_CLIENT_SECRET = os.getenv("GITHUB_CLIENT_SECRET")
-FRONTEND_URL = os.getenv("FRONTEND_URL", "https://www.somm.dev")
-BACKEND_URL = os.getenv("BACKEND_URL", "http://49.247.9.193:2621")
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -43,14 +37,14 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
 
 @router.get("/github")
 async def github_login():
-    if not GITHUB_CLIENT_ID:
+    if not settings.GITHUB_CLIENT_ID:
         raise HTTPException(status_code=500, detail="GitHub OAuth not configured")
 
     state = secrets.token_urlsafe(32)
 
     github_oauth_url = (
         f"https://github.com/login/oauth/authorize"
-        f"?client_id={GITHUB_CLIENT_ID}"
+        f"?client_id={settings.GITHUB_CLIENT_ID}"
         f"&scope=repo,user:email,read:user"
         f"&state={state}"
     )
@@ -75,11 +69,8 @@ async def github_callback(
     error: str = None,
     oauth_state: Optional[str] = Cookie(None),
 ):
-    response = RedirectResponse(url=f"{FRONTEND_URL}/login")
-    response.delete_cookie("oauth_state")
-
     if error:
-        response = RedirectResponse(url=f"{FRONTEND_URL}/login?error={error}")
+        response = RedirectResponse(url=f"{settings.FRONTEND_URL}/login?error={error}")
         response.delete_cookie("oauth_state")
         return response
 
@@ -87,15 +78,17 @@ async def github_callback(
         raise HTTPException(status_code=400, detail="Authorization code not provided")
 
     if not state or state != oauth_state:
-        response = RedirectResponse(url=f"{FRONTEND_URL}/login?error=invalid_state")
+        response = RedirectResponse(
+            url=f"{settings.FRONTEND_URL}/login?error=invalid_state"
+        )
         response.delete_cookie("oauth_state")
         return response
 
     try:
         logger.info("=" * 60)
         logger.info("[GitHub OAuth] Callback received")
-        logger.info(f"[GitHub OAuth] BACKEND_URL: {BACKEND_URL}")
-        logger.info(f"[GitHub OAuth] FRONTEND_URL: {FRONTEND_URL}")
+        logger.info(f"[GitHub OAuth] BACKEND_URL: {settings.BACKEND_URL}")
+        logger.info(f"[GitHub OAuth] FRONTEND_URL: {settings.FRONTEND_URL}")
         logger.info(
             f"[GitHub OAuth] Code: {code[:10]}..."
             if code
@@ -113,8 +106,8 @@ async def github_callback(
                 "https://github.com/login/oauth/access_token",
                 headers={"Accept": "application/json"},
                 data={
-                    "client_id": GITHUB_CLIENT_ID,
-                    "client_secret": GITHUB_CLIENT_SECRET,
+                    "client_id": settings.GITHUB_CLIENT_ID,
+                    "client_secret": settings.GITHUB_CLIENT_SECRET,
                     "code": code,
                 },
             )
@@ -136,7 +129,7 @@ async def github_callback(
                 error_msg = token_data.get("error_description", "OAuth failed")
                 print(f"[OAUTH DEBUG] Error: {error_msg}", file=sys.stderr)
                 response = RedirectResponse(
-                    url=f"{FRONTEND_URL}/login?error={error_msg}"
+                    url=f"{settings.FRONTEND_URL}/login?error={error_msg}"
                 )
                 response.delete_cookie("oauth_state")
                 return response
@@ -209,7 +202,7 @@ async def github_callback(
             print("[OAUTH DEBUG] Created JWT token", file=sys.stderr)
 
             response = RedirectResponse(
-                url=f"{FRONTEND_URL}/evaluate#token={jwt_token}"
+                url=f"{settings.FRONTEND_URL}/evaluate#token={jwt_token}"
             )
             response.delete_cookie("oauth_state")
             print("[OAUTH DEBUG] Redirecting to frontend", file=sys.stderr)
@@ -217,7 +210,9 @@ async def github_callback(
 
     except httpx.HTTPError as e:
         print(f"[OAUTH DEBUG] HTTP Error: {e}", file=sys.stderr)
-        response = RedirectResponse(url=f"{FRONTEND_URL}/login?error=github_api_error")
+        response = RedirectResponse(
+            url=f"{settings.FRONTEND_URL}/login?error=github_api_error"
+        )
         response.delete_cookie("oauth_state")
         return response
     except Exception as e:
@@ -225,7 +220,9 @@ async def github_callback(
         import traceback
 
         traceback.print_exc(file=sys.stderr)
-        response = RedirectResponse(url=f"{FRONTEND_URL}/login?error=internal_error")
+        response = RedirectResponse(
+            url=f"{settings.FRONTEND_URL}/login?error=internal_error"
+        )
         response.delete_cookie("oauth_state")
         return response
 

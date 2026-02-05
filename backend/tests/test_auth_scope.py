@@ -1,16 +1,22 @@
 """Tests for GitHub OAuth scope configuration."""
 
-import os
 import pytest
 from fastapi.testclient import TestClient
-
-
-# Set environment variables BEFORE importing the app
-os.environ["GITHUB_CLIENT_ID"] = "test_client_id"
-os.environ["GITHUB_CLIENT_SECRET"] = "test_client_secret"
-os.environ["FRONTEND_URL"] = "http://localhost:3000"
+from unittest.mock import patch
 
 from app.main import app
+from app.core.config import settings
+
+
+@pytest.fixture(autouse=True)
+def mock_github_settings():
+    with (
+        patch.object(settings, "GITHUB_CLIENT_ID", "test_client_id"),
+        patch.object(settings, "GITHUB_CLIENT_SECRET", "test_client_secret"),
+        patch.object(settings, "FRONTEND_URL", "http://localhost:3000"),
+    ):
+        yield
+
 
 client = TestClient(app)
 
