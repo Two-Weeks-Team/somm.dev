@@ -26,7 +26,7 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
 
   const [repositories, setRepositories] = useState<Repository[]>([]);
   const [isLoadingRepos, setIsLoadingRepos] = useState(false);
-  const [reposError, setReposError] = useState<string | null>(null);
+  const [reposError, setReposError] = useState<Error | null>(null);
 
   const { isAuthenticated, token, login } = useAuth();
   const { validation, validateRepo, clearValidation } = useRepoValidation(500);
@@ -47,11 +47,7 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
       const response = await api.getRepositories(token);
       setRepositories(response.repositories);
     } catch (err) {
-      if (err instanceof AuthError) {
-        setReposError('Your session has expired. Please login again.');
-      } else {
-        setReposError(err instanceof Error ? err.message : 'Failed to load repositories');
-      }
+      setReposError(err instanceof Error ? err : new Error('Failed to load repositories'));
     } finally {
       setIsLoadingRepos(false);
     }
@@ -67,7 +63,7 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
       const response = await api.refreshRepositories(token);
       setRepositories(response.repositories);
     } catch (err) {
-      setReposError(err instanceof Error ? err.message : 'Failed to refresh repositories');
+      setReposError(err instanceof Error ? err : new Error('Failed to refresh repositories'));
     } finally {
       setIsLoadingRepos(false);
     }
@@ -171,6 +167,7 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
               selectedId={selectedRepoId}
               onSelect={handleRepoSelect}
               onRefresh={handleRefresh}
+              onReLogin={handleOAuthLogin}
             />
           )}
         </div>
