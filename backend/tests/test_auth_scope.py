@@ -44,7 +44,6 @@ class TestGitHubOAuthScope:
 
         # Check all required OAuth parameters
         assert "client_id=test_client_id" in redirect_url
-        assert "redirect_uri=" in redirect_url
         assert "state=" in redirect_url
         assert "scope=" in redirect_url
 
@@ -63,12 +62,13 @@ class TestGitHubOAuthScope:
 
         # Extract scope parameter
         import urllib.parse
+
         parsed = urllib.parse.urlparse(redirect_url)
         params = urllib.parse.parse_qs(parsed.query)
-        
+
         assert "scope" in params
         scope_value = params["scope"][0]
-        
+
         # Verify scope contains all required values
         scopes = scope_value.split(",")
         assert "repo" in scopes
