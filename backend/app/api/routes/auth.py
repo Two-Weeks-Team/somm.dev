@@ -253,7 +253,7 @@ async def get_current_user(request: Request):
             raise HTTPException(status_code=404, detail="User not found")
 
         return {
-            "id": user["_id"],
+            "id": str(user["_id"]),
             "github_id": user.get("github_id"),
             "username": user.get("username"),
             "email": user.get("email"),
