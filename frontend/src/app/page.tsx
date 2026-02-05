@@ -1,4 +1,5 @@
 import { Wine } from "lucide-react";
+import Link from "next/link";
 
 export default function Home() {
   return (
@@ -61,12 +62,12 @@ export default function Home() {
         </div>
 
         <div className="text-center">
-          <button className="rounded-full bg-[#722F37] px-8 py-4 text-lg font-semibold text-[#F7E7CE] transition-colors hover:bg-[#5A252C]">
+          <Link
+            href="/evaluate"
+            className="inline-block rounded-full bg-[#722F37] px-8 py-4 text-lg font-semibold text-[#F7E7CE] transition-colors hover:bg-[#5A252C]"
+          >
             Begin Your Evaluation
-          </button>
-          <p className="mt-4 text-sm text-gray-500">
-            Coming soon. Join the waitlist.
-          </p>
+          </Link>
         </div>
 
         <div className="mt-16 rounded-xl bg-white p-8 shadow-sm">
