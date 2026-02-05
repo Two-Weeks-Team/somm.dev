@@ -50,26 +50,12 @@ async def github_login():
 
     state = secrets.token_urlsafe(32)
 
-    # 'repo' scope is required to access user's private repositories
-    # This allows fetching the complete list of repositories for evaluation
-    # Use BACKEND_URL for callback - GitHub calls backend directly, not through Vercel
-    redirect_uri = f"{BACKEND_URL}/auth/github/callback"
     github_oauth_url = (
         f"https://github.com/login/oauth/authorize"
         f"?client_id={GITHUB_CLIENT_ID}"
         f"&scope=repo,user:email,read:user"
-        f"&redirect_uri={redirect_uri}"
         f"&state={state}"
     )
-
-    # Debug logging
-    logger.info("=" * 60)
-    logger.info("[GitHub OAuth] Login initiated")
-    logger.info(f"[GitHub OAuth] BACKEND_URL: {BACKEND_URL}")
-    logger.info(f"[GitHub OAuth] FRONTEND_URL: {FRONTEND_URL}")
-    logger.info(f"[GitHub OAuth] Generated redirect_uri: {redirect_uri}")
-    logger.info(f"[GitHub OAuth] Full OAuth URL: {github_oauth_url}")
-    logger.info("=" * 60)
 
     response = RedirectResponse(url=github_oauth_url)
     response.set_cookie(
