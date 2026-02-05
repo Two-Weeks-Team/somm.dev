@@ -200,6 +200,93 @@ class GitHubService:
 
         return languages
 
+    async def list_user_repositories(self, access_token: str) -> List[Dict[str, Any]]:
+        """Fetch all repositories for the authenticated user.
+
+        This method fetches all repositories the user has access to,
+        including private repos, organization repos, and collaborative repos.
+        Handles pagination to retrieve all repositories.
+
+        Args:
+            access_token: User's GitHub OAuth access token.
+
+        Returns:
+            A list of repository dictionaries with essential metadata.
+
+        Raises:
+            CorkedError: If API request fails or rate limit is exceeded.
+        """
+        repos = []
+        page = 1
+        per_page = 100  # Maximum allowed by GitHub API
+
+        headers = {
+            "Accept": "application/vnd.github.v3+json",
+            "Authorization": f"Bearer {access_token}",
+        }
+
+        async with httpx.AsyncClient() as client:
+            while True:
+                url = (
+                    f"{GITHUB_API_BASE}/user/repos"
+                    f"?type=all"
+                    f"&affiliation=owner,collaborator,organization_member"
+                    f"&sort=pushed"
+                    f"&direction=desc"
+                    f"&per_page={per_page}"
+                    f"&page={page}"
+                )
+
+                response = await client.get(url, headers=headers, timeout=30.0)
+
+                if response.status_code == 401:
+                    raise CorkedError(
+                        "GitHub authentication failed. Token may be expired."
+                    )
+                elif response.status_code == 403:
+                    raise CorkedError("GitHub API rate limit exceeded or access denied")
+                elif not response.is_success:
+                    raise CorkedError(
+                        f"GitHub API error: {response.status_code} - {response.text}"
+                    )
+
+                page_repos = response.json()
+
+                if not page_repos:
+                    break
+
+                # Extract essential fields from each repository
+                for repo in page_repos:
+                    repos.append(
+                        {
+                            "id": repo.get("id"),
+                            "name": repo.get("name"),
+                            "full_name": repo.get("full_name"),
+                            "description": repo.get("description"),
+                            "private": repo.get("private"),
+                            "html_url": repo.get("html_url"),
+                            "default_branch": repo.get("default_branch", "main"),
+                            "stars": repo.get("stargazers_count", 0),
+                            "forks": repo.get("forks_count", 0),
+                            "language": repo.get("language"),
+                            "updated_at": repo.get("updated_at"),
+                            "pushed_at": repo.get("pushed_at"),
+                        }
+                    )
+
+                # Check if there's a next page via Link header
+                link_header = response.headers.get("link", "")
+                if 'rel="next"' not in link_header:
+                    break
+
+                page += 1
+
+                # Safety limit - prevent infinite loops
+                if page > 100:
+                    break
+
+        return repos
+
     async def get_full_repo_context(
         self, owner: str, repo: str, branch: str = "main"
     ) -> Dict[str, Any]:
