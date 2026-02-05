@@ -1,6 +1,8 @@
 import React from 'react';
 import { Github, X } from 'lucide-react';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.somm.dev";
+
 interface ReAuthModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -10,7 +12,7 @@ export const ReAuthModal: React.FC<ReAuthModalProps> = ({ isOpen, onClose }) => 
   if (!isOpen) return null;
 
   const handleLogin = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/github`;
+    window.location.href = `${API_URL}/auth/github`;
   };
 
   return (
