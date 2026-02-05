@@ -39,7 +39,10 @@ class Settings(BaseSettings):
 
     @property
     def CORS_ORIGINS(self) -> List[str]:
-        return [self.FRONTEND_URL]
+        origins = [self.FRONTEND_URL]
+        if self.FRONTEND_URL.startswith("https://www."):
+            origins.append(self.FRONTEND_URL.replace("https://www.", "https://", 1))
+        return origins
 
     class Config:
         env_file = ".env"
