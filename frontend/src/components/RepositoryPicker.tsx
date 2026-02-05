@@ -1,15 +1,16 @@
 import React, { useState, useMemo } from 'react';
-import { Search, RefreshCw, Loader2 } from 'lucide-react';
-import { Repository } from '@/lib/api';
+import { Search, RefreshCw, Loader2, Github } from 'lucide-react';
+import { Repository, AuthError } from '@/lib/api';
 import { RepositoryCard } from './RepositoryCard';
 
 interface RepositoryPickerProps {
   repositories: Repository[];
   isLoading: boolean;
-  error: string | null;
+  error: Error | null;
   selectedId?: number;
   onSelect: (repository: Repository) => void;
   onRefresh: () => void;
+  onReLogin?: () => void;
 }
 
 export const RepositoryPicker: React.FC<RepositoryPickerProps> = ({
@@ -19,6 +20,7 @@ export const RepositoryPicker: React.FC<RepositoryPickerProps> = ({
   selectedId,
   onSelect,
   onRefresh,
+  onReLogin,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -54,16 +56,29 @@ export const RepositoryPicker: React.FC<RepositoryPickerProps> = ({
   }
 
   if (error) {
+    const isAuth = error instanceof AuthError;
+    const showLoginButton = isAuth && onReLogin;
+    
     return (
       <div className="rounded-lg border border-red-200 bg-red-50 p-4 text-center">
-        <p className="text-red-600 mb-3">{error}</p>
-        <button
-          onClick={onRefresh}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-[#722F37] text-white rounded-lg hover:bg-[#5a252c] transition-colors"
-        >
-          <RefreshCw className="w-4 h-4" />
-          Try Again
-        </button>
+        <p className="text-red-600 mb-3">{error.message}</p>
+        {showLoginButton ? (
+          <button
+            onClick={onReLogin}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#722F37] text-white rounded-lg hover:bg-[#5a252c] transition-colors"
+          >
+            <Github className="w-4 h-4" />
+            Login with GitHub
+          </button>
+        ) : (
+          <button
+            onClick={onRefresh}
+            className="inline-flex items-center gap-2 px-4 py-2 bg-[#722F37] text-white rounded-lg hover:bg-[#5a252c] transition-colors"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Try Again
+          </button>
+        )}
       </div>
     );
   }
