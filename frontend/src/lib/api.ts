@@ -1,6 +1,7 @@
 import { EvaluationResult, EvaluationHistoryItem, CriteriaType } from '../types';
 
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.somm.dev';
+const TOKEN_STORAGE_KEY = 'somm_auth_token';
 
 export class AuthError extends Error {
   constructor(message: string = 'Authentication required') {
@@ -11,13 +12,15 @@ export class AuthError extends Error {
 
 async function fetchWithConfig(endpoint: string, options: RequestInit = {}, token?: string) {
   const url = `${BASE_API_URL}${endpoint}`;
+  const storedToken = typeof window !== 'undefined' ? localStorage.getItem(TOKEN_STORAGE_KEY) : null;
+  const authToken = token || storedToken || undefined;
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...options.headers as Record<string, string>,
   };
 
-  if (token) {
-    headers['Authorization'] = `Bearer ${token}`;
+  if (authToken) {
+    headers['Authorization'] = `Bearer ${authToken}`;
   }
 
   const response = await fetch(url, {
