@@ -7,6 +7,8 @@ import { useRepoValidation } from '@/hooks/useRepoValidation';
 import { api, Repository, AuthError } from '@/lib/api';
 import { Search, Loader2, AlertCircle, Github, CheckCircle, Lock, XCircle } from 'lucide-react';
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.somm.dev";
+
 interface EvaluationFormProps {
   onSubmit: (repoUrl: string, criteria: CriteriaType) => Promise<void>;
   isLoading?: boolean;
@@ -99,7 +101,7 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
   };
 
   const handleOAuthLogin = () => {
-    window.location.href = `${process.env.NEXT_PUBLIC_API_URL}/auth/github`;
+    window.location.href = `${API_URL}/auth/github`;
   };
 
   useEffect(() => {
