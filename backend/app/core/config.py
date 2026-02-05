@@ -24,8 +24,13 @@ class Settings(BaseSettings):
     JWT_ALGORITHM: str = "HS256"
     JWT_EXPIRATION_DAYS: int = 7
 
-    # CORS settings
-    FRONTEND_URL: str = "http://localhost:3000"
+    # GitHub OAuth
+    GITHUB_CLIENT_ID: str
+    GITHUB_CLIENT_SECRET: str
+
+    # URLs
+    FRONTEND_URL: str = "https://www.somm.dev"
+    BACKEND_URL: str = "http://localhost:8000"
 
     # Database
     MONGODB_URI: str = "mongodb://localhost:27017/somm_db"
