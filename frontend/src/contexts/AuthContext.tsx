@@ -9,6 +9,8 @@ import React, {
   ReactNode,
 } from "react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.somm.dev";
+
 interface User {
   id: string;
   github_id: string;
@@ -59,7 +61,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const validateToken = useCallback(async (authToken: string): Promise<User | null> => {
     try {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+      const response = await fetch(`${API_URL}/auth/me`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
@@ -135,7 +137,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         throw new Error("No token to refresh");
       }
 
-      const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/refresh`, {
+      const response = await fetch(`${API_URL}/auth/refresh`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
