@@ -12,6 +12,9 @@
 |----------|-------------|------------|
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | System architecture and LangGraph design | FastAPI structure, LangGraph patterns, state management, data flow |
 | [EVALUATION_PIPELINE.md](./EVALUATION_PIPELINE.md) | Multi-agent evaluation pipeline | 6 sommelier nodes, parallel execution, graph definition, SSE streaming |
+| [ADR_TEMPLATE.md](./adr/ADR_TEMPLATE.md) | Architecture decision record template | Context, decision, alternatives, consequences |
+| [ADR-001-fairthon-alignment.md](./adr/ADR-001-fairthon-alignment.md) | Alignment baseline decisions | Scope, phase order, dependencies |
+| [DECISION_LOG.md](./adr/DECISION_LOG.md) | Alignment decision log | Adopted/rejected deltas |
 
 ### 🎯 Evaluation System
 
@@ -25,6 +28,7 @@
 | Document | Description | Key Topics |
 |----------|-------------|------------|
 | [IMPLEMENTATION_PLAN.md](./IMPLEMENTATION_PLAN.md) | Step-by-step implementation guide | 10-day development plan, code examples, deployment instructions |
+| [FAIRTHON_ALIGNMENT_PLAN.md](./FAIRTHON_ALIGNMENT_PLAN.md) | Alignment plan | Phased roadmap and scope |
 
 ---
 
