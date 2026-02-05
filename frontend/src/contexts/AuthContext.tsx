@@ -26,6 +26,9 @@ interface AuthContextType {
   logout: () => void;
   refreshToken: () => Promise<void>;
   error: string | null;
+  showReAuthModal: boolean;
+  onAuthError: () => void;
+  closeReAuthModal: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -41,8 +44,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [showReAuthModal, setShowReAuthModal] = useState(false);
 
   const isAuthenticated = !!user && !!token;
+
+  const onAuthError = useCallback(() => {
+    logout();
+    setShowReAuthModal(true);
+  }, []);
+
+  const closeReAuthModal = useCallback(() => {
+    setShowReAuthModal(false);
+  }, []);
 
   const validateToken = useCallback(async (authToken: string): Promise<User | null> => {
     try {
@@ -113,6 +126,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setToken(null);
     setUser(null);
     setError(null);
+    setShowReAuthModal(false);
   }, []);
 
   const refreshToken = async () => {
@@ -152,6 +166,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     logout,
     refreshToken,
     error,
+    showReAuthModal,
+    onAuthError,
+    closeReAuthModal,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
