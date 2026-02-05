@@ -20,7 +20,7 @@ from app.services.evaluation_service import (
 )
 from app.services.sse_manager import get_sse_manager
 
-router = APIRouter(prefix="/api/evaluate", tags=["evaluate"])
+router = APIRouter(prefix="/evaluate", tags=["evaluate"])
 
 
 class EvaluateRequest(BaseModel):
