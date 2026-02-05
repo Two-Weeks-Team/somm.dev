@@ -15,6 +15,7 @@ services:
       - DEBUG=false
       - PORT=8000
       - FRONTEND_URL=https://www.somm.dev
+      - BACKEND_URL=https://api.somm.dev
       - MONGODB_URI=mongodb://somm_dev_user:AUn5q8lWINorbgayEuS2Dte89aEZmvP5GSpv9f0vWHE=@49.247.2.211:27017/somm_dev?authSource=somm_dev
     restart: always
     healthcheck:
