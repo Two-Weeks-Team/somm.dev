@@ -11,6 +11,12 @@ This module contains all Pydantic models for graph visualization as defined in A
 - Graph3DMetadata: Metadata for 3D graph
 - Graph3DPayload: Complete 3D graph payload
 
+Graph State Models (Phase G1):
+- TraceEvent: Single trace event for timeline visualization
+- ItemScore: Score for a single evaluated item
+- ExcludedTechnique: Technique that was excluded from evaluation
+- AgentContribution: Contribution from a single agent
+
 Graph Schema Versioning:
     - Current version: 2 (matching Fairthon)
     - graph_schema_version field included in all payloads
@@ -19,7 +25,7 @@ Graph Schema Versioning:
 """
 
 from enum import Enum
-from typing import Any, Optional
+from typing import Any, List, Optional
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -317,3 +323,120 @@ class Graph3DPayload(BaseModel):
                 f"({self.metadata.graph_schema_version})"
             )
         return self
+
+
+# =============================================================================
+# Phase G1: Graph State Models
+# =============================================================================
+
+
+class TraceEvent(BaseModel):
+    """Single trace event for timeline visualization.
+
+    Represents a discrete action in the evaluation pipeline,
+    enabling step-by-step animation and debugging.
+
+    Timestamp format: ISO 8601 (e.g., "2026-02-06T10:30:00Z")
+    Step semantics: Global ordering per evaluation (0-indexed, monotonic)
+
+    Attributes:
+        step: Global step number for ordering
+        timestamp: ISO 8601 timestamp
+        agent: Agent that performed the action
+        technique_id: Technique being applied
+        item_id: Item being evaluated, if applicable
+        action: Action performed (e.g., 'evaluate', 'score', 'exclude')
+        score_delta: Score change, if applicable
+        evidence_ref: Reference to evidence, if applicable
+    """
+
+    step: int = Field(ge=0, description="Global step number for ordering")
+    timestamp: str = Field(description="ISO 8601 timestamp")
+    agent: str = Field(description="Agent that performed the action")
+    technique_id: str = Field(description="Technique being applied")
+    item_id: Optional[str] = Field(
+        default=None, description="Item being evaluated, if applicable"
+    )
+    action: str = Field(
+        description="Action performed (e.g., 'evaluate', 'score', 'exclude')"
+    )
+    score_delta: Optional[float] = Field(
+        default=None, description="Score change, if applicable"
+    )
+    evidence_ref: Optional[str] = Field(
+        default=None, description="Reference to evidence, if applicable"
+    )
+
+
+class ItemScore(BaseModel):
+    """Score for a single evaluated item.
+
+    Attributes:
+        item_id: Unique identifier for the evaluated item
+        score: Score value between 0 and 100
+        evaluated_by: Name of the agent that performed the evaluation
+        technique_id: Technique used for evaluation
+        timestamp: ISO 8601 timestamp of when the evaluation occurred
+        notes: Optional notes or comments about the evaluation
+    """
+
+    item_id: str = Field(description="Unique identifier for the evaluated item")
+    score: float = Field(ge=0, le=100, description="Score value between 0 and 100")
+    evaluated_by: str = Field(
+        description="Name of the agent that performed the evaluation"
+    )
+    technique_id: str = Field(description="Technique used for evaluation")
+    timestamp: str = Field(
+        description="ISO 8601 timestamp of when the evaluation occurred"
+    )
+    notes: Optional[str] = Field(
+        default=None, description="Optional notes or comments about the evaluation"
+    )
+
+
+class ExcludedTechnique(BaseModel):
+    """Technique that was excluded from evaluation.
+
+    Attributes:
+        technique_id: Unique identifier for the excluded technique
+        reason: Reason for exclusion
+        excluded_at: Timestamp when the technique was excluded
+        excluded_by: Agent that excluded the technique
+    """
+
+    technique_id: str = Field(
+        description="Unique identifier for the excluded technique"
+    )
+    reason: str = Field(default="unknown", description="Reason for exclusion")
+    excluded_at: Optional[str] = Field(
+        default=None, description="Timestamp when the technique was excluded"
+    )
+    excluded_by: Optional[str] = Field(
+        default=None, description="Agent that excluded the technique"
+    )
+
+
+class AgentContribution(BaseModel):
+    """Contribution from a single agent.
+
+    Tracks the work performed by a single agent during evaluation,
+    including techniques used, items evaluated, and artifacts produced.
+
+    Attributes:
+        agent: Name of the agent
+        technique_ids: List of technique IDs used by this agent
+        item_ids: List of item IDs evaluated by this agent
+        artifacts: Dictionary of artifacts produced by this agent
+    """
+
+    agent: str = Field(description="Name of the agent")
+    technique_ids: List[str] = Field(
+        default_factory=list, description="List of technique IDs used by this agent"
+    )
+    item_ids: List[str] = Field(
+        default_factory=list, description="List of item IDs evaluated by this agent"
+    )
+    artifacts: dict = Field(
+        default_factory=dict,
+        description="Dictionary of artifacts produced by this agent",
+    )

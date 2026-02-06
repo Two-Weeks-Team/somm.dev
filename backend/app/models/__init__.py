@@ -5,6 +5,7 @@ This package contains all Pydantic models for the somm.dev backend:
 - evaluation: Evaluation models (EvaluationStatus, EvaluationCriteria, RepoContext, etc.)
 - results: Results models (RatingTier, SommelierOutput, FinalEvaluation, etc.)
 - graph: Graph visualization models (ReactFlowGraph, Graph3DPayload, EvaluationMode, etc.)
+         and graph state models (TraceEvent, ItemScore, ExcludedTechnique, AgentContribution)
 """
 
 from app.models.user import UserBase, UserCreate, UserInDB, UserResponse
@@ -25,6 +26,7 @@ from app.models.results import (
     ResultResponse,
 )
 from app.models.graph import (
+    # G0: Graph visualization models
     GRAPH_SCHEMA_VERSION,
     EvaluationMode,
     ReactFlowNode,
@@ -35,6 +37,11 @@ from app.models.graph import (
     Graph3DEdge,
     Graph3DMetadata,
     Graph3DPayload,
+    # G1: Graph state models
+    TraceEvent,
+    ItemScore,
+    ExcludedTechnique,
+    AgentContribution,
 )
 
 __all__ = [
@@ -57,7 +64,7 @@ __all__ = [
     "FinalEvaluation",
     "ResultInDB",
     "ResultResponse",
-    # Graph models
+    # G0: Graph visualization models
     "GRAPH_SCHEMA_VERSION",
     "EvaluationMode",
     "ReactFlowNode",
@@ -68,4 +75,9 @@ __all__ = [
     "Graph3DEdge",
     "Graph3DMetadata",
     "Graph3DPayload",
+    # G1: Graph state models
+    "TraceEvent",
+    "ItemScore",
+    "ExcludedTechnique",
+    "AgentContribution",
 ]
