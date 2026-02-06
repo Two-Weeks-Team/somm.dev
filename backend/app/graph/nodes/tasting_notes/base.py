@@ -113,6 +113,22 @@ Provide structured output with technique results and an aggregate summary."""
         if not techniques:
             techniques = self.get_techniques()[:3]
 
+        if not techniques:
+            logger.warning(f"{self.category.value}: no techniques available")
+            return {
+                "errors": [f"{self.category.value}: no techniques configured"],
+                f"{self.category.value}_result": None,
+                "completed_sommeliers": [self.category.value],
+                "token_usage": {self.category.value: {}},
+                "cost_usage": {self.category.value: None},
+                "trace_metadata": {
+                    self.category.value: {
+                        "started_at": started_at,
+                        "completed_at": datetime.now(timezone.utc).isoformat(),
+                    }
+                },
+            }
+
         context_budget = get_context_budget(provider, model)
         rendered_context, context_meta = render_repo_context(
             state["repo_context"], max_tokens=context_budget
