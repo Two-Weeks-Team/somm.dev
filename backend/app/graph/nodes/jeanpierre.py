@@ -16,7 +16,7 @@ from app.graph.nodes.base import BaseSommelierNode, SOMMELIER_PROGRESS
 from app.graph.schemas import FinalEvaluation
 from app.graph.state import EvaluationState
 from app.prompts.jeanpierre import get_jeanpierre_prompt
-from app.providers.llm import build_llm
+from app.providers.llm import build_llm, extract_text_content
 from app.providers.llm_policy import invoke_with_policy, RetryConfig
 from app.services.event_channel import create_sommelier_event, get_event_channel
 from app.services.llm_context import render_repo_context, get_context_budget
@@ -165,7 +165,8 @@ class JeanPierreNode(BaseSommelierNode):
             observability["cost_usage"] = {self.name: usage.get("total_cost")}
 
             try:
-                result = self.parser.parse(response.content)
+                text_content = extract_text_content(response.content)
+                result = self.parser.parse(text_content)
             except Exception as parse_error:
                 logger.error(f"{self.name} failed to parse response: {parse_error!s}")
                 if evaluation_id:

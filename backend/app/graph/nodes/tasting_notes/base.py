@@ -8,7 +8,7 @@ from langchain_core.prompts import ChatPromptTemplate, HumanMessagePromptTemplat
 from langchain_core.messages import SystemMessage
 from app.graph.state import EvaluationState
 from app.graph.schemas import TastingNoteOutput, TechniqueResult
-from app.providers.llm import build_llm
+from app.providers.llm import build_llm, extract_text_content
 from app.providers.llm_policy import invoke_with_policy, RetryConfig
 from app.services.llm_context import render_repo_context, get_context_budget
 from app.techniques.mappings import (
@@ -172,7 +172,8 @@ Provide structured output with technique results and an aggregate summary."""
             }
 
             try:
-                result = self.parser.parse(response.content)
+                text_content = extract_text_content(response.content)
+                result = self.parser.parse(text_content)
             except Exception as parse_error:
                 logger.error(
                     f"{self.category.value} failed to parse response: {parse_error!s}"

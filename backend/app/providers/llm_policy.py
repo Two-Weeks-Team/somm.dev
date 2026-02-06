@@ -3,6 +3,7 @@
 import asyncio
 import logging
 import random
+import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, TypeVar
 
@@ -14,13 +15,15 @@ logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
 
+LLM_INVOKE_TIMEOUT_SECONDS = 90.0
+
 
 @dataclass
 class RetryConfig:
     """Configuration for retry behavior with jittered exponential backoff."""
 
     max_attempts: int = 3
-    base_delay: float = 2.0
+    base_delay: float = 5.0
     max_delay: float = 60.0
     jitter_factor: float = 0.5
 
@@ -37,24 +40,55 @@ class InvocationResult:
     error_category: ErrorCategory | None = None
 
 
+class RpmLimiter:
+    """Simple in-process RPM limiter to prevent burst requests."""
+
+    def __init__(self, rpm: int):
+        self._min_interval = 60.0 / rpm
+        self._lock = asyncio.Lock()
+        self._next_ts = 0.0
+
+    async def wait(self) -> None:
+        async with self._lock:
+            now = time.monotonic()
+            if now < self._next_ts:
+                delay = self._next_ts - now
+                logger.debug(f"RPM limiter: waiting {delay:.2f}s")
+                await asyncio.sleep(delay)
+            self._next_ts = max(time.monotonic(), self._next_ts) + self._min_interval
+
+
 _provider_semaphores: dict[str, asyncio.Semaphore] = {}
+_provider_rpm_limiters: dict[str, RpmLimiter] = {}
 _semaphore_lock = asyncio.Lock()
 
 PROVIDER_CONCURRENCY_LIMITS = {
-    "gemini": 5,
+    "gemini": 3,
     "openai": 10,
     "anthropic": 5,
 }
 
+PROVIDER_RPM_LIMITS = {
+    "gemini": 10,
+    "openai": 60,
+    "anthropic": 20,
+}
+
 
 async def _get_provider_semaphore(provider: str) -> asyncio.Semaphore:
-    """Get or create a semaphore for the given provider."""
     async with _semaphore_lock:
         if provider not in _provider_semaphores:
-            limit = PROVIDER_CONCURRENCY_LIMITS.get(provider, 5)
+            limit = PROVIDER_CONCURRENCY_LIMITS.get(provider, 3)
             _provider_semaphores[provider] = asyncio.Semaphore(limit)
-            logger.debug(f"Created semaphore for {provider} with limit {limit}")
         return _provider_semaphores[provider]
+
+
+async def _get_provider_rpm_limiter(provider: str) -> RpmLimiter:
+    async with _semaphore_lock:
+        if provider not in _provider_rpm_limiters:
+            rpm = PROVIDER_RPM_LIMITS.get(provider, 10)
+            _provider_rpm_limiters[provider] = RpmLimiter(rpm)
+        return _provider_rpm_limiters[provider]
 
 
 def _calculate_delay_with_jitter(
@@ -101,6 +135,7 @@ async def invoke_with_policy(
     """
     config = config or RetryConfig()
     semaphore = await _get_provider_semaphore(provider)
+    rpm_limiter = await _get_provider_rpm_limiter(provider)
 
     attempts = 0
     total_wait = 0.0
@@ -110,15 +145,35 @@ async def invoke_with_policy(
     while attempts < config.max_attempts:
         attempts += 1
 
+        await rpm_limiter.wait()
+
         async with semaphore:
             try:
-                response = await llm.ainvoke(messages, config=langchain_config)
+                response = await asyncio.wait_for(
+                    llm.ainvoke(messages, config=langchain_config),
+                    timeout=LLM_INVOKE_TIMEOUT_SECONDS,
+                )
                 return InvocationResult(
                     success=True,
                     response=response,
                     attempts=attempts,
                     total_wait_seconds=total_wait,
                 )
+            except asyncio.TimeoutError:
+                last_error = TimeoutError(
+                    f"LLM call timed out after {LLM_INVOKE_TIMEOUT_SECONDS}s"
+                )
+                last_category = ErrorCategory.TRANSIENT
+                logger.warning(
+                    f"Attempt {attempts}/{config.max_attempts}: "
+                    f"timed out after {LLM_INVOKE_TIMEOUT_SECONDS}s"
+                )
+                if attempts >= config.max_attempts:
+                    break
+                delay = _calculate_delay_with_jitter(attempts - 1, config)
+                await asyncio.sleep(delay)
+                total_wait += delay
+                continue
             except Exception as e:
                 classified = classify_error(e)
                 last_error = e
@@ -173,6 +228,6 @@ async def invoke_with_policy(
 
 
 def reset_semaphores() -> None:
-    """Reset all provider semaphores. Used for testing."""
-    global _provider_semaphores
+    global _provider_semaphores, _provider_rpm_limiters
     _provider_semaphores = {}
+    _provider_rpm_limiters = {}

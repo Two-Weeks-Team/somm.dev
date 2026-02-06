@@ -9,8 +9,10 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from app.core.config import settings
 
 
-DEFAULT_TEMPERATURE = 0.3
+DEFAULT_TEMPERATURE = 0.7
 DEFAULT_MAX_OUTPUT_TOKENS = 2048
+DEFAULT_REQUEST_TIMEOUT = 60
+GEMINI3_THINKING_BUDGET = 1024
 
 
 @dataclass
@@ -94,13 +96,17 @@ def build_llm(
     resolved_max_tokens = max_output_tokens or DEFAULT_MAX_OUTPUT_TOKENS
 
     if provider_key == "gemini":
-        llm = ChatGoogleGenerativeAI(
-            model=model or PROVIDER_DEFAULTS["gemini"],
-            temperature=resolved_temperature,
-            max_output_tokens=resolved_max_tokens,
-            google_api_key=resolved_key or settings.GEMINI_API_KEY,
-            convert_system_message_to_human=True,
-        )
+        resolved_model = model or PROVIDER_DEFAULTS["gemini"]
+        gemini_kwargs: dict = {
+            "model": resolved_model,
+            "temperature": resolved_temperature,
+            "max_output_tokens": resolved_max_tokens,
+            "google_api_key": resolved_key or settings.GEMINI_API_KEY,
+            "timeout": DEFAULT_REQUEST_TIMEOUT,
+        }
+        if "gemini-3" in resolved_model:
+            gemini_kwargs["thinking_budget"] = GEMINI3_THINKING_BUDGET
+        llm = ChatGoogleGenerativeAI(**gemini_kwargs)
     elif provider_key == "openai":
         llm = ChatOpenAI(
             model=model or PROVIDER_DEFAULTS["openai"],
@@ -128,3 +134,23 @@ def build_llm(
         return llm.with_fallbacks([fallback_llm])
 
     return llm
+
+
+def extract_text_content(content) -> str:
+    """Extract text from LLM response content.
+
+    Gemini 3 with thinking mode returns content as a list of blocks:
+      [{'type': 'text', 'text': '...', 'extras': {'signature': '...'}}]
+    Other providers return plain strings.
+    """
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts = []
+        for block in content:
+            if isinstance(block, dict) and block.get("type") == "text":
+                parts.append(block.get("text", ""))
+            elif isinstance(block, str):
+                parts.append(block)
+        return "\n".join(parts) if parts else str(content)
+    return str(content)
