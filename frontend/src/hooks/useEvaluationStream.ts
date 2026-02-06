@@ -2,6 +2,14 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from '../lib/api';
 import { SommelierResult, EvaluationStatus, SSEEvent } from '../types';
 
+type ConnectionStatus = 'connecting' | 'open' | 'retrying' | 'failed';
+
+interface RetryInfo {
+  attempt: number;
+  maxAttempts: number;
+  nextRetryAt: Date | null;
+}
+
 interface UseEvaluationStreamResult {
   status: EvaluationStatus;
   completedSommeliers: SommelierResult[];
@@ -9,6 +17,8 @@ interface UseEvaluationStreamResult {
   isComplete: boolean;
   progress: number;
   currentSommelier: string | null;
+  connectionStatus: ConnectionStatus;
+  retryInfo: RetryInfo | null;
 }
 
 const SOMMELIER_NAMES: Record<string, { name: string; role: string }> = {
@@ -29,6 +39,8 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
   const [isComplete, setIsComplete] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentSommelier, setCurrentSommelier] = useState<string | null>(null);
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('connecting');
+  const [retryInfo, setRetryInfo] = useState<RetryInfo | null>(null);
   
   const progressRef = useRef(0);
 
@@ -143,6 +155,8 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
         eventSource.close();
       }
 
+      setConnectionStatus('connecting');
+
       eventSource = api.getEvaluationStream(
         evaluationId,
         (event) => {
@@ -150,22 +164,39 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
             const parsedData: SSEEvent = JSON.parse(event.data);
             handleSSEEvent(parsedData);
             retryCount = 0;
+            setConnectionStatus('open');
+            setRetryInfo(null);
           } catch (err) {
             console.error('Error parsing SSE data:', err);
           }
         },
         (error) => {
-          console.error('SSE Error:', error);
+          const readyState = eventSource?.readyState;
+          const readyStateLabel = readyState === 0 ? 'CONNECTING' : readyState === 1 ? 'OPEN' : 'CLOSED';
+          console.error('SSE connection error:', {
+            readyState: `${readyState} (${readyStateLabel})`,
+            retryCount,
+            maxRetries: MAX_RETRIES,
+            isOnline: typeof navigator !== 'undefined' ? navigator.onLine : 'unknown',
+            evaluationId,
+          });
+          
           if (eventSource) eventSource.close();
 
           if (!isCompleteRef.current && retryCount < MAX_RETRIES) {
             retryCount += 1;
             const timeout = Math.min(Math.pow(2, retryCount) * 1000, 30000);
+            const nextRetryAt = new Date(Date.now() + timeout);
+            
+            setConnectionStatus('retrying');
+            setRetryInfo({ attempt: retryCount, maxAttempts: MAX_RETRIES, nextRetryAt });
+            
             retryTimeout = setTimeout(() => {
-              console.log(`Retrying connection... (${retryCount}/${MAX_RETRIES})`);
               connect();
             }, timeout);
           } else if (retryCount >= MAX_RETRIES) {
+            setConnectionStatus('failed');
+            setRetryInfo(null);
             setErrors((prev) => [...prev, 'Connection lost. Please refresh the page.']);
           }
         }
@@ -191,5 +222,7 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
     isComplete,
     progress,
     currentSommelier,
+    connectionStatus,
+    retryInfo,
   };
 };

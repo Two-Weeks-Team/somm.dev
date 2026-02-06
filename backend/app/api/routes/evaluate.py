@@ -252,8 +252,6 @@ async def stream_evaluation(
                     break
         except asyncio.CancelledError:
             logger.info(f"SSE stream cancelled for {evaluation_id}")
-        finally:
-            await event_channel.close_channel(evaluation_id)
 
     return StreamingResponse(
         generate(),
