@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { useFrame } from '@react-three/fiber';
+import { useFrame, ThreeEvent } from '@react-three/fiber';
 import { Html } from '@react-three/drei';
 import * as THREE from 'three';
 import { Graph3DNode } from '@/types/graph';
@@ -29,13 +29,13 @@ export const Node3D: React.FC<Node3DProps> = ({ node, onClick }) => {
     node.position.z
   ];
 
-  const handlePointerOver = (e: any) => {
+  const handlePointerOver = (e: ThreeEvent<PointerEvent>) => {
     e.stopPropagation();
     setHovered(true);
     document.body.style.cursor = 'pointer';
   };
 
-  const handlePointerOut = (e: any) => {
+  const handlePointerOut = () => {
     setHovered(false);
     document.body.style.cursor = 'auto';
   };

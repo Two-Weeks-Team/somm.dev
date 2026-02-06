@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { ResultTabs, ResultTabId } from '@/components/ResultTabs';
+import { ResultTabs } from '@/components/ResultTabs';
 
 // Mock window.location and window.history
 const mockReplaceState = jest.fn();
@@ -134,24 +134,15 @@ describe('ResultTabs', () => {
     expect(mockOnTabChange).toHaveBeenCalledWith('graph-3d');
   });
 
-  it('sets active tab based on URL hash on mount', () => {
+  it('renders correctly when hash is set (hash handling is now in useResultTab hook)', () => {
     window.location.hash = '#graph-2d';
 
     render(
-      <ResultTabs activeTab="tasting" onTabChange={mockOnTabChange} />
+      <ResultTabs activeTab="graph-2d" onTabChange={mockOnTabChange} />
     );
 
-    expect(mockOnTabChange).toHaveBeenCalledWith('graph-2d');
-  });
-
-  it('ignores unknown hash values', () => {
-    window.location.hash = '#unknown-tab';
-
-    render(
-      <ResultTabs activeTab="tasting" onTabChange={mockOnTabChange} />
-    );
-
-    expect(mockOnTabChange).not.toHaveBeenCalled();
+    const graph2dTab = screen.getByRole('tab', { name: /2D Graph/i });
+    expect(graph2dTab).toHaveAttribute('aria-selected', 'true');
   });
 
   it('has correct active styling for selected tab', () => {

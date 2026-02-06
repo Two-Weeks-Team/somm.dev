@@ -41,14 +41,6 @@ export function ResultTabs({ activeTab, onTabChange }: ResultTabsProps) {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
-  useEffect(() => {
-    const hash = window.location.hash;
-    const tab = TABS.find(t => t.hash === hash);
-    if (tab) {
-      onTabChange(tab.id);
-    }
-  }, [onTabChange]);
-
   const handleTabClick = (tab: Tab) => {
     onTabChange(tab.id);
     window.history.replaceState(null, '', tab.hash);
@@ -86,16 +78,17 @@ export function ResultTabs({ activeTab, onTabChange }: ResultTabsProps) {
   );
 }
 
-export function useResultTab(initialTab: ResultTabId = 'tasting') {
-  const [activeTab, setActiveTab] = React.useState<ResultTabId>(initialTab);
+function getInitialTabFromHash(initialTab: ResultTabId): ResultTabId {
+  if (typeof window === 'undefined') return initialTab;
+  const hash = window.location.hash;
+  const tab = TABS.find(t => t.hash === hash);
+  return tab?.id ?? initialTab;
+}
 
-  useEffect(() => {
-    const hash = window.location.hash;
-    const tab = TABS.find(t => t.hash === hash);
-    if (tab) {
-      setActiveTab(tab.id);
-    }
-  }, []);
+export function useResultTab(initialTab: ResultTabId = 'tasting') {
+  const [activeTab, setActiveTab] = React.useState<ResultTabId>(() => 
+    getInitialTabFromHash(initialTab)
+  );
 
   return [activeTab, setActiveTab] as const;
 }
