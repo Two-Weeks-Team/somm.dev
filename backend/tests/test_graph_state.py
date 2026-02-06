@@ -148,3 +148,36 @@ class TestEvaluationStateTypeHints:
         # Verify they are Annotated types
         assert get_origin(completed_sommeliers_annotation) is Annotated
         assert get_origin(errors_annotation) is Annotated
+
+    def test_rag_context_field_exists(self):
+        """Test that rag_context field is defined in EvaluationState"""
+        from typing import get_type_hints
+
+        type_hints = get_type_hints(EvaluationState)
+        assert "rag_context" in type_hints
+
+    def test_rag_context_accepts_dict(self):
+        """Test that EvaluationState accepts rag_context with dict value"""
+        state: EvaluationState = {
+            "repo_url": "https://github.com/example/repo",
+            "repo_context": {"files": []},
+            "evaluation_criteria": "basic",
+            "user_id": "user123",
+            "rag_context": {
+                "query": "Evaluate repository",
+                "chunks": [{"text": "content", "source": "readme"}],
+                "error": None,
+            },
+        }
+        assert state["rag_context"]["query"] == "Evaluate repository"
+        assert len(state["rag_context"]["chunks"]) == 1
+
+    def test_rag_context_optional(self):
+        """Test that rag_context is optional (NotRequired)"""
+        state: EvaluationState = {
+            "repo_url": "https://github.com/example/repo",
+            "repo_context": {"files": []},
+            "evaluation_criteria": "basic",
+            "user_id": "user123",
+        }
+        assert "rag_context" not in state
