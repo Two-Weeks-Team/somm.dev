@@ -11,7 +11,7 @@ from typing import Optional
 
 from app.core.config import settings
 from app.database import connect_to_mongo, close_mongo_connection
-from app.api.routes import evaluate, history, auth, repositories
+from app.api.routes import evaluate, history, auth, repositories, graph
 
 
 @asynccontextmanager
@@ -46,6 +46,9 @@ app.include_router(repositories.router)
 
 # Auth routes - kept at root level for OAuth callback compatibility
 app.include_router(auth.router)
+
+# Graph visualization routes
+app.include_router(graph.router, prefix=settings.API_V1_STR)
 
 
 class HealthResponse(BaseModel):

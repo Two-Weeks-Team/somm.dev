@@ -26,7 +26,6 @@ from app.models.results import (
     ResultResponse,
 )
 from app.models.graph import (
-    # G0: Graph visualization models
     GRAPH_SCHEMA_VERSION,
     EvaluationMode,
     ReactFlowNode,
@@ -37,34 +36,30 @@ from app.models.graph import (
     Graph3DEdge,
     Graph3DMetadata,
     Graph3DPayload,
-    # G1: Graph state models
     TraceEvent,
     ItemScore,
     ExcludedTechnique,
     AgentContribution,
+    ModeResponse,
 )
 
 __all__ = [
-    # User models
     "UserBase",
     "UserCreate",
     "UserInDB",
     "UserResponse",
-    # Evaluation models
     "EvaluationStatus",
     "EvaluationCriteria",
     "RepoContext",
     "EvaluationCreate",
     "EvaluationInDB",
     "EvaluationResponse",
-    # Results models
     "RatingTier",
     "get_rating_tier",
     "SommelierOutput",
     "FinalEvaluation",
     "ResultInDB",
     "ResultResponse",
-    # G0: Graph visualization models
     "GRAPH_SCHEMA_VERSION",
     "EvaluationMode",
     "ReactFlowNode",
@@ -75,9 +70,9 @@ __all__ = [
     "Graph3DEdge",
     "Graph3DMetadata",
     "Graph3DPayload",
-    # G1: Graph state models
     "TraceEvent",
     "ItemScore",
     "ExcludedTechnique",
     "AgentContribution",
+    "ModeResponse",
 ]
