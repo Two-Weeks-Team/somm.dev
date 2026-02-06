@@ -19,6 +19,10 @@ import { api } from '@/lib/api';
 import { nodeTypes } from './graph/nodes';
 import { getLayoutedElements } from '@/lib/graphLayout';
 import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+import { ModeIndicatorBadge } from './ModeIndicatorBadge';
+import { GraphLegend } from './graph/GraphLegend';
+import { getAgentColor, getCategoryColor } from '@/lib/graphColors';
+import { GraphEvaluationMode } from '@/types/graph';
 
 import { TimelinePlayer } from './graph/TimelinePlayer';
 import { useTimelinePlayer } from '@/hooks/useTimelinePlayer';
@@ -33,6 +37,7 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [maxStep, setMaxStep] = useState(0);
+  const [mode, setMode] = useState<GraphEvaluationMode | string>('six_hats');
 
   const {
     currentStep,
@@ -48,22 +53,35 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
     setError(null);
     try {
       const graphData = await api.getGraph(evaluationId);
+      setMode(graphData.mode);
       
-      // Calculate max step from nodes
       const maxNodeStep = Math.max(...graphData.nodes.map(n => (n.data.step as number) || 0), 0);
       setMaxStep(maxNodeStep);
-      // Start at the end
       setCurrentStep(maxNodeStep);
       
-      // Transform API nodes to ReactFlow nodes
-      const initialNodes: Node[] = graphData.nodes.map(node => ({
-        id: node.id,
-        type: node.type,
-        position: node.position || { x: 0, y: 0 },
-        data: node.data,
-      }));
+      const initialNodes: Node[] = graphData.nodes.map(node => {
+        let nodeColor = node.data.color as string;
+        
+        if (node.type === 'agent') {
+          if (graphData.mode === 'full_techniques') {
+            nodeColor = getCategoryColor(node.data.category as string);
+          } else {
+            nodeColor = getAgentColor(node.data.label as string);
+          }
+        }
 
-      // Transform API edges to ReactFlow edges
+        return {
+          id: node.id,
+          type: node.type,
+          position: node.position || { x: 0, y: 0 },
+          data: {
+            ...node.data,
+            color: nodeColor,
+            mode: graphData.mode
+          },
+        };
+      });
+
       const initialEdges: Edge[] = graphData.edges.map(edge => ({
         id: edge.id,
         source: edge.source,
@@ -72,7 +90,6 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
         style: { stroke: '#722F37', strokeWidth: 2 },
       }));
 
-      // Apply layout
       const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
         initialNodes,
         initialEdges
@@ -92,7 +109,6 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
     fetchData();
   }, [fetchData]);
 
-  // Update node visibility based on current step
   useEffect(() => {
     setNodes((nds) =>
       nds.map((node) => {
@@ -147,7 +163,12 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="h-[600px] bg-[#FAFAFA] rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="flex items-center justify-between">
+        <ModeIndicatorBadge mode={mode} />
+      </div>
+
+      <div className="h-[600px] bg-[#FAFAFA] rounded-2xl shadow-sm border border-gray-200 overflow-hidden relative">
+        <GraphLegend mode={mode} />
         <ReactFlow
           nodes={nodes}
           edges={edges}
@@ -164,6 +185,9 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
           <MiniMap 
             className="!bg-white !border-gray-200 !shadow-sm"
             nodeColor={(node) => {
+              if (node.data.color && typeof node.data.color === 'string') {
+                return node.data.color;
+              }
               switch (node.type) {
                 case 'start':
                 case 'end':

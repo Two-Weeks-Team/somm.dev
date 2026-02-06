@@ -7,6 +7,8 @@ import { api } from '@/lib/api';
 import { Graph3DPayload } from '@/types/graph';
 import { TimelinePlayer } from './graph/TimelinePlayer';
 import { useTimelinePlayer } from '@/hooks/useTimelinePlayer';
+import { ModeIndicatorBadge } from './ModeIndicatorBadge';
+import { GraphLegend } from './graph/GraphLegend';
 
 interface Graph3DTabProps {
   evaluationId: string;
@@ -90,7 +92,12 @@ export function Graph3DTab({ evaluationId }: Graph3DTabProps) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="h-[600px] bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <div className="flex items-center justify-between">
+        <ModeIndicatorBadge mode={data.mode} />
+      </div>
+
+      <div className="h-[600px] bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 overflow-hidden relative">
+        <GraphLegend mode={data.mode} />
         <GraphView3D data={data} currentStep={currentStep} />
       </div>
 
