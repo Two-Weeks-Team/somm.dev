@@ -39,6 +39,12 @@ async function fetchWithConfig(endpoint: string, options: RequestInit = {}, toke
   return response.json();
 }
 
+export interface RepositoryOwner {
+  login: string;
+  type: 'User' | 'Organization';
+  avatar_url: string | null;
+}
+
 export interface Repository {
   id: number;
   name: string;
@@ -52,6 +58,7 @@ export interface Repository {
   language: string | null;
   updated_at: string | null;
   pushed_at: string | null;
+  owner: RepositoryOwner | null;
 }
 
 export interface RepositoryListResponse {

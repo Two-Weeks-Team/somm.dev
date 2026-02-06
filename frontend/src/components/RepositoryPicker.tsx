@@ -25,15 +25,25 @@ export const RepositoryPicker: React.FC<RepositoryPickerProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
 
   const filteredRepositories = useMemo(() => {
-    if (!searchQuery.trim()) return repositories;
+    const sortByDate = (repos: typeof repositories) => {
+      return [...repos].sort((a, b) => {
+        const dateA = a.pushed_at || a.updated_at || '';
+        const dateB = b.pushed_at || b.updated_at || '';
+        return dateB.localeCompare(dateA);
+      });
+    };
+
+    if (!searchQuery.trim()) return sortByDate(repositories);
     
     const query = searchQuery.toLowerCase();
-    return repositories.filter(
+    const filtered = repositories.filter(
       (repo) =>
         repo.name.toLowerCase().includes(query) ||
         (repo.description && repo.description.toLowerCase().includes(query)) ||
-        repo.full_name.toLowerCase().includes(query)
+        repo.full_name.toLowerCase().includes(query) ||
+        (repo.owner?.login && repo.owner.login.toLowerCase().includes(query))
     );
+    return sortByDate(filtered);
   }, [repositories, searchQuery]);
 
   if (isLoading) {
