@@ -1,4 +1,13 @@
-import { EvaluationResult, EvaluationHistoryItem, CriteriaType, EvaluationMode } from '../types';
+import { 
+  EvaluationResult, 
+  EvaluationHistoryItem, 
+  CriteriaType, 
+  EvaluationMode,
+  ReactFlowGraph,
+  Graph3DPayload,
+  TraceEvent,
+  ModeResponse
+} from '../types';
 
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.somm.dev';
 const TOKEN_STORAGE_KEY = 'somm_auth_token';
@@ -188,5 +197,23 @@ export const api = {
 
   getCurrentUser: async (token: string): Promise<User> => {
     return fetchWithConfig('/auth/me', {}, token);
+  },
+
+  getGraph: async (evaluationId: string, refresh?: boolean): Promise<ReactFlowGraph> => {
+    const queryParams = refresh ? '?refresh=true' : '';
+    return fetchWithConfig(`/api/evaluate/${evaluationId}/graph${queryParams}`);
+  },
+
+  getGraph3D: async (evaluationId: string, refresh?: boolean): Promise<Graph3DPayload> => {
+    const queryParams = refresh ? '?refresh=true' : '';
+    return fetchWithConfig(`/api/evaluate/${evaluationId}/graph-3d${queryParams}`);
+  },
+
+  getTimeline: async (evaluationId: string): Promise<TraceEvent[]> => {
+    return fetchWithConfig(`/api/evaluate/${evaluationId}/graph/timeline`);
+  },
+
+  getGraphMode: async (evaluationId: string): Promise<ModeResponse> => {
+    return fetchWithConfig(`/api/evaluate/${evaluationId}/graph/mode`);
   },
 };
