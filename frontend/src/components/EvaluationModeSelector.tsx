@@ -1,6 +1,6 @@
 import React from 'react';
 import { EvaluationMode } from '../types';
-import { Wine, Trophy } from 'lucide-react';
+import { Wine, Trophy, LucideIcon } from 'lucide-react';
 
 interface EvaluationModeSelectorProps {
   value: EvaluationMode;
@@ -11,7 +11,7 @@ interface ModeOption {
   value: EvaluationMode;
   label: string;
   description: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   badge?: string;
 }
 
