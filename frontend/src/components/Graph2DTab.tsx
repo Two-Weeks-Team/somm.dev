@@ -20,6 +20,9 @@ import { nodeTypes } from './graph/nodes';
 import { getLayoutedElements } from '@/lib/graphLayout';
 import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 
+import { TimelinePlayer } from './graph/TimelinePlayer';
+import { useTimelinePlayer } from '@/hooks/useTimelinePlayer';
+
 interface Graph2DTabProps {
   evaluationId: string;
 }
@@ -29,12 +32,28 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [maxStep, setMaxStep] = useState(0);
+
+  const {
+    currentStep,
+    setCurrentStep,
+    isPlaying,
+    togglePlay,
+    playbackSpeed,
+    setPlaybackSpeed,
+  } = useTimelinePlayer(maxStep);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
       const graphData = await api.getGraph(evaluationId);
+      
+      // Calculate max step from nodes
+      const maxNodeStep = Math.max(...graphData.nodes.map(n => (n.data.step as number) || 0), 0);
+      setMaxStep(maxNodeStep);
+      // Start at the end
+      setCurrentStep(maxNodeStep);
       
       // Transform API nodes to ReactFlow nodes
       const initialNodes: Node[] = graphData.nodes.map(node => ({
@@ -67,11 +86,34 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
     } finally {
       setLoading(false);
     }
-  }, [evaluationId, setNodes, setEdges]);
+  }, [evaluationId, setNodes, setEdges, setCurrentStep]);
 
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // Update node visibility based on current step
+  useEffect(() => {
+    setNodes((nds) =>
+      nds.map((node) => {
+        const nodeStep = (node.data.step as number) || 0;
+        const isFuture = nodeStep > currentStep;
+        return {
+          ...node,
+          style: {
+            ...node.style,
+            opacity: isFuture ? 0.1 : 1,
+            filter: isFuture ? 'grayscale(100%)' : 'none',
+            transition: 'opacity 0.3s ease, filter 0.3s ease',
+          },
+          data: {
+            ...node.data,
+            isFuture,
+          }
+        };
+      })
+    );
+  }, [currentStep, setNodes]);
 
   const onConnect = useCallback(
     (params: Connection) => setEdges((eds) => addEdge(params, eds)),
@@ -104,40 +146,52 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
   }
 
   return (
-    <div className="h-[800px] bg-[#FAFAFA] rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        nodeTypes={nodeTypes}
-        fitView
-        attributionPosition="bottom-left"
-        minZoom={0.1}
-        maxZoom={1.5}
-      >
-        <Controls className="!bg-white !border-gray-200 !shadow-sm" />
-        <MiniMap 
-          className="!bg-white !border-gray-200 !shadow-sm"
-          nodeColor={(node) => {
-            switch (node.type) {
-              case 'start':
-              case 'end':
-                return '#722F37';
-              case 'agent':
-                return '#2E4A3F';
-              case 'technique':
-                return '#F7E7CE';
-              case 'synthesis':
-                return '#DAA520';
-              default:
-                return '#eee';
-            }
-          }}
-        />
-        <Background variant={BackgroundVariant.Dots} gap={12} size={1} color="#E5E7EB" />
-      </ReactFlow>
+    <div className="flex flex-col gap-4">
+      <div className="h-[600px] bg-[#FAFAFA] rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          nodeTypes={nodeTypes}
+          fitView
+          attributionPosition="bottom-left"
+          minZoom={0.1}
+          maxZoom={1.5}
+        >
+          <Controls className="!bg-white !border-gray-200 !shadow-sm" />
+          <MiniMap 
+            className="!bg-white !border-gray-200 !shadow-sm"
+            nodeColor={(node) => {
+              switch (node.type) {
+                case 'start':
+                case 'end':
+                  return '#722F37';
+                case 'agent':
+                  return '#2E4A3F';
+                case 'technique':
+                  return '#F7E7CE';
+                case 'synthesis':
+                  return '#DAA520';
+                default:
+                  return '#eee';
+              }
+            }}
+          />
+          <Background variant={BackgroundVariant.Dots} gap={12} size={1} color="#E5E7EB" />
+        </ReactFlow>
+      </div>
+
+      <TimelinePlayer
+        currentStep={currentStep}
+        maxStep={maxStep}
+        isPlaying={isPlaying}
+        onStepChange={setCurrentStep}
+        onPlayPause={togglePlay}
+        playbackSpeed={playbackSpeed}
+        onSpeedChange={setPlaybackSpeed}
+      />
     </div>
   );
 }
