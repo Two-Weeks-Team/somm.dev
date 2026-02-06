@@ -523,8 +523,8 @@ class TestInvalidModeValidation:
             )
         assert "mode" in str(exc_info.value).lower()
 
-    def test_graph_3d_payload_invalid_mode(self):
-        """Test Graph3DPayload fails with invalid mode."""
+    def test_graph_3d_payload_accepts_any_mode(self):
+        """Test Graph3DPayload accepts any mode string (criteria-based)."""
         node = Graph3DNode(
             node_id="node-1",
             node_type="start",
@@ -542,12 +542,11 @@ class TestInvalidModeValidation:
             max_step_number=0,
             generated_at="2026-02-06T10:00:00Z",
         )
-        with pytest.raises(ValidationError) as exc_info:
-            Graph3DPayload(
-                evaluation_id="eval_123",
-                mode="unknown_mode",
-                nodes=[node],
-                edges=[],
-                metadata=metadata,
-            )
-        assert "mode" in str(exc_info.value).lower()
+        payload = Graph3DPayload(
+            evaluation_id="eval_123",
+            mode="hackathon",
+            nodes=[node],
+            edges=[],
+            metadata=metadata,
+        )
+        assert payload.mode == "hackathon"
