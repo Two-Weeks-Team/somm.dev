@@ -41,6 +41,7 @@ export type SSEEventType =
   | 'sommelier_complete'
   | 'sommelier_error'
   | 'evaluation_complete'
+  | 'evaluation_error'
   | 'heartbeat'
   | 'status'
   | 'sommelier'
