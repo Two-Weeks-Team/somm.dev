@@ -8,9 +8,10 @@ import { BundledEdge3D } from './edges3d/BundledEdge3D';
 
 interface GraphView3DProps {
   data: Graph3DPayload;
+  currentStep?: number;
 }
 
-const GraphView3D: React.FC<GraphView3DProps> = ({ data }) => {
+const GraphView3D: React.FC<GraphView3DProps> = ({ data, currentStep = Infinity }) => {
   const nodeMap = useMemo(() => {
     const map = new Map<string, Graph3DNode>();
     data.nodes.forEach(node => map.set(node.node_id, node));
@@ -30,11 +31,17 @@ const GraphView3D: React.FC<GraphView3DProps> = ({ data }) => {
         <OrbitControls makeDefault />
 
         <group>
-          {data.nodes.map((node) => (
-            <Node3D key={node.node_id} node={node} />
-          ))}
+          {data.nodes.map((node) => {
+            const isVisible = node.step_number <= currentStep;
+            if (!isVisible) return null;
+            
+            return <Node3D key={node.node_id} node={node} />;
+          })}
 
           {data.edges.map((edge) => {
+            const isVisible = edge.step_number <= currentStep;
+            if (!isVisible) return null;
+
             if (edge.bundled_path && edge.bundled_path.length > 0) {
               return <BundledEdge3D key={edge.edge_id} edge={edge} />;
             }
@@ -43,6 +50,11 @@ const GraphView3D: React.FC<GraphView3DProps> = ({ data }) => {
             const targetNode = nodeMap.get(edge.target);
 
             if (sourceNode && targetNode) {
+              // Check if connected nodes are visible (should be if edge step is correct, but safety check)
+              if (sourceNode.step_number > currentStep || targetNode.step_number > currentStep) {
+                return null;
+              }
+
               return (
                 <Edge3D
                   key={edge.edge_id}
