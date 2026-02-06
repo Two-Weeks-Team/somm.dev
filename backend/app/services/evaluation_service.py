@@ -30,19 +30,21 @@ logger = logging.getLogger(__name__)
 async def _prepare_repo_context(
     repo_url: str,
     api_key: Optional[str] = None,
+    github_token: Optional[str] = None,
 ) -> tuple[dict, str]:
     """Prepare repository context for evaluation.
 
     Args:
         repo_url: The GitHub repository URL.
         api_key: Optional BYOK API key.
+        github_token: Optional user's GitHub access token for private repo access.
 
     Returns:
         Tuple of (repo_context dict, resolved_api_key).
     """
     owner, repo_name = parse_github_url(repo_url)
 
-    github = GitHubService()
+    github = GitHubService(token=github_token)
     repo_context = await github.get_full_repo_context(owner, repo_name)
 
     techniques, technique_errors = load_techniques()
@@ -193,13 +195,16 @@ async def run_evaluation_pipeline(
     temperature: Optional[float] = None,
     api_key: Optional[str] = None,
     progress_queue: Optional[Queue] = None,
+    github_token: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Run the LangGraph evaluation pipeline (blocking, legacy).
 
     Note: For non-blocking evaluation with SSE streaming,
     use run_evaluation_pipeline_with_events() instead.
     """
-    repo_context, resolved_key = await _prepare_repo_context(repo_url, api_key)
+    repo_context, resolved_key = await _prepare_repo_context(
+        repo_url, api_key, github_token
+    )
     state = _create_initial_state(repo_url, repo_context, criteria)
     config = _create_graph_config(resolved_key, provider, model, temperature)
 
@@ -354,6 +359,7 @@ async def run_full_evaluation(
     model: Optional[str] = None,
     temperature: Optional[float] = None,
     api_key: Optional[str] = None,
+    github_token: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Run a complete evaluation from start to finish (blocking).
 
@@ -373,6 +379,7 @@ async def run_full_evaluation(
             model=model,
             temperature=temperature,
             api_key=api_key,
+            github_token=github_token,
         )
         if result.get("errors"):
             logger.warning(f"Evaluation {eval_id} node errors: {result['errors']}")
@@ -401,6 +408,7 @@ async def run_evaluation_pipeline_with_events(
     model: Optional[str] = None,
     temperature: Optional[float] = None,
     api_key: Optional[str] = None,
+    github_token: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Run evaluation pipeline with SSE event emission (non-blocking).
 
@@ -411,7 +419,9 @@ async def run_evaluation_pipeline_with_events(
     await eval_repo.update_status(evaluation_id, "running")
 
     try:
-        repo_context, resolved_key = await _prepare_repo_context(repo_url, api_key)
+        repo_context, resolved_key = await _prepare_repo_context(
+            repo_url, api_key, github_token
+        )
         state = _create_initial_state(
             repo_url,
             repo_context,
