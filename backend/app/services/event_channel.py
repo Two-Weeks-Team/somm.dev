@@ -21,7 +21,6 @@ from __future__ import annotations
 import asyncio
 import logging
 import queue
-import threading
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -120,7 +119,6 @@ class EventChannel:
         self._max_queue_size = 100
 
         self._sync_buffer: queue.Queue = queue.Queue(maxsize=1000)
-        self._thread_lock = threading.Lock()
         self._transfer_task: Optional[asyncio.Task] = None
         self._transfer_running = False
 
