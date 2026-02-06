@@ -61,7 +61,11 @@ async def get_current_user(
     """Get the current authenticated user from JWT token.
 
     This dependency extracts the JWT token from the Authorization header,
-    validates it, and returns the corresponding user from the database.
+    query parameter, or request body and validates it.
+
+    Token sources (in priority order):
+    1. Authorization header (Bearer token)
+    2. Query parameter (?token=xxx) - useful for SSE/EventSource connections
 
     Args:
         request: The FastAPI request object.
@@ -83,6 +87,10 @@ async def get_current_user(
         auth_header = request.headers.get("Authorization")
         if auth_header and auth_header.startswith("Bearer "):
             token = auth_header.split(" ")[1]
+
+    # Fallback: Try to get from query parameter (for SSE/EventSource)
+    if not token:
+        token = request.query_params.get("token")
 
     if not token:
         raise HTTPException(
