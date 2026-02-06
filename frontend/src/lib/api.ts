@@ -88,7 +88,10 @@ export const api = {
   },
 
   getEvaluationStream: (evaluationId: string, onMessage: (event: MessageEvent) => void, onError?: (error: Event) => void): EventSource => {
-    const url = `${BASE_API_URL}/api/evaluate/${evaluationId}/stream`;
+    const token = typeof window !== 'undefined' ? localStorage.getItem(TOKEN_STORAGE_KEY) : null;
+    const url = token 
+      ? `${BASE_API_URL}/api/evaluate/${evaluationId}/stream?token=${encodeURIComponent(token)}`
+      : `${BASE_API_URL}/api/evaluate/${evaluationId}/stream`;
     const eventSource = new EventSource(url);
 
     eventSource.onmessage = onMessage;
