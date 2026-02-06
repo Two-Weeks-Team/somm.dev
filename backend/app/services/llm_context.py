@@ -245,8 +245,8 @@ def get_context_budget(provider: str, model: str | None = None) -> int:
     Returns a conservative budget leaving room for system prompts and output.
     """
     model_budgets = {
-        "gemini-3-pro-preview": 64000,
-        "gemini-3-flash-preview": 64000,
+        "gemini-3-pro-preview": 32000,
+        "gemini-3-flash-preview": 32000,
         "gemini-2.5-pro": 32000,
         "gemini-2.5-flash": 32000,
         "gemini-2.0-flash": 32000,
@@ -269,7 +269,7 @@ def get_context_budget(provider: str, model: str | None = None) -> int:
         return model_budgets[model]
 
     provider_defaults = {
-        "gemini": 64000,
+        "gemini": 32000,
         "openai": 32000,
         "anthropic": 64000,
     }

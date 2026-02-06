@@ -357,8 +357,9 @@ async def get_evaluation_progress(
     status = evaluation.get("status", "pending")
     completed = evaluation.get("completed_sommeliers", [])
     user_id = evaluation.get("user_id")
+    evaluation_mode = evaluation.get("evaluation_mode", "six_sommeliers")
 
-    total_steps = 6
+    total_steps = 8 if evaluation_mode == "grand_tasting" else 6
 
     if status == "pending":
         return {

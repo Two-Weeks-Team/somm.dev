@@ -9,7 +9,7 @@ from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from app.graph.state import EvaluationState
 from app.graph.schemas import SommelierOutput
-from app.providers.llm import build_llm
+from app.providers.llm import build_llm, extract_text_content
 from app.providers.llm_policy import invoke_with_policy, RetryConfig
 from app.providers.llm_errors import ErrorCategory
 from app.services.event_channel import create_sommelier_event, get_event_channel
@@ -176,7 +176,8 @@ class BaseSommelierNode(ABC):
             observability["cost_usage"] = {self.name: usage.get("total_cost")}
 
             try:
-                result = self.parser.parse(response.content)
+                text_content = extract_text_content(response.content)
+                result = self.parser.parse(text_content)
             except Exception as parse_error:
                 logger.error(f"{self.name} failed to parse response: {parse_error!s}")
                 if evaluation_id:
