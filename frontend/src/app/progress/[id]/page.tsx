@@ -3,14 +3,14 @@
 import React, { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEvaluationStream } from '../../../hooks/useEvaluationStream';
-import { Wine, CheckCircle2, Loader2, AlertTriangle, XCircle, ArrowLeft } from 'lucide-react';
+import { Wine, CheckCircle2, Loader2, AlertTriangle, XCircle, ArrowLeft, WifiOff } from 'lucide-react';
 
 export default function ProgressPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
   
-  const { completedSommeliers, errors, isComplete, progress, status } = useEvaluationStream(id);
+  const { completedSommeliers, errors, isComplete, progress, status, connectionStatus, retryInfo } = useEvaluationStream(id);
 
   useEffect(() => {
     if (isComplete && status === 'completed') {
@@ -54,6 +54,14 @@ export default function ProgressPage() {
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
+            {connectionStatus === 'retrying' && retryInfo && (
+              <div className="mt-3 flex items-center text-sm text-amber-600">
+                <WifiOff size={14} className="mr-2" />
+                <span>
+                  Connection lost - retrying ({retryInfo.attempt}/{retryInfo.maxAttempts})...
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="space-y-4">
