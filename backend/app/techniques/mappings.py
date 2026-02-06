@@ -6,6 +6,18 @@ Maps techniques to evaluation axes (Tasting Notes) with priority ordering.
 from enum import Enum
 from typing import Dict, List, Optional
 
+__all__ = [
+    "TastingNote",
+    "Priority",
+    "get_techniques_for_category",
+    "get_primary_technique",
+    "get_technique_priority",
+    "get_p0_techniques",
+    "validate_mappings",
+    "get_category_summary",
+    "list_all_mappings",
+]
+
 from app.techniques.registry import (
     TechniqueNotFoundError,
     TechniqueRegistry,

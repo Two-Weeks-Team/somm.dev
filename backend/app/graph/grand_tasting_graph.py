@@ -17,6 +17,8 @@ Architecture:
 """
 
 from langgraph.graph import StateGraph, END
+
+__all__ = ["create_grand_tasting_graph"]
 from app.core.config import settings
 from app.graph.state import EvaluationState
 from app.graph.checkpoint import get_checkpointer
@@ -82,13 +84,3 @@ def create_grand_tasting_graph():
 
     checkpointer = get_checkpointer()
     return builder.compile(checkpointer=checkpointer)
-
-
-_grand_tasting_graph = None
-
-
-def get_grand_tasting_graph():
-    global _grand_tasting_graph
-    if _grand_tasting_graph is None:
-        _grand_tasting_graph = create_grand_tasting_graph()
-    return _grand_tasting_graph
