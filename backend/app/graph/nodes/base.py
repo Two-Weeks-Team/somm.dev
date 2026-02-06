@@ -1,6 +1,7 @@
 """Base class for all sommelier nodes."""
 
 from abc import ABC, abstractmethod
+from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 from langchain_core.runnables import RunnableConfig
 from langchain_google_genai import ChatGoogleGenerativeAI
@@ -57,24 +58,53 @@ class BaseSommelierNode(ABC):
         Returns:
             Dictionary containing the sommelier result and completion status.
         """
+        started_at = datetime.now(timezone.utc).isoformat()
+        model_name = getattr(self.llm, "model", "gemini-1.5-flash")
+        observability = {
+            "completed_sommeliers": [self.name],
+            "token_usage": {self.name: {}},
+            "cost_usage": {self.name: None},
+            "trace_metadata": {
+                self.name: {
+                    "started_at": started_at,
+                    "completed_at": None,
+                    "model": model_name,
+                    "provider": "gemini",
+                }
+            },
+        }
         try:
             prompt = self.get_prompt(state["evaluation_criteria"])
-            chain = prompt | self.llm | self.parser
-            result = await chain.ainvoke(
-                {
-                    "repo_context": state["repo_context"],
-                    "criteria": state["evaluation_criteria"],
-                    "format_instructions": self.parser.get_format_instructions(),
-                },
-                config=config,
-            )
+            prompt_inputs = {
+                "repo_context": state["repo_context"],
+                "criteria": state["evaluation_criteria"],
+                "format_instructions": self.parser.get_format_instructions(),
+            }
+            messages = prompt.format_messages(**prompt_inputs)
+            response = await self.llm.ainvoke(messages, config=config)
+            usage = getattr(response, "usage_metadata", {}) or {}
+            observability["token_usage"] = {
+                self.name: {
+                    "input_tokens": usage.get("input_tokens"),
+                    "output_tokens": usage.get("output_tokens"),
+                    "total_tokens": usage.get("total_tokens"),
+                }
+            }
+            observability["cost_usage"] = {self.name: usage.get("total_cost")}
+            observability["trace_metadata"][self.name]["completed_at"] = datetime.now(
+                timezone.utc
+            ).isoformat()
+            result = self.parser.parse(response.content)
             return {
                 f"{self.name}_result": result.dict(),
-                "completed_sommeliers": [self.name],
+                **observability,
             }
         except Exception as e:
+            observability["trace_metadata"][self.name]["completed_at"] = datetime.now(
+                timezone.utc
+            ).isoformat()
             return {
-                "errors": [f"{self.name} evaluation failed: {str(e)}"],
+                "errors": [f"{self.name} evaluation failed: {e!s}"],
                 f"{self.name}_result": None,
-                "completed_sommeliers": [self.name],
+                **observability,
             }
