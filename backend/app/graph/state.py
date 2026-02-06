@@ -110,7 +110,7 @@ def merge_excluded_techniques(
     for tech in current + incoming:
         by_id[tech.technique_id] = tech
 
-    return list(by_id.values())
+    return sorted(by_id.values(), key=lambda x: x.technique_id)
 
 
 def merge_agent_contributions(
@@ -137,10 +137,10 @@ def merge_agent_contributions(
             result[agent] = contribution
         else:
             existing = result[agent]
-            merged_techniques = list(
+            merged_techniques = sorted(
                 set(existing.technique_ids) | set(contribution.technique_ids)
             )
-            merged_items = list(set(existing.item_ids) | set(contribution.item_ids))
+            merged_items = sorted(set(existing.item_ids) | set(contribution.item_ids))
             merged_artifacts = {**existing.artifacts, **contribution.artifacts}
             result[agent] = AgentContribution(
                 agent=agent,
