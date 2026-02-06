@@ -17,7 +17,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, get_current_user_token
 from app.core.exceptions import CorkedError, EmptyCellarError
 from app.services.evaluation_service import (
     get_evaluation_progress,
@@ -97,6 +97,7 @@ class ResultResponse(BaseModel):
 async def create_evaluation(
     request: EvaluateRequest,
     user=Depends(get_current_user),
+    github_token: str = Depends(get_current_user_token),
 ) -> EvaluateResponse:
     """Start a new code evaluation for a GitHub repository.
 
@@ -129,6 +130,7 @@ async def create_evaluation(
                     model=request.model,
                     temperature=request.temperature,
                     api_key=request.api_key,
+                    github_token=github_token,
                 )
             except Exception as e:
                 logger.exception(f"Background evaluation failed: {eval_id}")
