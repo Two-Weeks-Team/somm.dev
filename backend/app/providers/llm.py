@@ -55,7 +55,7 @@ def resolve_byok(
 
 
 PROVIDER_DEFAULTS = {
-    "gemini": "gemini-2.0-flash",
+    "gemini": "gemini-3-flash-preview",
     "openai": "gpt-4o-mini",
     "anthropic": "claude-sonnet-4-20250514",
 }

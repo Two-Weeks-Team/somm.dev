@@ -26,6 +26,7 @@ from app.graph.state import EvaluationState
 from app.prompts.jeanpierre import get_jeanpierre_prompt
 from app.providers.llm import build_llm
 from app.services.event_channel import create_sommelier_event, get_event_channel
+from app.services.llm_context import render_repo_context, get_context_budget
 
 
 class JeanPierreNode(BaseSommelierNode):
@@ -89,6 +90,12 @@ class JeanPierreNode(BaseSommelierNode):
         model_name = model or getattr(
             llm, "model", getattr(llm, "model_name", "unknown")
         )
+
+        context_budget = get_context_budget(provider, model)
+        rendered_context, context_meta = render_repo_context(
+            state["repo_context"], max_tokens=context_budget
+        )
+
         observability = {
             "completed_sommeliers": [self.name],
             "token_usage": {self.name: {}},
@@ -99,12 +106,14 @@ class JeanPierreNode(BaseSommelierNode):
                     "completed_at": None,
                     "model": model_name,
                     "provider": provider,
+                    "estimated_input_tokens": context_meta["estimated_tokens"],
+                    "context_truncated": context_meta["truncated"],
                 }
             },
         }
         prompt = self.get_prompt(state["evaluation_criteria"])
         prompt_inputs = {
-            "repo_context": state["repo_context"],
+            "repo_context": rendered_context,
             "criteria": state["evaluation_criteria"],
             "format_instructions": self.parser.get_format_instructions(),
             "marcel_result": state.get("marcel_result") or "Not available",
