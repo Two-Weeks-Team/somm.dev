@@ -1,4 +1,3 @@
-import asyncio
 import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
@@ -10,6 +9,7 @@ from langchain_core.messages import SystemMessage
 from app.graph.state import EvaluationState
 from app.graph.schemas import TastingNoteOutput, TechniqueResult
 from app.providers.llm import build_llm
+from app.providers.llm_policy import invoke_with_policy, RetryConfig
 from app.services.llm_context import render_repo_context, get_context_budget
 from app.techniques.mappings import (
     TastingNote,
@@ -20,9 +20,6 @@ from app.techniques.mappings import (
 from app.techniques.schema import TechniqueDefinition
 
 logger = logging.getLogger(__name__)
-
-MAX_RETRIES = 3
-RETRY_DELAYS = [1, 2, 4]
 
 TASTING_NOTE_PROGRESS = {
     "aroma": {"start": 10, "complete": 20},
@@ -141,48 +138,70 @@ Provide structured output with technique results and an aggregate summary."""
         prompt = self.build_evaluation_prompt(techniques)
         messages = prompt.format_messages(repo_context=rendered_context)
 
-        last_error: Optional[Exception] = None
-        for attempt in range(MAX_RETRIES):
-            try:
-                response = await llm.ainvoke(messages, config=config)
+        def on_retry(attempt: int, delay: float, msg: str) -> None:
+            logger.info(f"{self.category.value}: {msg}")
 
-                usage = getattr(response, "usage_metadata", {}) or {}
-                observability["token_usage"] = {
-                    self.category.value: {
-                        "input_tokens": usage.get("input_tokens"),
-                        "output_tokens": usage.get("output_tokens"),
-                        "total_tokens": usage.get("total_tokens"),
-                    }
-                }
-                observability["trace_metadata"][self.category.value]["completed_at"] = (
-                    datetime.now(timezone.utc).isoformat()
-                )
-
-                result = self.parser.parse(response.content)
-                return {
-                    f"{self.category.value}_result": result.model_dump(),
-                    **observability,
-                }
-            except Exception as e:
-                last_error = e
-                if attempt < MAX_RETRIES - 1:
-                    delay = RETRY_DELAYS[attempt]
-                    logger.warning(
-                        f"{self.category.value} attempt {attempt + 1} failed: {e!s}. "
-                        f"Retrying in {delay}s..."
-                    )
-                    await asyncio.sleep(delay)
-                else:
-                    logger.error(
-                        f"{self.category.value} failed after {MAX_RETRIES} attempts: "
-                        f"{e!s}"
-                    )
+        invocation_result = await invoke_with_policy(
+            llm=llm,
+            messages=messages,
+            provider=provider,
+            config=RetryConfig(max_attempts=3, base_delay=2.0, max_delay=60.0),
+            langchain_config=config,
+            on_retry=on_retry,
+        )
 
         observability["trace_metadata"][self.category.value]["completed_at"] = (
             datetime.now(timezone.utc).isoformat()
         )
+        observability["trace_metadata"][self.category.value]["attempts"] = (
+            invocation_result.attempts
+        )
+        observability["trace_metadata"][self.category.value]["total_wait_seconds"] = (
+            invocation_result.total_wait_seconds
+        )
+
+        if invocation_result.success:
+            response = invocation_result.response
+            usage = getattr(response, "usage_metadata", {}) or {}
+            observability["token_usage"] = {
+                self.category.value: {
+                    "input_tokens": usage.get("input_tokens"),
+                    "output_tokens": usage.get("output_tokens"),
+                    "total_tokens": usage.get("total_tokens"),
+                }
+            }
+
+            try:
+                result = self.parser.parse(response.content)
+            except Exception as parse_error:
+                logger.error(
+                    f"{self.category.value} failed to parse response: {parse_error!s}"
+                )
+                return {
+                    "errors": [f"{self.category.value} parse error: {parse_error!s}"],
+                    f"{self.category.value}_result": None,
+                    **observability,
+                }
+
+            return {
+                f"{self.category.value}_result": result.model_dump(),
+                **observability,
+            }
+
+        error_category = invocation_result.error_category
+        error_msg = (
+            f"{self.category.value} evaluation failed after "
+            f"{invocation_result.attempts} attempts"
+        )
+        if error_category:
+            error_msg += f" ({error_category.value})"
+        if invocation_result.final_error:
+            error_msg += f": {invocation_result.final_error!s}"
+
+        logger.error(error_msg)
+
         return {
-            "errors": [f"{self.category.value} evaluation failed: {last_error!s}"],
+            "errors": [error_msg],
             f"{self.category.value}_result": None,
             **observability,
         }
