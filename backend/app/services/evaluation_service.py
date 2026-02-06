@@ -16,6 +16,11 @@ from app.database.repositories.evaluation import EvaluationRepository
 from app.database.repositories.result import ResultRepository
 from app.graph.state import EvaluationState
 from app.services.github_service import GitHubService, parse_github_url
+from app.techniques import (
+    determine_available_inputs,
+    filter_techniques,
+    load_techniques,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -85,6 +90,16 @@ async def run_evaluation_pipeline(
 
     github = GitHubService()
     repo_context = await github.get_full_repo_context(owner, repo_name)
+
+    techniques, technique_errors = load_techniques()
+    if technique_errors:
+        logger.warning(
+            "Technique load errors",
+            extra={"errors": technique_errors},
+        )
+    available_inputs = determine_available_inputs(repo_context)
+    filtered = filter_techniques(techniques, available_inputs)
+    repo_context["techniques"] = [tech.model_dump() for tech in filtered]
 
     state: EvaluationState = {
         "repo_url": repo_url,
