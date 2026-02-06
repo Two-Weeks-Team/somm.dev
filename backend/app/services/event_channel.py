@@ -35,7 +35,7 @@ logger = logging.getLogger(__name__)
 
 PENDING_EVENTS_MAX_SIZE = 50
 PENDING_EVENTS_MAX_AGE_SECONDS = 30.0
-CRITICAL_EVENT_TYPES = {"sommelier_error", "evaluation_complete"}
+CRITICAL_EVENT_TYPES = {"sommelier_error", "evaluation_complete", "evaluation_error"}
 TRANSFER_LOOP_INTERVAL_SECONDS = 0.01
 TRANSFER_BATCH_SIZE = 10
 STALE_CHANNEL_MAX_AGE_SECONDS = 600.0
