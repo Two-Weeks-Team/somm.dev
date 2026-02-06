@@ -136,9 +136,10 @@ class ReactFlowGraph(BaseModel):
 
 
 class Position3D(BaseModel):
-    """3D coordinate position.
+    """3D coordinate position with vector operations.
 
     Represents a point in 3D space for graph visualization.
+    Supports vector arithmetic for FDEB edge bundling calculations.
 
     Attributes:
         x: X-coordinate (horizontal)
@@ -149,6 +150,41 @@ class Position3D(BaseModel):
     x: float = Field(..., description="X-coordinate (horizontal)")
     y: float = Field(..., description="Y-coordinate (vertical)")
     z: float = Field(..., description="Z-coordinate (depth)")
+
+    def __add__(self, other: "Position3D") -> "Position3D":
+        """Add two positions component-wise."""
+        return Position3D(x=self.x + other.x, y=self.y + other.y, z=self.z + other.z)
+
+    def __sub__(self, other: "Position3D") -> "Position3D":
+        """Subtract two positions component-wise."""
+        return Position3D(x=self.x - other.x, y=self.y - other.y, z=self.z - other.z)
+
+    def __mul__(self, scalar: float) -> "Position3D":
+        """Scale position by a scalar."""
+        return Position3D(x=self.x * scalar, y=self.y * scalar, z=self.z * scalar)
+
+    def __truediv__(self, scalar: float) -> "Position3D":
+        """Divide position by a scalar."""
+        if scalar == 0:
+            return Position3D(x=0, y=0, z=0)
+        return Position3D(x=self.x / scalar, y=self.y / scalar, z=self.z / scalar)
+
+    def dot(self, other: "Position3D") -> float:
+        """Compute dot product with another position."""
+        return self.x * other.x + self.y * other.y + self.z * other.z
+
+    def magnitude(self) -> float:
+        """Compute Euclidean magnitude."""
+        import math
+
+        return math.sqrt(self.x**2 + self.y**2 + self.z**2)
+
+    def normalize(self) -> "Position3D":
+        """Return normalized position (unit vector)."""
+        mag = self.magnitude()
+        if mag == 0:
+            return Position3D(x=0, y=0, z=0)
+        return self / mag
 
 
 class Graph3DNode(BaseModel):
@@ -499,3 +535,33 @@ class ModeResponse(BaseModel):
 
     mode: str = Field(..., description="Evaluation mode (six_hats or full_techniques)")
     evaluation_id: str = Field(..., description="The evaluation ID")
+
+
+# =============================================================================
+# Phase G4: Advanced 3D Graph Models
+# =============================================================================
+
+
+class ExcludedVisualization(BaseModel):
+    """Visualization metadata for excluded techniques.
+
+    Provides styling information for techniques that were excluded
+    from the main flow but should still be visualized with distinct styling.
+
+    Attributes:
+        technique_id: ID of the excluded technique
+        reason: Reason for exclusion
+        node_style: Visual style for excluded node (opacity, dasharray)
+        edge_style: Visual style for edges to excluded node (color, dasharray)
+    """
+
+    technique_id: str = Field(..., description="ID of the excluded technique")
+    reason: str = Field(..., description="Reason for exclusion")
+    node_style: dict = Field(
+        default_factory=lambda: {"opacity": 0.5, "dasharray": "5,5"},
+        description="Visual style for excluded node",
+    )
+    edge_style: dict = Field(
+        default_factory=lambda: {"color": "#ff0000", "dasharray": "3,3"},
+        description="Visual style for edges to excluded node",
+    )
