@@ -31,7 +31,8 @@ export default function ProgressPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const id = params.id as string;
-  const mode = (searchParams.get('mode') as EvaluationMode) || 'six_sommeliers';
+  const modeParam = searchParams.get('mode');
+  const mode: EvaluationMode = modeParam === 'grand_tasting' ? 'grand_tasting' : 'six_sommeliers';
   
   const { completedSommeliers, errors, isComplete, progress, status, connectionStatus, retryInfo } = useEvaluationStream(id);
 

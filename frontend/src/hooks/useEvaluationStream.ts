@@ -62,7 +62,9 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
   }, [isComplete]);
   
   const updateProgressFromCompleted = useCallback((completedCount: number, hasActiveTask: boolean) => {
-    const baseProgress = Math.round((completedCount / TOTAL_SOMMELIERS) * 100);
+    const isTastingMode = completedSommeliers.some(s => s.id in TASTING_NOTE_NAMES);
+    const total = isTastingMode ? TOTAL_TASTING_NOTES : TOTAL_SOMMELIERS;
+    const baseProgress = Math.round((completedCount / total) * 100);
     const activeBonus = hasActiveTask ? 5 : 0;
     const newProgress = Math.min(99, baseProgress + activeBonus);
     

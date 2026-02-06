@@ -44,6 +44,8 @@ class RpmLimiter:
     """Simple in-process RPM limiter to prevent burst requests."""
 
     def __init__(self, rpm: int):
+        if rpm <= 0:
+            raise ValueError(f"RPM must be positive, got {rpm}")
         self._min_interval = 60.0 / rpm
         self._lock = asyncio.Lock()
         self._next_ts = 0.0
@@ -164,13 +166,16 @@ async def invoke_with_policy(
                     f"LLM call timed out after {LLM_INVOKE_TIMEOUT_SECONDS}s"
                 )
                 last_category = ErrorCategory.TRANSIENT
-                logger.warning(
-                    f"Attempt {attempts}/{config.max_attempts}: "
+                msg = (
+                    f"Attempt {attempts}/{config.max_attempts} "
                     f"timed out after {LLM_INVOKE_TIMEOUT_SECONDS}s"
                 )
+                logger.warning(msg)
                 if attempts >= config.max_attempts:
                     break
                 delay = _calculate_delay_with_jitter(attempts - 1, config)
+                if on_retry:
+                    on_retry(attempts, delay, msg)
                 await asyncio.sleep(delay)
                 total_wait += delay
                 continue

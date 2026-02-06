@@ -228,12 +228,14 @@ async def run_evaluation_pipeline(
 async def save_evaluation_results(
     evaluation_id: str,
     evaluation_data: Dict[str, Any],
+    evaluation_mode: str = "six_sommeliers",
 ) -> str:
     """Save evaluation results to the database.
 
     Args:
         evaluation_id: The evaluation ID.
         evaluation_data: The evaluation results data.
+        evaluation_mode: The evaluation mode used.
 
     Returns:
         The result ID.
@@ -245,7 +247,7 @@ async def save_evaluation_results(
     cellar_result = evaluation_data.get("cellar_result")
     jeanpierre_result = evaluation_data.get("jeanpierre_result")
 
-    is_grand_tasting = cellar_result is not None and jeanpierre_result is None
+    is_grand_tasting = evaluation_mode == "grand_tasting"
 
     if is_grand_tasting:
         cellar_result = cellar_result or {}
@@ -490,7 +492,7 @@ async def run_evaluation_pipeline_with_events(
                 f"Evaluation {evaluation_id} node errors: {result['errors']}"
             )
 
-        await save_evaluation_results(evaluation_id, result)
+        await save_evaluation_results(evaluation_id, result, evaluation_mode)
         await eval_repo.update_status(evaluation_id, "completed")
 
         jeanpierre = result.get("jeanpierre_result") or {}
