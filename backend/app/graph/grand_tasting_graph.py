@@ -1,19 +1,16 @@
 """Grand Tasting evaluation pipeline with 8 Tasting Notes nodes.
 
-Architecture:
+Architecture (7 parallel + 1 synthesis):
   START → RAG Enrich (optional)
-                │
-    ┌───────────┼───────────┐
-    │     │     │     │     │
-    ▼     ▼     ▼     ▼     ▼
-  Aroma Palate Body Finish Balance
-    │     │     │     │     │
-    │     ▼     ▼     │     │
-    │  Vintage Terroir │     │
-    │     │     │     │     │
-    └─────┴─────┴─────┴─────┘
-                │
-            Cellar (Synthesis) → END
+                   │
+    ┌──────────────┼──────────────┐
+    │    │    │    │    │    │    │
+    ▼    ▼    ▼    ▼    ▼    ▼    ▼
+  Aroma Palate Body Finish Balance Vintage Terroir
+    │    │    │    │    │    │    │
+    └────┴────┴────┴────┴────┴────┘
+                   │
+           Cellar (Synthesis) → END
 """
 
 from langgraph.graph import StateGraph, END
