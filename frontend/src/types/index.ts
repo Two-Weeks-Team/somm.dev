@@ -68,3 +68,5 @@ export interface SommelierProgress {
   status: 'pending' | 'analyzing' | 'completed' | 'failed';
   result?: SommelierResult;
 }
+
+export * from './graph';
