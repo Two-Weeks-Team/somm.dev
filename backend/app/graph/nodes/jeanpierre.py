@@ -8,9 +8,11 @@ Style: Wise, synthesizing, final verdict.
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 
+from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.runnables import RunnableConfig
 
 from app.graph.nodes.base import BaseSommelierNode, SOMMELIER_PROGRESS
+from app.graph.schemas import FinalEvaluation
 from app.graph.state import EvaluationState
 from app.prompts.jeanpierre import get_jeanpierre_prompt
 from app.providers.llm import build_llm
@@ -26,6 +28,10 @@ class JeanPierreNode(BaseSommelierNode):
 
     name = "jeanpierre"
     role = "Master Sommelier"
+
+    def __init__(self):
+        """Initialize with FinalEvaluation schema instead of SommelierOutput."""
+        self.parser = PydanticOutputParser(pydantic_object=FinalEvaluation)
 
     def get_prompt(self, criteria: str):
         """Return Jean-Pierre's synthesis prompt template."""

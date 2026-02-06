@@ -224,19 +224,40 @@ async def save_evaluation_results(
     """
     repo = ResultRepository()
 
-    from app.models.results import get_rating_tier
+    from app.models.results import get_rating_tier, SommelierOutput
 
-    final_eval = evaluation_data.get("jeanpierre_result") or {}
-    overall_score = final_eval.get("overall_score", 0)
+    jeanpierre_result = evaluation_data.get("jeanpierre_result") or {}
+    overall_score = jeanpierre_result.get("total_score", 0)
     rating_tier = get_rating_tier(overall_score)
+    summary = jeanpierre_result.get("verdict", "")
+
+    sommelier_names = {
+        "marcel": ("Marcel", "Cellar Master"),
+        "isabella": ("Isabella", "Wine Critic"),
+        "heinrich": ("Heinrich", "Quality Inspector"),
+        "sofia": ("Sofia", "Vineyard Scout"),
+        "laurent": ("Laurent", "Winemaker"),
+    }
+    sommelier_outputs = []
+    for key, (name, role) in sommelier_names.items():
+        result = evaluation_data.get(f"{key}_result")
+        if result:
+            sommelier_outputs.append(
+                SommelierOutput(
+                    sommelier_name=name,
+                    score=result.get("score", 0),
+                    summary=result.get("notes", ""),
+                    recommendations=result.get("techniques_used", []),
+                )
+            )
 
     from app.models.results import FinalEvaluation
 
     final_evaluation = FinalEvaluation(
         overall_score=overall_score,
         rating_tier=rating_tier,
-        sommelier_outputs=final_eval.get("sommelier_outputs", []),
-        summary=final_eval.get("summary", ""),
+        sommelier_outputs=sommelier_outputs,
+        summary=summary,
     )
 
     result_id = await repo.create_result(
