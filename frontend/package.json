@@ -10,7 +10,9 @@
     "lint": "eslint",
     "test": "jest",
     "test:watch": "jest --watch",
-    "test:coverage": "jest --coverage"
+    "test:coverage": "jest --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui"
   },
   "dependencies": {
     "@react-three/drei": "^10.7.7",
@@ -25,6 +27,7 @@
     "three": "^0.182.0"
   },
   "devDependencies": {
+    "@playwright/test": "^1.58.2",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.2.0",
