@@ -1,9 +1,20 @@
 """Graph state definition for the evaluation pipeline."""
 
+from datetime import datetime
 from typing import Annotated, TypedDict, Optional, List, Required, NotRequired, Dict
 from operator import add
 
 from app.models.graph import TraceEvent, ItemScore, ExcludedTechnique, AgentContribution
+
+
+def _parse_timestamp(ts: str) -> datetime:
+    """Parse ISO 8601 timestamp string to datetime for safe comparison.
+
+    Handles 'Z' suffix which Python < 3.11 doesn't support in fromisoformat().
+    """
+    if ts.endswith("Z"):
+        ts = ts[:-1] + "+00:00"
+    return datetime.fromisoformat(ts)
 
 
 def merge_dicts(
@@ -18,7 +29,7 @@ def merge_methodology_trace(
     """Merge methodology trace events with deterministic ordering.
 
     Orders by step, then timestamp, then agent, then technique_id.
-    Dedupes by (step, agent, technique_id, item_id, action) tuple.
+    Dedupes by (step, agent, technique_id, item_id, action, timestamp) tuple.
 
     Args:
         current: Existing trace events
@@ -34,7 +45,14 @@ def merge_methodology_trace(
     all_events = []
 
     for event in current + incoming:
-        key = (event.step, event.agent, event.technique_id, event.item_id, event.action)
+        key = (
+            event.step,
+            event.agent,
+            event.technique_id,
+            event.item_id,
+            event.action,
+            event.timestamp,
+        )
         if key not in seen:
             seen.add(key)
             all_events.append(event)
@@ -64,7 +82,9 @@ def merge_item_scores(
             result[item_id] = new_score
         else:
             existing = result[item_id]
-            if new_score.timestamp > existing.timestamp:
+            if _parse_timestamp(new_score.timestamp) > _parse_timestamp(
+                existing.timestamp
+            ):
                 result[item_id] = new_score
     return result
 
