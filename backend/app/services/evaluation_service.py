@@ -293,6 +293,8 @@ async def run_full_evaluation(
             temperature=temperature,
             api_key=api_key,
         )
+        if result.get("errors"):
+            logger.warning(f"Evaluation {eval_id} node errors: {result['errors']}")
         await save_evaluation_results(eval_id, result)
         await eval_repo.update_status(eval_id, "completed")
 
