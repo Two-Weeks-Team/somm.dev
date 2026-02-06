@@ -78,14 +78,14 @@ class EvaluationRepository(BaseRepository[EvaluationInDB]):
     async def update_status(
         self,
         eval_id: str,
-        status: EvaluationStatus,
+        status: EvaluationStatus | str,
         error_message: Optional[str] = None,
     ) -> Optional[dict]:
         """Update the status of an evaluation.
 
         Args:
             eval_id: The evaluation ID to update.
-            status: The new status.
+            status: The new status (enum or string).
             error_message: Optional error message if status is 'failed'.
 
         Returns:
@@ -93,8 +93,11 @@ class EvaluationRepository(BaseRepository[EvaluationInDB]):
         """
         from bson import ObjectId
 
+        # Handle both enum and string status
+        status_value = status.value if isinstance(status, EvaluationStatus) else status
+
         update_data = {
-            "status": status.value,
+            "status": status_value,
             "updated_at": datetime.utcnow(),
         }
         if error_message:
