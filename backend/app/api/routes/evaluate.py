@@ -7,6 +7,7 @@ This module provides endpoints for:
 """
 
 import asyncio
+import json
 from typing import Any
 
 from fastapi import APIRouter, Depends
@@ -94,12 +95,12 @@ async def event_generator(
         while True:
             try:
                 event = await asyncio.wait_for(queue.get(), timeout=30.0)
-                yield f"data: {event}\n\n"
+                yield f"data: {json.dumps(event)}\n\n"
 
                 if event.get("type") == "close":
                     break
             except asyncio.TimeoutError:
-                yield f"data: {None}\n\n"
+                yield f"data: {json.dumps({'type': 'ping'})}\n\n"
     except asyncio.CancelledError:
         pass
     finally:
@@ -180,12 +181,12 @@ async def stream_evaluation(
             while True:
                 try:
                     event = await asyncio.wait_for(queue.get(), timeout=30.0)
-                    yield f"data: {event}\n\n"
+                    yield f"data: {json.dumps(event)}\n\n"
 
                     if event.get("type") == "close":
                         break
                 except asyncio.TimeoutError:
-                    yield f"data: {None}\n\n"
+                    yield f"data: {json.dumps({'type': 'ping'})}\n\n"
         except asyncio.CancelledError:
             pass
         finally:
