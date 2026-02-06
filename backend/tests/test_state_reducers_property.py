@@ -293,7 +293,7 @@ class TestExcludedTechniquesReducer:
         merged1 = merge_excluded_techniques(current, incoming)
         merged2 = merge_excluded_techniques(current, incoming)
 
-        assert len(merged1) == len(merged2)
+        assert merged1 == merged2
 
 
 class TestAgentContributionsReducer:
