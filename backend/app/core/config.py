@@ -39,6 +39,7 @@ class Settings(BaseSettings):
     # LLM APIs
     GEMINI_API_KEY: str = ""
     OPENAI_API_KEY: str = ""
+    ANTHROPIC_API_KEY: str = ""
 
     # GitHub
     GITHUB_TOKEN: str = ""
