@@ -8,12 +8,18 @@
       "compose_file": "docker-compose.yml",
       "remote_path": "/home/barahime/github/somm.dev",
       "health_check_url": null,
-      "last_deployed_commit": "7bb0c553e3f5d04b3e3d3e5a3e6d0f8f3f2b1a0a",
-      "last_deploy": "2026-02-06T06:24:00Z"
+      "last_deployed_commit": "5b2f66a",
+      "last_deploy": "2026-02-06T06:10:00Z"
     }
   },
   "default_env": "prod",
   "deploy_history": [
+    {
+      "commit": "5b2f66a",
+      "env": "prod",
+      "timestamp": "2026-02-06T06:10:00Z",
+      "status": "success"
+    },
     {
       "commit": "7bb0c55",
       "env": "prod",
