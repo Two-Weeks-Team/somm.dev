@@ -21,6 +21,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import queue
+import threading
 import time
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
@@ -48,6 +49,7 @@ class EventType(str, Enum):
     SOMMELIER_COMPLETE = "sommelier_complete"
     SOMMELIER_ERROR = "sommelier_error"
     EVALUATION_COMPLETE = "evaluation_complete"
+    EVALUATION_ERROR = "evaluation_error"
     HEARTBEAT = "heartbeat"
     STATUS = "status"
 
@@ -115,6 +117,7 @@ class EventChannel:
         self._channels: dict[str, list[asyncio.Queue]] = {}
         self._channel_timestamps: dict[str, float] = {}
         self._pending_events: dict[str, list[tuple[float, SommelierProgressEvent]]] = {}
+        self._closed_channels: set[str] = set()
         self._lock = asyncio.Lock()
         self._max_queue_size = 100
 
@@ -132,6 +135,8 @@ class EventChannel:
             evaluation_id: The evaluation ID to create a channel for.
         """
         async with self._lock:
+            self._closed_channels.discard(evaluation_id)
+
             if evaluation_id not in self._channels:
                 self._channels[evaluation_id] = []
                 self._channel_timestamps[evaluation_id] = time.monotonic()
@@ -207,6 +212,10 @@ class EventChannel:
             event: The event to emit.
         """
         async with self._lock:
+            if evaluation_id in self._closed_channels:
+                logger.debug(f"Ignoring event for closed channel {evaluation_id}")
+                return
+
             if evaluation_id not in self._channels:
                 self._channels[evaluation_id] = []
                 self._channel_timestamps[evaluation_id] = time.monotonic()
@@ -299,15 +308,20 @@ class EventChannel:
             if evaluation_id not in self._channels:
                 self._channels[evaluation_id] = []
                 self._channel_timestamps[evaluation_id] = time.monotonic()
+
+            # Deliver pending events INSIDE lock to prevent race with _transfer_loop
+            delivered = await self._deliver_pending_events(
+                evaluation_id, subscriber_queue
+            )
+            if delivered > 0:
+                logger.info(f"Delivered {delivered} pending events to new subscriber")
+
+            # Register subscriber AFTER pending events delivered to ensure ordering
             self._channels[evaluation_id].append(subscriber_queue)
             logger.info(
                 f"New subscriber for {evaluation_id}, "
                 f"total: {len(self._channels[evaluation_id])}"
             )
-
-        delivered = await self._deliver_pending_events(evaluation_id, subscriber_queue)
-        if delivered > 0:
-            logger.info(f"Delivered {delivered} pending events to new subscriber")
 
         try:
             while True:
@@ -383,6 +397,8 @@ class EventChannel:
             evaluation_id: The evaluation ID to close.
         """
         async with self._lock:
+            self._closed_channels.add(evaluation_id)
+
             if evaluation_id in self._channels:
                 for q in self._channels[evaluation_id]:
                     try:
@@ -447,6 +463,7 @@ class EventChannel:
 
 
 _event_channel: Optional[EventChannel] = None
+_event_channel_lock = threading.Lock()
 
 
 def get_event_channel() -> EventChannel:
@@ -457,7 +474,9 @@ def get_event_channel() -> EventChannel:
     """
     global _event_channel
     if _event_channel is None:
-        _event_channel = EventChannel()
+        with _event_channel_lock:
+            if _event_channel is None:
+                _event_channel = EventChannel()
     return _event_channel
 
 

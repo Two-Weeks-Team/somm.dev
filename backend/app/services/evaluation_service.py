@@ -398,9 +398,9 @@ async def run_evaluation_pipeline_with_events(
             "score": jeanpierre.get("overall_score", 0),
             "rating_tier": jeanpierre.get("rating_tier", ""),
         }
-    except Exception as e:
-        error_msg = str(e)
-        await handle_evaluation_error(evaluation_id, error_msg)
+    except Exception:
+        # Re-raise without handling here - evaluate.py's run_in_background() handles errors
+        # to avoid duplicate handle_evaluation_error calls
         raise
 
 
