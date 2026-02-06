@@ -490,24 +490,22 @@ async def get_evaluation_result(
 
 
 async def get_user_history(
+    user_id: str,
     skip: int = 0,
     limit: int = 50,
 ) -> list[Dict[str, Any]]:
     """Get the evaluation history for a user.
 
     Args:
+        user_id: The user ID to get history for.
         skip: Number of records to skip.
         limit: Maximum number of records to return.
 
     Returns:
         A list of evaluation summaries.
     """
-    from app.api.deps import get_current_user
-
-    user = await get_current_user()
-
     repo = EvaluationRepository()
-    evaluations = await repo.list_by_user(user.id, limit=limit, skip=skip)
+    evaluations = await repo.list_by_user(user_id, limit=limit, skip=skip)
 
     history = []
     for eval_doc in evaluations:

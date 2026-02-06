@@ -64,7 +64,7 @@ async def list_history(
     Returns:
         A paginated list of evaluation history items.
     """
-    history = await get_user_history(skip=skip, limit=limit)
+    history = await get_user_history(user_id=user.id, skip=skip, limit=limit)
 
     items = []
     for h in history:
