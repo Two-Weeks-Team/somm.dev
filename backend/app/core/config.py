@@ -41,6 +41,12 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = ""
     ANTHROPIC_API_KEY: str = ""
 
+    # LangSmith Tracing (optional - enables LangGraph monitoring)
+    LANGSMITH_API_KEY: str = ""
+    LANGSMITH_ENDPOINT: str = "https://api.smith.langchain.com"
+    LANGSMITH_TRACING: bool = False
+    LANGCHAIN_PROJECT: str = "somm-dev"
+
     # GitHub
     GITHUB_TOKEN: str = ""
 
