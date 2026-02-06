@@ -1,0 +1,71 @@
+id: metaphor-mapping
+name: Metaphor Mapping
+nameKo: 은유 매핑
+category: terroir
+applicableHats:
+- green
+- red
+evaluationDimensions:
+- A3
+- D2
+- D3
+description: '복잡한 개념을 친숙한 은유로 설명하는 기법.
+
+  추상적인 아이디어를 구체적이고
+
+  이해하기 쉬운 비유로 표현합니다.
+
+  '
+promptTemplate: '## Metaphor Mapping 분석
+
+
+  프로젝트가 효과적인 은유를 사용했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **은유 사용**: 복잡한 개념을 비유로 설명했는가?
+
+  2. **적절성**: 은유가 개념을 잘 전달하는가?
+
+  3. **일관성**: 은유가 전체적으로 일관성 있는가?
+
+  4. **기억성**: 은유가 기억에 남는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 강력한 핵심 은유, 일관성, 높은 기억성
+
+  - 4점: 효과적인 은유 사용
+
+  - 3점: 일부 비유 사용
+
+  - 2점: 산발적 비유
+
+  - 1점: 은유 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 강력한 은유, 일관성, 기억성
+    4: 효과적 은유 사용
+    3: 일부 비유
+    2: 산발적 비유
+    1: 은유 없음
+outputSchema:
+  score: number
+  coreMetaphors: string[]
+  conceptsMapped: string[]
+  consistency: string
+  memorability: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 500
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Cognitive Linguistics / Communication
+requiredSources: pdf_only

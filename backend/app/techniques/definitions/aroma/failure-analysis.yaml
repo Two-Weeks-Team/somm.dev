@@ -1,0 +1,70 @@
+id: failure-analysis
+name: Failure Analysis (FMEA)
+nameKo: 실패 분석
+category: aroma
+applicableHats:
+- black
+- white
+evaluationDimensions:
+- B3
+- B4
+- C3
+description: 'Failure Mode and Effects Analysis (FMEA).
+
+  잠재적 실패 모드를 사전에 식별하고
+
+  그 영향과 대응책을 분석합니다.
+
+  '
+promptTemplate: '## Failure Analysis (FMEA) 분석
+
+
+  이 프로젝트가 잠재적 실패 모드를 고려했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **실패 모드 식별**: 어떤 방식으로 실패할 수 있는지 식별했는가?
+
+  2. **영향 분석**: 각 실패의 영향도를 평가했는가?
+
+  3. **발생 가능성**: 실패 발생 확률을 고려했는가?
+
+  4. **대응책**: 각 실패에 대한 대응책이 있는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 체계적 FMEA 수행, 우선순위화된 대응책 존재
+
+  - 4점: 주요 실패 모드 식별 및 대응
+
+  - 3점: 일부 위험 인식
+
+  - 2점: 피상적 위험 언급
+
+  - 1점: 위험 분석 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 체계적 FMEA, 우선순위화된 대응책
+    4: 주요 실패 모드 식별 및 대응
+    3: 일부 위험 인식
+    2: 피상적 위험 언급
+    1: 위험 분석 없음
+outputSchema:
+  score: number
+  failureModes: string[]
+  impactAnalysis: string
+  mitigationStrategies: string[]
+  reasoning: string
+metadata:
+  complexity: high
+  estimatedTokens: 700
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Automotive Industry / NASA
+requiredSources: either

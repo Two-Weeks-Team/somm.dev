@@ -1,0 +1,70 @@
+id: consensus-building
+name: Consensus Building
+nameKo: 합의 형성
+category: cellar
+applicableHats:
+- blue
+evaluationDimensions:
+- D3
+- D4
+description: '여러 관점과 평가 결과를 종합하여 균형 잡힌 합의점을 도출하는 기법.
+
+  상충되는 의견들 사이에서 최적의 결론을 찾아내는 과정.
+
+  '
+promptTemplate: '## Consensus Building (합의 도출)
+
+
+  여러 평가 관점을 종합하여 균형 잡힌 결론을 도출하세요.
+
+
+  ### 분석 관점:
+
+  1. **공통점 식별**: 모든 관점에서 동의하는 부분은?
+
+  2. **갈등 지점**: 관점 간 상충되는 부분은?
+
+  3. **가중치 결정**: 어떤 관점에 더 무게를 둘 것인가?
+
+  4. **절충안 도출**: 갈등을 해결할 수 있는 절충안은?
+
+  5. **최종 합의**: 모든 것을 고려한 최종 결론은?
+
+
+  ### 점수 기준:
+
+  - 5점: 모든 관점을 균형있게 종합, 명확한 결론
+
+  - 4점: 대부분 관점 종합, 일부 누락
+
+  - 3점: 주요 관점만 종합
+
+  - 2점: 일부 관점만 반영, 편향됨
+
+  - 1점: 종합 없이 단일 관점만 반영
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 모든 관점 균형있게 종합
+    4: 대부분 관점 종합
+    3: 주요 관점만 종합
+    2: 편향된 종합
+    1: 단일 관점만 반영
+outputSchema:
+  score: number
+  commonGround: string[]
+  conflictPoints: string[]
+  weightingRationale: string
+  compromiseSolutions: string[]
+  finalConsensus: string
+  reasoning: string
+metadata:
+  complexity: high
+  estimatedTokens: 600
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Blue Hat Thinking / Facilitation
+requiredSources: either

@@ -1,0 +1,69 @@
+id: biomimicry
+name: Biomimicry
+nameKo: 생체모방
+category: palate
+applicableHats:
+- green
+evaluationDimensions:
+- A3
+- B1
+- B2
+description: '자연의 디자인과 프로세스에서 영감을 얻어
+
+  문제를 해결하는 기법.
+
+  38억 년 진화의 지혜를 활용합니다.
+
+  '
+promptTemplate: '## Biomimicry 분석
+
+
+  이 프로젝트가 자연에서 영감을 받았는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **자연 모방**: 자연의 디자인이나 프로세스를 모방했는가?
+
+  2. **생물학적 영감**: 생물의 특성에서 아이디어를 얻었는가?
+
+  3. **생태계 원리**: 생태계의 원리(순환, 적응 등)를 적용했는가?
+
+  4. **지속가능성**: 자연의 지속가능한 방식을 참고했는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 자연의 원리를 핵심 솔루션에 깊이 적용
+
+  - 4점: 명확한 생체모방 요소가 설계에 반영
+
+  - 3점: 부분적으로 자연에서 영감
+
+  - 2점: 자연 참조가 피상적
+
+  - 1점: 생체모방 요소 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 자연 원리를 핵심에 깊이 적용
+    4: 명확한 생체모방 요소 반영
+    3: 부분적 자연 영감
+    2: 피상적 자연 참조
+    1: 생체모방 요소 없음
+outputSchema:
+  score: number
+  natureInspiration: string[]
+  biologicalPrinciples: string
+  sustainabilityAspects: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 600
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Janine Benyus
+requiredSources: either

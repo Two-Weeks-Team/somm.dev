@@ -1,0 +1,70 @@
+id: decision-tree-mapping
+name: Decision Tree Mapping
+nameKo: 의사결정 트리 매핑
+category: balance
+applicableHats:
+- white
+- blue
+evaluationDimensions:
+- B2
+- B3
+description: '의사결정 포인트와 분기점을 시각화하는 기법.
+
+  각 선택지의 결과와 영향을 체계적으로 분석하여
+
+  최적의 의사결정 경로를 찾습니다.
+
+  '
+promptTemplate: '## Decision Tree Mapping 분석
+
+
+  프로젝트가 의사결정 과정을 체계적으로 분석했는지 평가하세요.
+
+
+  ### 분석 관점:
+
+  1. **결정 포인트**: 주요 의사결정 지점을 식별했는가?
+
+  2. **선택지 분석**: 각 결정의 대안을 분석했는가?
+
+  3. **결과 예측**: 각 선택의 결과를 예측했는가?
+
+  4. **최적 경로**: 최선의 의사결정 경로를 도출했는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 체계적 의사결정 트리, 정량적 분석 포함
+
+  - 4점: 주요 결정 포인트와 대안 분석
+
+  - 3점: 일부 의사결정 분석
+
+  - 2점: 의사결정 과정 불명확
+
+  - 1점: 의사결정 분석 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 체계적 트리, 정량적 분석
+    4: 주요 결정 포인트 분석
+    3: 일부 의사결정 분석
+    2: 과정 불명확
+    1: 분석 없음
+outputSchema:
+  score: number
+  decisionPoints: string[]
+  alternatives: string[]
+  outcomes: string
+  optimalPath: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 550
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Decision Science / Operations Research
+requiredSources: either

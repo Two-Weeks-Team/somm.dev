@@ -1,0 +1,71 @@
+id: anti-solution
+name: Anti-Solution Design
+nameKo: 반(反)해결책
+category: body
+applicableHats:
+- black
+- green
+evaluationDimensions:
+- A3
+- B3
+- C3
+description: '"최악의 솔루션"을 먼저 설계해보고
+
+  그것을 뒤집어 좋은 솔루션을 도출하는 기법.
+
+  무엇을 피해야 하는지 명확히 합니다.
+
+  '
+promptTemplate: '## Anti-Solution Design 분석
+
+
+  프로젝트가 안티-솔루션 사고를 활용했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **최악 설계**: "최악의 솔루션"을 상상해 보았는가?
+
+  2. **피해야 할 것**: 무엇을 피해야 하는지 명확히 했는가?
+
+  3. **역전 활용**: 최악에서 최선을 도출했는가?
+
+  4. **경계선 정의**: 하지 말아야 할 것의 경계를 정했는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 안티-솔루션 설계 후 역전으로 최선 도출
+
+  - 4점: 피해야 할 것을 명확히 정의
+
+  - 3점: 일부 안티패턴 인식
+
+  - 2점: 부정적 사례 언급만
+
+  - 1점: 안티-솔루션 사고 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 안티-솔루션 역전으로 최선 도출
+    4: 피해야 할 것 명확 정의
+    3: 일부 안티패턴 인식
+    2: 부정 사례 언급만
+    1: 안티-솔루션 없음
+outputSchema:
+  score: number
+  worstSolution: string
+  antiPatterns: string[]
+  reversedInsights: string[]
+  boundaries: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 550
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Creative Problem Solving
+requiredSources: either

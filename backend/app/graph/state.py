@@ -48,9 +48,16 @@ class EvaluationState(TypedDict):
         Annotated[Dict[str, Dict[str, Optional[str]]], merge_dicts]
     ]
 
-    # RAG enrichment
     rag_context: NotRequired[Optional[dict]]
 
-    # Metadata
+    aroma_result: NotRequired[Optional[dict]]
+    palate_result: NotRequired[Optional[dict]]
+    body_result: NotRequired[Optional[dict]]
+    finish_result: NotRequired[Optional[dict]]
+    balance_result: NotRequired[Optional[dict]]
+    vintage_result: NotRequired[Optional[dict]]
+    terroir_result: NotRequired[Optional[dict]]
+    cellar_result: NotRequired[Optional[dict]]
+
     started_at: NotRequired[str]
     completed_at: NotRequired[Optional[str]]

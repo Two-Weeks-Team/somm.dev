@@ -31,20 +31,24 @@ def test_load_techniques_schema_validation_error(tmp_path: Path):
 
 
 def test_filter_techniques_by_input_source():
+    from app.techniques.schema import ScoringCriteria
+
     techniques = [
         TechniqueDefinition(
             id="t1",
+            name="Test Technique 1",
             category="structure",
             input_source="github",
-            scoring={"weight": 1.0},
+            scoring=ScoringCriteria(min=1, max=5, criteria={}, weight=1.0),
             output_schema={"score": "integer"},
             prompt_template="x",
         ),
         TechniqueDefinition(
             id="t2",
+            name="Test Technique 2",
             category="structure",
             input_source="both",
-            scoring={"weight": 1.0},
+            scoring=ScoringCriteria(min=1, max=5, criteria={}, weight=1.0),
             output_schema={"score": "integer"},
             prompt_template="y",
         ),

@@ -19,9 +19,11 @@ def load_techniques(
     if not definitions_dir.exists():
         return techniques, errors
 
-    for path in sorted(definitions_dir.glob("*.yml")) + sorted(
-        definitions_dir.glob("*.yaml")
-    ):
+    yaml_files = list(definitions_dir.glob("**/*.yaml")) + list(
+        definitions_dir.glob("**/*.yml")
+    )
+
+    for path in sorted(yaml_files):
         try:
             raw = yaml.safe_load(path.read_text(encoding="utf-8"))
             if not isinstance(raw, dict):

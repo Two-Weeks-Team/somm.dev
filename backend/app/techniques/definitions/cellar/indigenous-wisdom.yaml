@@ -1,0 +1,71 @@
+id: indigenous-wisdom
+name: Indigenous Wisdom Integration
+nameKo: 토착 지혜
+category: cellar
+applicableHats:
+- blue
+- green
+evaluationDimensions:
+- A3
+- C1
+- D1
+description: '다양한 문화권의 전통 지혜와 현대적 접근을
+
+  통합하는 기법. 장기적 지속 가능성과
+
+  전체론적 관점을 추구합니다.
+
+  '
+promptTemplate: '## Indigenous Wisdom Integration 분석
+
+
+  프로젝트가 전통적 지혜와 지속 가능성을 고려했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **전체론적 시각**: 부분이 아닌 전체를 보았는가?
+
+  2. **장기 관점**: 7세대 후를 고려했는가?
+
+  3. **자연과 조화**: 자연/환경과의 조화를 고려했는가?
+
+  4. **커뮤니티 영향**: 공동체에 미치는 영향을 고려했는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 전체론적, 장기적, 지속 가능한 관점 통합
+
+  - 4점: 장기적 영향 고려
+
+  - 3점: 일부 전체론적 시각
+
+  - 2점: 단기 관점 중심
+
+  - 1점: 전체론적 관점 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 전체론적, 장기적, 지속 가능
+    4: 장기적 영향 고려
+    3: 일부 전체론적
+    2: 단기 관점
+    1: 전체론 없음
+outputSchema:
+  score: number
+  holisticView: string
+  longTermPerspective: string
+  sustainabilityConsiderations: string
+  communityImpact: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 550
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Indigenous Knowledge / Sustainable Development
+requiredSources: either

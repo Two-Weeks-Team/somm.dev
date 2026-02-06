@@ -1,0 +1,70 @@
+id: role-playing
+name: Role Playing
+nameKo: 역할극
+category: finish
+applicableHats:
+- red
+- white
+evaluationDimensions:
+- C1
+- C2
+- D2
+description: '실제 사용자의 입장에서 제품/서비스를 경험해보는 기법.
+
+  사용자의 행동, 감정, 니즈를 직접 체험함으로써
+
+  더 깊은 공감과 통찰을 얻습니다.
+
+  '
+promptTemplate: '## Role Playing 분석
+
+
+  프로젝트 팀이 사용자 역할을 얼마나 깊이 체험했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **역할 정의**: 구체적인 사용자 역할을 정의했는가?
+
+  2. **상황 설정**: 사용 상황을 구체적으로 설정했는가?
+
+  3. **체험 깊이**: 실제로 사용자 입장에서 경험해 보았는가?
+
+  4. **인사이트 도출**: 역할극에서 의미 있는 발견이 있었는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 다양한 사용자 역할을 깊이 체험하고 핵심 인사이트 발견
+
+  - 4점: 주요 사용자 역할을 체험하고 인사이트 도출
+
+  - 3점: 기본적인 사용자 관점 고려
+
+  - 2점: 피상적인 사용자 언급
+
+  - 1점: 사용자 관점 고려 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 다양한 역할 깊이 체험, 핵심 인사이트
+    4: 주요 역할 체험 및 인사이트
+    3: 기본적 사용자 관점 고려
+    2: 피상적 사용자 언급
+    1: 사용자 관점 없음
+outputSchema:
+  score: number
+  rolesExplored: string[]
+  situationsSimulated: string[]
+  insightsGained: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 550
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Design Thinking / UX Research
+requiredSources: either

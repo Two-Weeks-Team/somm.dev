@@ -1,0 +1,73 @@
+id: quantum-superposition
+name: Quantum Superposition Thinking
+nameKo: 양자 중첩
+category: palate
+applicableHats:
+- green
+- blue
+evaluationDimensions:
+- A3
+- B4
+description: '양자역학의 중첩 원리에서 영감을 받은 창의적 사고 기법.
+
+  상반되는 가능성들을 동시에 유지하며 최적의 해결책을 탐색.
+
+  "이것 또는 저것"이 아닌 "이것과 저것 동시에"를 고려.
+
+  '
+promptTemplate: '## Quantum Superposition Thinking (양자 중첩 사고)
+
+
+  이 프로젝트가 상반되는 가능성들을 어떻게 다루는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **이분법 탈피**: 양자택일 대신 "둘 다"를 선택했는가?
+
+  2. **모순 통합**: 상충되는 요구사항을 어떻게 해결했는가?
+
+  3. **다중 경로**: 여러 가능성을 열어두었는가?
+
+  4. **유연성**: 상황에 따라 적응할 수 있는 구조인가?
+
+  5. **패러독스 활용**: 역설적 상황을 기회로 활용했는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 다중 가능성을 동시에 유지하며 유연하게 대응
+
+  - 4점: 일부 영역에서 다중 가능성 고려
+
+  - 3점: 2-3개 대안을 검토
+
+  - 2점: 단일 경로에 집중, 대안 제한적
+
+  - 1점: 이분법적 사고, 유연성 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 다중 가능성 동시 유지, 유연한 대응
+    4: 일부 영역에서 다중 가능성
+    3: 2-3개 대안 검토
+    2: 단일 경로 집중
+    1: 이분법적 사고
+outputSchema:
+  score: number
+  dichotomyEscape: string
+  contradictionIntegration: string
+  multiplePathways: string[]
+  adaptability: string
+  paradoxUtilization: string
+  reasoning: string
+metadata:
+  complexity: high
+  estimatedTokens: 650
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Quantum Mechanics Metaphor / Creative Thinking
+requiredSources: either

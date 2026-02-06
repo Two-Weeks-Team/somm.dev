@@ -146,6 +146,7 @@ async def start_evaluation(
     criteria: str,
     user_id: str,
     custom_criteria: Optional[list[str]] = None,
+    evaluation_mode: str = "six_sommeliers",
 ) -> str:
     """Start a new evaluation for a repository.
 
@@ -154,6 +155,7 @@ async def start_evaluation(
         criteria: The evaluation criteria mode (basic, hackathon, academic, custom).
         user_id: The ID of the user requesting the evaluation.
         custom_criteria: Optional list of custom criteria for custom mode.
+        evaluation_mode: Evaluation mode (six_sommeliers or grand_tasting).
 
     Returns:
         The evaluation ID.
@@ -172,6 +174,14 @@ async def start_evaluation(
             f"Invalid criteria: {criteria}. Must be one of {valid_criteria}"
         )
 
+    from app.graph.graph_factory import is_valid_mode
+
+    if not is_valid_mode(evaluation_mode):
+        raise CorkedError(
+            f"Invalid evaluation mode: {evaluation_mode}. "
+            "Must be 'six_sommeliers' or 'grand_tasting'"
+        )
+
     repo = EvaluationRepository()
     eval_id = await repo.create_evaluation(
         eval_data={
@@ -181,6 +191,7 @@ async def start_evaluation(
             "criteria": criteria,
             "user_id": user_id,
             "custom_criteria": custom_criteria,
+            "evaluation_mode": evaluation_mode,
         }
     )
 
@@ -404,6 +415,7 @@ async def run_evaluation_pipeline_with_events(
     repo_url: str,
     criteria: str,
     user_id: str,
+    evaluation_mode: str = "six_sommeliers",
     provider: Optional[str] = None,
     model: Optional[str] = None,
     temperature: Optional[float] = None,
@@ -432,9 +444,9 @@ async def run_evaluation_pipeline_with_events(
         )
         config = _create_graph_config(resolved_key, provider, model, temperature)
 
-        from app.graph.graph import get_evaluation_graph
+        from app.graph.graph_factory import get_evaluation_graph
 
-        graph = get_evaluation_graph()
+        graph = get_evaluation_graph(evaluation_mode)
         result = await graph.ainvoke(state, config=config)
 
         if result.get("errors"):

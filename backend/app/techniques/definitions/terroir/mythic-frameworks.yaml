@@ -1,0 +1,70 @@
+id: mythic-frameworks
+name: Mythic Frameworks
+nameKo: 신화적 프레임워크
+category: terroir
+applicableHats:
+- red
+- blue
+evaluationDimensions:
+- D2
+- D3
+description: 'Joseph Campbell의 영웅의 여정 등
+
+  보편적 서사 구조를 활용하는 기법.
+
+  프로젝트 스토리에 신화적 깊이를 부여합니다.
+
+  '
+promptTemplate: '## Mythic Frameworks 분석
+
+
+  프로젝트가 신화적 서사 구조를 활용했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **영웅의 여정**: 도전-시련-성장의 서사가 있는가?
+
+  2. **보편적 테마**: 인류 보편의 주제와 연결되는가?
+
+  3. **감정적 공명**: 깊은 감정적 울림이 있는가?
+
+  4. **변환의 서사**: 변화와 성장의 이야기가 있는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 완전한 영웅의 여정, 깊은 감정적 공명
+
+  - 4점: 명확한 서사 구조와 테마
+
+  - 3점: 기본적인 스토리 구조
+
+  - 2점: 약한 서사
+
+  - 1점: 서사 구조 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 완전한 영웅 여정, 감정 공명
+    4: 명확한 서사와 테마
+    3: 기본 스토리 구조
+    2: 약한 서사
+    1: 서사 없음
+outputSchema:
+  score: number
+  narrativeStructure: string
+  universalThemes: string[]
+  emotionalResonance: string
+  transformationArc: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 550
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Joseph Campbell / Mythology
+requiredSources: pdf_only

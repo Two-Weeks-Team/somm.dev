@@ -1,0 +1,69 @@
+id: data-mining
+name: Data Mining
+nameKo: 데이터 마이닝 관점
+category: aroma
+applicableHats:
+- white
+evaluationDimensions:
+- A1
+- A4
+- B1
+description: '데이터에서 패턴과 인사이트를 추출하는 기법.
+
+  프로젝트가 데이터 기반 의사결정을
+
+  하고 있는지 평가합니다.
+
+  '
+promptTemplate: '## Data Mining 분석
+
+
+  이 프로젝트가 데이터 기반으로 의사결정을 했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **데이터 수집**: 관련 데이터를 수집했는가?
+
+  2. **데이터 분석**: 데이터에서 패턴을 발견했는가?
+
+  3. **인사이트 도출**: 분석에서 의미 있는 통찰을 얻었는가?
+
+  4. **의사결정 반영**: 인사이트가 설계에 반영되었는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 체계적 데이터 분석으로 핵심 인사이트 도출 및 적용
+
+  - 4점: 데이터 분석이 설계에 반영됨
+
+  - 3점: 일부 데이터 참조
+
+  - 2점: 피상적 데이터 언급
+
+  - 1점: 데이터 기반 의사결정 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 체계적 분석으로 인사이트 도출 및 적용
+    4: 데이터 분석이 설계에 반영
+    3: 일부 데이터 참조
+    2: 피상적 데이터 언급
+    1: 데이터 기반 의사결정 없음
+outputSchema:
+  score: number
+  dataCollected: string[]
+  patternsFound: string[]
+  insightsApplied: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 550
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Data Science
+requiredSources: either

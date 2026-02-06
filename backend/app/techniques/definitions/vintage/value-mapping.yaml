@@ -1,0 +1,79 @@
+id: value-mapping
+name: Value Proposition Mapping
+nameKo: 가치 제안 매핑
+category: vintage
+applicableHats:
+- yellow
+evaluationDimensions:
+- A3
+- A4
+description: '프로젝트가 제공하는 가치와 고객의 니즈를 매핑하여
+
+  가치 제안의 적합성을 분석하는 기법.
+
+  Alexander Osterwalder의 Value Proposition Canvas 기반.
+
+  '
+promptTemplate: '## Value Proposition Mapping (가치 제안 매핑)
+
+
+  이 프로젝트의 가치 제안이 고객 니즈와 얼마나 잘 맞는지 분석하세요.
+
+
+  ### 고객 프로필 분석:
+
+  1. **고객의 할 일 (Jobs)**: 고객이 해결하려는 과제는?
+
+  2. **고통점 (Pains)**: 고객의 불편함과 장애물은?
+
+  3. **얻고자 하는 것 (Gains)**: 고객이 원하는 결과와 혜택은?
+
+
+  ### 가치 제안 분석:
+
+  1. **제품/서비스**: 어떤 솔루션을 제공하는가?
+
+  2. **고통 해소제**: 어떤 고통을 줄여주는가?
+
+  3. **이득 창출자**: 어떤 이득을 제공하는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 고객 니즈와 가치 제안이 완벽히 일치
+
+  - 4점: 대부분의 니즈를 충족하는 가치 제안
+
+  - 3점: 일부 니즈만 충족
+
+  - 2점: 가치 제안과 니즈 간 갭이 큼
+
+  - 1점: 가치 제안이 불명확하거나 니즈와 무관
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 가치 제안과 니즈 완벽 일치
+    4: 대부분 니즈 충족
+    3: 일부 니즈 충족
+    2: 가치-니즈 간 갭 큼
+    1: 가치 제안 불명확
+outputSchema:
+  score: number
+  customerJobs: string[]
+  customerPains: string[]
+  customerGains: string[]
+  productServices: string[]
+  painRelievers: string[]
+  gainCreators: string[]
+  fitAssessment: string
+  reasoning: string
+metadata:
+  complexity: high
+  estimatedTokens: 700
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Alexander Osterwalder / Value Proposition Canvas
+requiredSources: both

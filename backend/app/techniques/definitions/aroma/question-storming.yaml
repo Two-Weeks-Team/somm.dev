@@ -1,0 +1,69 @@
+id: question-storming
+name: Question Storming
+nameKo: 질문 스토밍
+category: aroma
+applicableHats:
+- white
+- green
+evaluationDimensions:
+- A1
+- A2
+description: '답을 찾기 전에 좋은 질문을 먼저 찾는 기법.
+
+  "올바른 질문이 올바른 답을 이끈다"는
+
+  원리에 기반합니다.
+
+  '
+promptTemplate: '## Question Storming 분석
+
+
+  이 프로젝트가 좋은 질문을 던지고 있는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **질문의 질**: 프로젝트가 던지는 질문이 통찰력 있는가?
+
+  2. **질문의 다양성**: 다양한 관점의 질문이 있는가?
+
+  3. **질문의 깊이**: 표면적 질문을 넘어 깊은 질문이 있는가?
+
+  4. **미답 질문**: 아직 답하지 못한 중요한 질문을 인식하고 있는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 통찰력 있는 질문들로 문제의 본질을 파악
+
+  - 4점: 다양하고 깊이 있는 질문들
+
+  - 3점: 적절한 질문들이 있음
+
+  - 2점: 질문이 피상적
+
+  - 1점: 질문 없이 바로 해결책으로 직행
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 통찰력 있는 질문으로 본질 파악
+    4: 다양하고 깊이 있는 질문
+    3: 적절한 질문들
+    2: 피상적 질문
+    1: 질문 없이 해결책 직행
+outputSchema:
+  score: number
+  keyQuestions: string[]
+  questionQuality: string
+  unansweredQuestions: string[]
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 550
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Design Thinking
+requiredSources: either
