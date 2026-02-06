@@ -1,15 +1,24 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Wine, Star } from 'lucide-react';
 import { EvaluationResult } from '../types';
 import { ScoreCircle } from './ScoreCircle';
+import { RadarChart } from './RadarChart';
 
 interface TastingNotesTabProps {
   result: EvaluationResult;
 }
 
 export function TastingNotesTab({ result }: TastingNotesTabProps) {
+  const radarData = useMemo(() => {
+    return result.results.map((somm) => ({
+      label: somm.name.split(' ')[0],
+      value: somm.score,
+      maxValue: 100,
+    }));
+  }, [result.results]);
+
   return (
     <div className="animate-fadeIn">
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
@@ -20,10 +29,17 @@ export function TastingNotesTab({ result }: TastingNotesTabProps) {
         </div>
         
         <div className="p-8">
-          <div className="flex flex-col md:flex-row items-center justify-center md:justify-between gap-8">
+          <div className="flex flex-col lg:flex-row items-center justify-center gap-8">
             <div className="flex flex-col items-center">
               <ScoreCircle score={result.totalScore || 0} size="lg" />
             </div>
+
+            {radarData.length >= 3 && (
+              <div className="flex flex-col items-center">
+                <h3 className="font-serif font-medium text-[#722F37] mb-2 text-sm">Sommelier Scores</h3>
+                <RadarChart data={radarData} size={220} />
+              </div>
+            )}
 
             <div className="flex-1 max-w-xl bg-[#FAFAFA] p-6 rounded-xl border border-gray-100">
               <h3 className="font-serif font-bold text-[#722F37] mb-3 flex items-center">
