@@ -61,7 +61,10 @@ class BaseTastingNoteNode(ABC):
         self, techniques: List[TechniqueDefinition]
     ) -> ChatPromptTemplate:
         technique_prompts = "\n\n".join(
-            [f"### {t.name} ({t.id})\n{t.prompt_template}" for t in techniques]
+            [
+                f"### {t.name} ({t.id})\n{t.prompt_template.replace('{', '{{').replace('}', '}}')}"
+                for t in techniques
+            ]
         )
 
         system = f"""You are an expert evaluator using the {self.axis} lens.

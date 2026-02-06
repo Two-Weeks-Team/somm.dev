@@ -90,7 +90,7 @@ def _matches_patterns(text: str, patterns: list[str]) -> bool:
 def _extract_retry_after(error: Exception) -> Optional[float]:
     """Try to extract retry-after value from error or response headers."""
     # Check for Retry-After in error attributes
-    if hasattr(error, "response"):
+    if hasattr(error, "response") and error.response is not None:
         response = error.response
         if hasattr(response, "headers"):
             retry_after = response.headers.get("Retry-After") or response.headers.get(
@@ -122,7 +122,11 @@ def _get_http_status(error: Exception) -> Optional[int]:
                 return val
 
     # Check nested response object
-    if hasattr(error, "response") and hasattr(error.response, "status_code"):
+    if (
+        hasattr(error, "response")
+        and error.response is not None
+        and hasattr(error.response, "status_code")
+    ):
         return error.response.status_code
 
     return None
