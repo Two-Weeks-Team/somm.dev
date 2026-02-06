@@ -18,6 +18,7 @@ services:
       - BACKEND_URL=https://api.somm.dev
       - MONGO_DB=somm_dev
       - MONGODB_URI=mongodb://somm_dev_user:AUn5q8lWINorbgayEuS2Dte89aEZmvP5GSpv9f0vWHE=@49.247.2.211:27017/somm_dev?authSource=somm_dev
+      - JWT_SECRET_KEY=UZX77Kw-yJ7UTUNHxlZQOPQuHf9dXPGUMnBYLuUX4P0
     restart: always
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
