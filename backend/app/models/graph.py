@@ -24,6 +24,7 @@ Graph Schema Versioning:
     - Cached graphs invalidated on version mismatch
 """
 
+from datetime import datetime, timezone
 from enum import Enum
 from typing import Any, List, Optional
 
@@ -178,7 +179,9 @@ class Graph3DNode(BaseModel):
     color: Optional[str] = Field(
         default=None, description="Optional color for the node"
     )
-    step_number: int = Field(..., description="Animation step number for sequencing")
+    step_number: int = Field(
+        default=0, description="Animation step number for sequencing"
+    )
     hat_type: Optional[str] = Field(
         default=None, description="Optional hat type for Six Hats mode"
     )
@@ -300,8 +303,9 @@ class Graph3DPayload(BaseModel):
         description="Schema version for backward compatibility and cache invalidation",
     )
     evaluation_id: str = Field(..., description="Reference to the evaluation")
-    mode: EvaluationMode = Field(
-        ..., description='Evaluation mode: "six_hats" | "full_techniques"'
+    mode: str = Field(
+        ...,
+        description="Evaluation mode (e.g., basic, hackathon, six_hats, full_techniques)",
     )
     nodes: list[Graph3DNode] = Field(..., description="List of graph nodes")
     edges: list[Graph3DEdge] = Field(..., description="List of graph edges (bundled)")
@@ -312,6 +316,54 @@ class Graph3DPayload(BaseModel):
         default=None, description="Optional list of excluded technique info"
     )
     metadata: Graph3DMetadata = Field(..., description="Graph bounds and statistics")
+
+    @classmethod
+    def create(
+        cls,
+        evaluation_id: str,
+        mode: str,
+        nodes: list["Graph3DNode"],
+        edges: list["Graph3DEdge"],
+        edges_raw: Optional[list["Graph3DEdge"]] = None,
+        excluded_techniques: Optional[list[dict]] = None,
+    ) -> "Graph3DPayload":
+        """Create Graph3DPayload with computed metadata."""
+        all_steps = {n.step_number for n in nodes} | {e.step_number for e in edges}
+        total_steps = len(all_steps)
+        max_step = max(all_steps) if all_steps else 0
+
+        if nodes:
+            x_coords = [n.position.x for n in nodes]
+            y_coords = [n.position.y for n in nodes]
+            z_coords = [n.position.z for n in nodes]
+            x_range = (min(x_coords), max(x_coords))
+            y_range = (min(y_coords), max(y_coords))
+            z_range = (min(z_coords), max(z_coords))
+        else:
+            x_range = (0.0, 0.0)
+            y_range = (0.0, 0.0)
+            z_range = (0.0, 0.0)
+
+        metadata = Graph3DMetadata(
+            x_range=x_range,
+            y_range=y_range,
+            z_range=z_range,
+            total_nodes=len(nodes),
+            total_edges=len(edges),
+            total_steps=total_steps,
+            max_step_number=max_step,
+            generated_at=datetime.now(timezone.utc).isoformat(),
+        )
+
+        return cls(
+            evaluation_id=evaluation_id,
+            mode=mode,
+            nodes=nodes,
+            edges=edges,
+            edges_raw=edges_raw,
+            excluded_techniques=excluded_techniques,
+            metadata=metadata,
+        )
 
     @model_validator(mode="after")
     def check_version_consistency(self) -> "Graph3DPayload":
@@ -447,4 +499,3 @@ class ModeResponse(BaseModel):
 
     mode: str = Field(..., description="Evaluation mode (six_hats or full_techniques)")
     evaluation_id: str = Field(..., description="The evaluation ID")
-

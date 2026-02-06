@@ -16,11 +16,18 @@ from fastapi import APIRouter, Depends
 from app.api.deps import get_current_user
 from app.core.exceptions import CorkedError, EmptyCellarError
 from app.database.repositories.evaluation import EvaluationRepository
-from app.models.graph import ReactFlowGraph, TraceEvent, ModeResponse, EvaluationMode
+from app.models.graph import (
+    ReactFlowGraph,
+    TraceEvent,
+    ModeResponse,
+    EvaluationMode,
+    Graph3DPayload,
+)
 from app.services.graph_builder import (
     build_six_hats_topology,
     build_full_techniques_topology,
 )
+from app.services.graph_builder_3d import build_3d_graph
 
 logger = logging.getLogger(__name__)
 
@@ -197,4 +204,32 @@ async def get_mode(
     return ModeResponse(
         mode=mode.value,
         evaluation_id=evaluation_id,
+    )
+
+
+@router.get("/{evaluation_id}/graph-3d", response_model=Graph3DPayload)
+async def get_graph_3d(
+    evaluation_id: str,
+    user=Depends(get_current_user),
+) -> Graph3DPayload:
+    """Get 3D graph payload for evaluation visualization.
+
+    Returns a deterministic 3D graph representation of the evaluation
+    pipeline with layered layout and step tracking.
+    """
+    logger.info(f"[Graph] Getting 3D graph for evaluation: {evaluation_id}")
+
+    evaluation = await _get_evaluation(evaluation_id)
+    if not evaluation:
+        raise EmptyCellarError(f"Evaluation not found: {evaluation_id}")
+
+    _check_ownership(evaluation, user)
+
+    mode = evaluation.get("criteria", "basic")
+    methodology_trace = evaluation.get("methodology_trace") or []
+
+    return build_3d_graph(
+        evaluation_id=evaluation_id,
+        mode=mode,
+        methodology_trace=methodology_trace,
     )
