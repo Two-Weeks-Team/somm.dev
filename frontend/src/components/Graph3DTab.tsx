@@ -1,32 +1,80 @@
 'use client';
 
-import React from 'react';
-import { Box } from 'lucide-react';
+import React, { useEffect, useState, useCallback } from 'react';
+import dynamic from 'next/dynamic';
+import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+import { api } from '@/lib/api';
+import { Graph3DPayload } from '@/types/graph';
 
 interface Graph3DTabProps {
   evaluationId: string;
 }
 
+const GraphView3D = dynamic(() => import('./graph/GraphView3D'), {
+  ssr: false,
+  loading: () => (
+    <div className="flex flex-col items-center justify-center h-full text-white">
+      <Loader2 className="w-10 h-10 text-[#722F37] animate-spin mb-4" />
+      <p className="text-gray-500">Loading 3D Engine...</p>
+    </div>
+  ),
+});
+
 export function Graph3DTab({ evaluationId }: Graph3DTabProps) {
-  return (
-    <div className="animate-fadeIn">
-      <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-12 text-center">
-        <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#F7E7CE] text-[#722F37] mb-4">
-          <Box size={32} />
-        </div>
-        <h2 className="text-2xl font-serif font-bold text-gray-900 mb-2">3D Graph Visualization</h2>
-        <p className="text-gray-500 mb-4">
-          Immersive Three.js graph with layered layout and edge bundling
-        </p>
-        <p className="text-sm text-gray-400">
-          Evaluation ID: {evaluationId}
-        </p>
-        <div className="mt-8 p-4 bg-gray-50 rounded-lg border border-dashed border-gray-300">
-          <p className="text-sm text-gray-500">
-            Three.js 3D Graph Viewer will be implemented in Issue #169
-          </p>
-        </div>
+  const [data, setData] = useState<Graph3DPayload | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchData = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const graphData = await api.getGraph3D(evaluationId);
+      setData(graphData);
+    } catch (err) {
+      console.error('Failed to fetch 3D graph data:', err);
+      setError('Failed to load 3D graph data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, [evaluationId]);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[600px] bg-white rounded-2xl shadow-sm border border-gray-100">
+        <Loader2 className="w-10 h-10 text-[#722F37] animate-spin mb-4" />
+        <p className="text-gray-500 font-medium">Loading 3D graph visualization...</p>
       </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex flex-col items-center justify-center h-[600px] bg-white rounded-2xl shadow-sm border border-gray-100">
+        <AlertCircle className="w-10 h-10 text-red-500 mb-4" />
+        <p className="text-gray-800 font-medium mb-2">{error}</p>
+        <button 
+          onClick={fetchData}
+          className="flex items-center px-4 py-2 bg-[#722F37] text-white rounded-lg hover:bg-[#5D262D] transition-colors"
+        >
+          <RefreshCw size={16} className="mr-2" />
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return null;
+  }
+
+  return (
+    <div className="h-[800px] bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+      <GraphView3D data={data} />
     </div>
   );
 }
