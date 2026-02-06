@@ -254,8 +254,8 @@ class GitHubService:
                 if not page_repos:
                     break
 
-                # Extract essential fields from each repository
                 for repo in page_repos:
+                    owner_data = repo.get("owner", {})
                     repos.append(
                         {
                             "id": repo.get("id"),
@@ -270,6 +270,11 @@ class GitHubService:
                             "language": repo.get("language"),
                             "updated_at": repo.get("updated_at"),
                             "pushed_at": repo.get("pushed_at"),
+                            "owner": {
+                                "login": owner_data.get("login", ""),
+                                "type": owner_data.get("type", "User"),
+                                "avatar_url": owner_data.get("avatar_url"),
+                            },
                         }
                     )
 

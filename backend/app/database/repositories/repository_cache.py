@@ -25,7 +25,7 @@ class RepositoryCacheRepository(BaseRepository[RepositoryCache]):
 
     collection_name: str = "user_repositories"
     model_cls = RepositoryCache
-    CACHE_TTL_SECONDS: int = 3600  # 1 hour
+    CACHE_TTL_SECONDS: int = 600  # 10 minutes
 
     async def ensure_ttl_index(self):
         """Ensure TTL index exists on cached_at field.
@@ -36,9 +36,7 @@ class RepositoryCacheRepository(BaseRepository[RepositoryCache]):
         # Create TTL index on cached_at field
         # MongoDB will automatically delete documents after CACHE_TTL_SECONDS
         await self.collection.create_index(
-            "cached_at",
-            expireAfterSeconds=self.CACHE_TTL_SECONDS,
-            name="cached_at_ttl"
+            "cached_at", expireAfterSeconds=self.CACHE_TTL_SECONDS, name="cached_at_ttl"
         )
 
     async def get_user_repos(self, user_id: str) -> Optional[List[dict]]:
@@ -58,9 +56,7 @@ class RepositoryCacheRepository(BaseRepository[RepositoryCache]):
 
         return repos
 
-    async def set_user_repos(
-        self, user_id: str, repos: List[dict]
-    ) -> None:
+    async def set_user_repos(self, user_id: str, repos: List[dict]) -> None:
         """Cache repositories for a user.
 
         This method:
@@ -128,8 +124,7 @@ class RepositoryCacheRepository(BaseRepository[RepositoryCache]):
             Timestamp of the most recent cache entry or None.
         """
         repo = await self.collection.find_one(
-            {"user_id": user_id},
-            sort=[("cached_at", -1)]
+            {"user_id": user_id}, sort=[("cached_at", -1)]
         )
         if repo:
             return repo.get("cached_at")
