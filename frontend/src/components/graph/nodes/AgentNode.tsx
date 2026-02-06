@@ -20,21 +20,22 @@ const AgentNode = ({ data }: NodeProps<Node<ReactFlowNodeData>>) => {
 
   const status = data.status || 'pending';
   const Icon = StatusIcon[status];
+  const themeColor = data.color || '#722F37';
 
   return (
     <div className="w-64 bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
       <Handle type="target" position={Position.Top} className="w-3 h-3 !bg-gray-400" />
       
-      <div className="h-2 w-full" style={{ backgroundColor: data.color || '#722F37' }} />
+      <div className="h-2 w-full" style={{ backgroundColor: themeColor }} />
       
       <div className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600">
+            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600" style={{ color: themeColor, backgroundColor: `${themeColor}15` }}>
               <User size={20} />
             </div>
             <div>
-              <h3 className="font-bold text-gray-900 text-sm">{data.label}</h3>
+              <h3 className="font-bold text-sm" style={{ color: themeColor }}>{data.label}</h3>
               <p className="text-xs text-gray-500">{data.hatType || 'Sommelier'}</p>
             </div>
           </div>
