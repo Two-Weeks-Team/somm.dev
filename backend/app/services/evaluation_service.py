@@ -240,34 +240,69 @@ async def save_evaluation_results(
     """
     repo = ResultRepository()
 
-    from app.models.results import get_rating_tier, SommelierOutput
+    from app.models.results import get_rating_tier, SommelierOutput, FinalEvaluation
 
-    jeanpierre_result = evaluation_data.get("jeanpierre_result") or {}
-    overall_score = jeanpierre_result.get("total_score", 0)
-    rating_tier = get_rating_tier(overall_score)
-    summary = jeanpierre_result.get("verdict", "")
+    cellar_result = evaluation_data.get("cellar_result")
+    jeanpierre_result = evaluation_data.get("jeanpierre_result")
 
-    sommelier_names = {
-        "marcel": ("Marcel", "Cellar Master"),
-        "isabella": ("Isabella", "Wine Critic"),
-        "heinrich": ("Heinrich", "Quality Inspector"),
-        "sofia": ("Sofia", "Vineyard Scout"),
-        "laurent": ("Laurent", "Winemaker"),
-    }
-    sommelier_outputs = []
-    for key, (name, role) in sommelier_names.items():
-        result = evaluation_data.get(f"{key}_result")
-        if result:
-            sommelier_outputs.append(
-                SommelierOutput(
-                    sommelier_name=name,
-                    score=result.get("score", 0),
-                    summary=result.get("notes", ""),
-                    recommendations=result.get("techniques_used", []),
+    is_grand_tasting = cellar_result is not None and jeanpierre_result is None
+
+    if is_grand_tasting:
+        cellar_result = cellar_result or {}
+        aggregate_score = cellar_result.get("aggregate_score", 0)
+        overall_score = int(aggregate_score * 20)
+        rating_tier = get_rating_tier(overall_score)
+        summary = cellar_result.get("summary", "")
+
+        tasting_note_names = {
+            "aroma": ("Aroma Notes", "Problem Analysis"),
+            "palate": ("Palate Notes", "Innovation"),
+            "body": ("Body Notes", "Risk Analysis"),
+            "finish": ("Finish Notes", "User-Centricity"),
+            "balance": ("Balance Notes", "Feasibility"),
+            "vintage": ("Vintage Notes", "Opportunity"),
+            "terroir": ("Terroir Notes", "Presentation"),
+        }
+        sommelier_outputs = []
+        for key, (name, role) in tasting_note_names.items():
+            result = evaluation_data.get(f"{key}_result")
+            if result:
+                agg_score = result.get("aggregate_score", 0)
+                techniques = result.get("techniques_applied", [])
+                technique_names = [t.get("technique_name", "") for t in techniques]
+                sommelier_outputs.append(
+                    SommelierOutput(
+                        sommelier_name=name,
+                        score=int(agg_score * 20),
+                        summary=result.get("summary", ""),
+                        recommendations=technique_names,
+                    )
                 )
-            )
+    else:
+        jeanpierre_result = jeanpierre_result or {}
+        overall_score = jeanpierre_result.get("total_score", 0)
+        rating_tier = get_rating_tier(overall_score)
+        summary = jeanpierre_result.get("verdict", "")
 
-    from app.models.results import FinalEvaluation
+        sommelier_names = {
+            "marcel": ("Marcel", "Cellar Master"),
+            "isabella": ("Isabella", "Wine Critic"),
+            "heinrich": ("Heinrich", "Quality Inspector"),
+            "sofia": ("Sofia", "Vineyard Scout"),
+            "laurent": ("Laurent", "Winemaker"),
+        }
+        sommelier_outputs = []
+        for key, (name, role) in sommelier_names.items():
+            result = evaluation_data.get(f"{key}_result")
+            if result:
+                sommelier_outputs.append(
+                    SommelierOutput(
+                        sommelier_name=name,
+                        score=result.get("score", 0),
+                        summary=result.get("notes", ""),
+                        recommendations=result.get("techniques_used", []),
+                    )
+                )
 
     final_evaluation = FinalEvaluation(
         overall_score=overall_score,
