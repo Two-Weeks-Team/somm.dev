@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 import { CriteriaType } from '../types';
 import { Wine, Award, BookOpen, Settings, LucideIcon } from 'lucide-react';
 
@@ -35,10 +35,40 @@ const criteriaOptions: { value: CriteriaType; label: string; description: string
 ];
 
 export const CriteriaSelector: React.FC<CriteriaSelectorProps> = ({ value, onChange }) => {
-  const handleKeyDown = (e: React.KeyboardEvent, optionValue: CriteriaType) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      onChange(optionValue);
+  const optionRefs = useRef<(HTMLDivElement | null)[]>([]);
+
+  const setOptionRef = useCallback((index: number) => (el: HTMLDivElement | null) => {
+    optionRefs.current[index] = el;
+  }, []);
+
+  const handleKeyDown = (e: React.KeyboardEvent, currentIndex: number) => {
+    const optionsCount = criteriaOptions.length;
+    let nextIndex: number | null = null;
+
+    switch (e.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        e.preventDefault();
+        nextIndex = (currentIndex + 1) % optionsCount;
+        break;
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        e.preventDefault();
+        nextIndex = (currentIndex - 1 + optionsCount) % optionsCount;
+        break;
+      case 'Enter':
+      case ' ':
+        e.preventDefault();
+        onChange(criteriaOptions[currentIndex].value);
+        return;
+      default:
+        return;
+    }
+
+    if (nextIndex !== null) {
+      const nextOption = criteriaOptions[nextIndex];
+      onChange(nextOption.value);
+      optionRefs.current[nextIndex]?.focus();
     }
   };
 
@@ -50,14 +80,15 @@ export const CriteriaSelector: React.FC<CriteriaSelectorProps> = ({ value, onCha
         aria-labelledby="criteria-label"
         className="grid grid-cols-1 md:grid-cols-2 gap-4"
       >
-        {criteriaOptions.map((option) => (
+        {criteriaOptions.map((option, index) => (
           <div
             key={option.value}
+            ref={setOptionRef(index)}
             role="radio"
             aria-checked={value === option.value}
-            tabIndex={0}
+            tabIndex={value === option.value ? 0 : -1}
             onClick={() => onChange(option.value)}
-            onKeyDown={(e) => handleKeyDown(e, option.value)}
+            onKeyDown={(e) => handleKeyDown(e, index)}
             className={`cursor-pointer border-2 rounded-lg p-4 transition-all duration-200 flex items-start space-x-3 focus:outline-none focus:ring-2 focus:ring-[#722F37] focus:ring-offset-2 ${
               value === option.value
                 ? 'border-[#722F37] bg-[#F7E7CE] bg-opacity-30'
