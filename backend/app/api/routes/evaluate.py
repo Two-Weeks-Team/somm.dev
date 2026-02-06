@@ -123,6 +123,7 @@ async def create_evaluation(
             repo_url=request.repo_url,
             criteria=request.criteria,
             user_id=user.id,
+            custom_criteria=request.custom_criteria,
             evaluation_mode=request.evaluation_mode,
         )
 

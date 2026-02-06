@@ -57,7 +57,7 @@ outputSchema:
   score: number
   provocativeIdeas: string[]
   industryNormsChallenged: string
-  creativeleapEvidence: string
+  creativeLeapEvidence: string
   reasoning: string
 metadata:
   complexity: medium

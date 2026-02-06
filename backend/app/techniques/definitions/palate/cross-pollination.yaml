@@ -59,6 +59,7 @@ outputSchema:
   score: number
   externalSources: string[]
   applicationMethod: string
+  similarityDiscovery: string
   transferValue: string
   reasoning: string
 metadata:
