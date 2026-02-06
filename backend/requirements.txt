@@ -30,6 +30,7 @@ sse-starlette>=2.1.0
 # Validation & Parsing
 eval-type-backport>=0.2.0
 email-validator>=2.0.0
+pyyaml>=6.0.0
 
 # Code Analysis (tree-sitter)
 tree-sitter>=0.24.0
