@@ -39,9 +39,10 @@ describe('Repository Selection Flow Integration', () => {
     });
 
     it('shows selected state when isSelected is true', () => {
-      render(<RepositoryCard repository={mockRepository} isSelected={true} />);
+      const { container } = render(<RepositoryCard repository={mockRepository} isSelected={true} />);
 
-      const card = screen.getByText('test-repo').closest('div');
+      // The outer wrapper div has the border class
+      const card = container.firstChild as HTMLElement;
       expect(card).toHaveClass('border-[#722F37]');
     });
   });
@@ -114,11 +115,12 @@ describe('Repository Selection Flow Integration', () => {
 
     it('shows error state with retry button', () => {
       const onRefresh = jest.fn();
+      const error = new Error('Failed to load repositories');
       render(
         <RepositoryPicker
           repositories={[]}
           isLoading={false}
-          error="Failed to load repositories"
+          error={error}
           onSelect={jest.fn()}
           onRefresh={onRefresh}
         />
