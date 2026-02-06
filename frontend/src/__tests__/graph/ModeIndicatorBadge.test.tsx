@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { ModeIndicatorBadge } from '@/components/ModeIndicatorBadge';
-import { GraphEvaluationMode } from '@/types/graph';
 
 describe('ModeIndicatorBadge', () => {
   it('renders "Standard Tasting" for six_hats mode', () => {

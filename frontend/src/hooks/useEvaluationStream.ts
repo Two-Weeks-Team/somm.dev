@@ -72,7 +72,7 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
       progressRef.current = newProgress;
       setProgress(newProgress);
     }
-  }, []);
+  }, [completedSommeliers]);
 
   const handleSSEEvent = useCallback((event: SSEEvent) => {
     const eventType = event.event_type;
