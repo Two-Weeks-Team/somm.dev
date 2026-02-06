@@ -27,6 +27,118 @@ from app.providers.llm import resolve_byok
 logger = logging.getLogger(__name__)
 
 
+async def _prepare_repo_context(
+    repo_url: str,
+    api_key: Optional[str] = None,
+) -> tuple[dict, str]:
+    """Prepare repository context for evaluation.
+
+    Args:
+        repo_url: The GitHub repository URL.
+        api_key: Optional BYOK API key.
+
+    Returns:
+        Tuple of (repo_context dict, resolved_api_key).
+    """
+    owner, repo_name = parse_github_url(repo_url)
+
+    github = GitHubService()
+    repo_context = await github.get_full_repo_context(owner, repo_name)
+
+    techniques, technique_errors = load_techniques()
+    if technique_errors:
+        logger.warning("Technique load errors", extra={"errors": technique_errors})
+    available_inputs = determine_available_inputs(repo_context)
+    filtered = filter_techniques(techniques, available_inputs)
+    repo_context["techniques"] = [tech.model_dump() for tech in filtered]
+
+    resolved_key, byok_error = resolve_byok(api_key)
+    if byok_error:
+        repo_context["byok_error"] = byok_error
+
+    return repo_context, resolved_key
+
+
+def _create_initial_state(
+    repo_url: str,
+    repo_context: dict,
+    criteria: str,
+    user_id: str = "",
+    evaluation_id: Optional[str] = None,
+    include_progress: bool = False,
+) -> EvaluationState:
+    """Create initial EvaluationState for the graph.
+
+    Args:
+        repo_url: The GitHub repository URL.
+        repo_context: Prepared repository context.
+        criteria: The evaluation criteria mode.
+        user_id: The user ID.
+        evaluation_id: Optional evaluation ID for event emission.
+        include_progress: Whether to include progress fields.
+
+    Returns:
+        Initial EvaluationState dict.
+    """
+    state: EvaluationState = {
+        "repo_url": repo_url,
+        "repo_context": repo_context,
+        "evaluation_criteria": criteria,
+        "user_id": user_id,
+        "marcel_result": None,
+        "isabella_result": None,
+        "heinrich_result": None,
+        "sofia_result": None,
+        "laurent_result": None,
+        "jeanpierre_result": None,
+        "completed_sommeliers": [],
+        "errors": [],
+        "token_usage": {},
+        "cost_usage": {},
+        "trace_metadata": {},
+        "started_at": "",
+        "completed_at": None,
+    }
+
+    if evaluation_id:
+        state["evaluation_id"] = evaluation_id
+
+    if include_progress:
+        state["progress_percent"] = 0
+        state["current_stage"] = ""
+
+    return state
+
+
+def _create_graph_config(
+    resolved_key: str,
+    provider: Optional[str] = None,
+    model: Optional[str] = None,
+    temperature: Optional[float] = None,
+) -> dict:
+    """Create graph configuration.
+
+    Args:
+        resolved_key: Resolved API key.
+        provider: LLM provider.
+        model: Model name.
+        temperature: Model temperature.
+
+    Returns:
+        Graph config dict.
+    """
+    return {
+        "configurable": {
+            "thread_id": str(uuid.uuid4()),
+            "provider": provider or "gemini",
+            "api_key": resolved_key,
+            "model": model,
+            "temperature": temperature,
+            "max_output_tokens": 2048,
+        }
+    }
+
+
 async def start_evaluation(
     repo_url: str,
     criteria: str,
@@ -82,71 +194,19 @@ async def run_evaluation_pipeline(
     api_key: Optional[str] = None,
     progress_queue: Optional[Queue] = None,
 ) -> Dict[str, Any]:
-    """Run the LangGraph evaluation pipeline.
+    """Run the LangGraph evaluation pipeline (blocking, legacy).
 
-    Args:
-        repo_url: The GitHub repository URL.
-        criteria: The evaluation criteria mode.
-        progress_queue: Optional queue to send progress updates.
-
-    Returns:
-        The evaluation results dictionary.
+    Note: For non-blocking evaluation with SSE streaming,
+    use run_evaluation_pipeline_with_events() instead.
     """
-    owner, repo_name = parse_github_url(repo_url)
-
-    github = GitHubService()
-    repo_context = await github.get_full_repo_context(owner, repo_name)
-
-    techniques, technique_errors = load_techniques()
-    if technique_errors:
-        logger.warning(
-            "Technique load errors",
-            extra={"errors": technique_errors},
-        )
-    available_inputs = determine_available_inputs(repo_context)
-    filtered = filter_techniques(techniques, available_inputs)
-    repo_context["techniques"] = [tech.model_dump() for tech in filtered]
-
-    resolved_key, byok_error = resolve_byok(api_key)
-    if byok_error:
-        repo_context["byok_error"] = byok_error
-
-    state: EvaluationState = {
-        "repo_url": repo_url,
-        "repo_context": repo_context,
-        "evaluation_criteria": criteria,
-        "user_id": "",
-        "marcel_result": None,
-        "isabella_result": None,
-        "heinrich_result": None,
-        "sofia_result": None,
-        "laurent_result": None,
-        "jeanpierre_result": None,
-        "completed_sommeliers": [],
-        "errors": [],
-        "token_usage": {},
-        "cost_usage": {},
-        "trace_metadata": {},
-        "started_at": "",
-        "completed_at": None,
-    }
+    repo_context, resolved_key = await _prepare_repo_context(repo_url, api_key)
+    state = _create_initial_state(repo_url, repo_context, criteria)
+    config = _create_graph_config(resolved_key, provider, model, temperature)
 
     from app.graph.graph import get_evaluation_graph
 
     graph = get_evaluation_graph()
-    config = {
-        "configurable": {
-            "thread_id": str(uuid.uuid4()),
-            "provider": provider or "gemini",
-            "api_key": resolved_key,
-            "model": model,
-            "temperature": temperature,
-            "max_output_tokens": 2048,
-        }
-    }
-    result = await graph.ainvoke(state, config=config)
-
-    return result
+    return await graph.ainvoke(state, config=config)
 
 
 async def save_evaluation_results(
@@ -321,71 +381,29 @@ async def run_evaluation_pipeline_with_events(
     temperature: Optional[float] = None,
     api_key: Optional[str] = None,
 ) -> Dict[str, Any]:
-    """Run evaluation pipeline with event emission for real-time SSE streaming.
+    """Run evaluation pipeline with SSE event emission (non-blocking).
 
-    This function is designed to be called from a background task. It includes
-    the evaluation_id in the graph state, enabling sommelier nodes to emit
-    progress events via the EventChannel.
+    Designed to be called from a background task. Includes evaluation_id
+    in graph state for sommelier nodes to emit progress events.
     """
     eval_repo = EvaluationRepository()
     await eval_repo.update_status(evaluation_id, "running")
 
     try:
-        owner, repo_name = parse_github_url(repo_url)
-
-        github = GitHubService()
-        repo_context = await github.get_full_repo_context(owner, repo_name)
-
-        techniques, technique_errors = load_techniques()
-        if technique_errors:
-            logger.warning(
-                "Technique load errors",
-                extra={"errors": technique_errors},
-            )
-        available_inputs = determine_available_inputs(repo_context)
-        filtered = filter_techniques(techniques, available_inputs)
-        repo_context["techniques"] = [tech.model_dump() for tech in filtered]
-
-        resolved_key, byok_error = resolve_byok(api_key)
-        if byok_error:
-            repo_context["byok_error"] = byok_error
-
-        state: EvaluationState = {
-            "evaluation_id": evaluation_id,
-            "repo_url": repo_url,
-            "repo_context": repo_context,
-            "evaluation_criteria": criteria,
-            "user_id": user_id,
-            "marcel_result": None,
-            "isabella_result": None,
-            "heinrich_result": None,
-            "sofia_result": None,
-            "laurent_result": None,
-            "jeanpierre_result": None,
-            "completed_sommeliers": [],
-            "errors": [],
-            "token_usage": {},
-            "cost_usage": {},
-            "trace_metadata": {},
-            "started_at": "",
-            "completed_at": None,
-            "progress_percent": 0,
-            "current_stage": "",
-        }
+        repo_context, resolved_key = await _prepare_repo_context(repo_url, api_key)
+        state = _create_initial_state(
+            repo_url,
+            repo_context,
+            criteria,
+            user_id=user_id,
+            evaluation_id=evaluation_id,
+            include_progress=True,
+        )
+        config = _create_graph_config(resolved_key, provider, model, temperature)
 
         from app.graph.graph import get_evaluation_graph
 
         graph = get_evaluation_graph()
-        config = {
-            "configurable": {
-                "thread_id": str(uuid.uuid4()),
-                "provider": provider or "gemini",
-                "api_key": resolved_key,
-                "model": model,
-                "temperature": temperature,
-                "max_output_tokens": 2048,
-            }
-        }
         result = await graph.ainvoke(state, config=config)
 
         if result.get("errors"):
@@ -404,8 +422,6 @@ async def run_evaluation_pipeline_with_events(
             "rating_tier": jeanpierre.get("rating_tier", ""),
         }
     except Exception:
-        # Re-raise without handling here - evaluate.py's run_in_background() handles errors
-        # to avoid duplicate handle_evaluation_error calls
         raise
 
 
