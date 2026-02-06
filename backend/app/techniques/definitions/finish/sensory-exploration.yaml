@@ -1,0 +1,71 @@
+id: sensory-exploration
+name: Sensory Exploration
+nameKo: 감각 탐험
+category: finish
+applicableHats:
+- red
+evaluationDimensions:
+- C2
+- D2
+- D3
+description: '오감(시각, 청각, 촉각, 후각, 미각)을 통해
+
+  경험을 탐색하고 설계하는 기법.
+
+  다감각적 경험의 풍부함을 추구합니다.
+
+  '
+promptTemplate: '## Sensory Exploration 분석
+
+
+  프로젝트가 다양한 감각적 경험을 탐색했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **시각적 경험**: 보는 경험을 어떻게 설계했는가?
+
+  2. **청각적 경험**: 소리/사운드를 고려했는가?
+
+  3. **촉각/물리적 경험**: 만지고 조작하는 경험은?
+
+  4. **다감각 통합**: 여러 감각의 조화를 고려했는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 5감 모두 고려한 통합적 감각 경험 설계
+
+  - 4점: 3가지 이상 감각 고려
+
+  - 3점: 시각 외 1가지 감각 추가 고려
+
+  - 2점: 시각적 경험만 고려
+
+  - 1점: 감각적 경험 고려 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 5감 통합 경험 설계
+    4: 3가지+ 감각 고려
+    3: 시각 + 1가지 감각
+    2: 시각만 고려
+    1: 감각 경험 무고려
+outputSchema:
+  score: number
+  visualDesign: string
+  auditoryElements: string
+  tactileElements: string
+  otherSenses: string
+  sensoryIntegration: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 550
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Sensory Design / Multi-modal UX
+requiredSources: either

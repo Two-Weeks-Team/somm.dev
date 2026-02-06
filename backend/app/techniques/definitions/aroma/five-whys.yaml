@@ -1,0 +1,70 @@
+id: five-whys
+name: Five Whys
+nameKo: 5 Whys
+category: aroma
+applicableHats:
+- white
+- black
+evaluationDimensions:
+- A1
+- A2
+- B4
+description: '토요타에서 개발한 근본 원인 분석 기법.
+
+  "왜?"를 5번 반복하여 표면적 증상이 아닌
+
+  근본 원인을 찾아냅니다.
+
+  '
+promptTemplate: '## Five Whys 분석
+
+
+  이 프로젝트의 문제 정의가 근본 원인까지 파고들었는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **분석 깊이**: "왜?"를 몇 단계까지 질문했는가?
+
+  2. **표면 vs 근본**: 표면적 증상과 근본 원인을 구분했는가?
+
+  3. **인과관계**: 원인과 결과의 연결이 논리적인가?
+
+  4. **누락된 질문**: 더 깊이 파고들 수 있는 부분이 있는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 5단계 이상 분석으로 진정한 근본 원인 도달
+
+  - 4점: 4단계 분석으로 핵심 원인 파악
+
+  - 3점: 3단계 분석
+
+  - 2점: 2단계 분석
+
+  - 1점: 표면적 증상만 다룸
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 5단계+ 분석으로 근본 원인 도달
+    4: 4단계 분석으로 핵심 원인 파악
+    3: 3단계 분석
+    2: 2단계 분석
+    1: 표면적 증상만 다룸
+outputSchema:
+  score: number
+  whyChain: string[]
+  rootCauseIdentified: string
+  missedQuestions: string[]
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 600
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Toyota Production System
+requiredSources: either

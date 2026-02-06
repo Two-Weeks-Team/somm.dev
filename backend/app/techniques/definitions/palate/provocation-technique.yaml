@@ -1,0 +1,68 @@
+id: provocation-technique
+name: Provocation Technique
+nameKo: 도발 기법
+category: palate
+applicableHats:
+- green
+evaluationDimensions:
+- A3
+- A4
+description: 'Edward de Bono의 "Po" 기법.
+
+  의도적으로 불합리하거나 도발적인 아이디어를 제시하여
+
+  새로운 사고의 방향을 유도합니다.
+
+  '
+promptTemplate: '## Provocation Technique (Po) 분석
+
+
+  이 프로젝트에서 도발적이거나 파격적인 아이디어가 있는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **대담한 아이디어**: 업계에서 "불가능"하다고 여기는 것에 도전했는가?
+
+  2. **도발적 제안**: 기존 규범을 깨는 제안이 있는가?
+
+  3. **창의적 도약**: 점진적 개선이 아닌 급진적 변화를 시도했는가?
+
+  4. **Po 수준**: "만약 ~라면?" 수준의 대담함이 있는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 업계 상식을 완전히 뒤엎는 도발적 아이디어
+
+  - 4점: 기존 관행에 대한 명확한 도전
+
+  - 3점: 약간의 파격적 요소 포함
+
+  - 2점: 안전한 범위 내 개선
+
+  - 1점: 보수적 접근, 도발적 요소 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 업계 상식을 뒤엎는 도발적 아이디어
+    4: 기존 관행에 대한 명확한 도전
+    3: 약간의 파격적 요소
+    2: 안전한 범위 내 개선
+    1: 보수적 접근
+outputSchema:
+  score: number
+  provocativeIdeas: string[]
+  industryNormsChallenged: string
+  creativeleapEvidence: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 600
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Edward de Bono - Po
+requiredSources: pdf_only

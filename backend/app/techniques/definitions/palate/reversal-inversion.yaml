@@ -1,0 +1,69 @@
+id: reversal-inversion
+name: Reversal Inversion
+nameKo: 반전/역전
+category: palate
+applicableHats:
+- green
+- black
+evaluationDimensions:
+- A3
+- B2
+description: '문제나 상황을 뒤집어서 바라보는 기법.
+
+  "반대로 하면 어떻게 될까?"를 질문하여
+
+  새로운 관점과 해결책을 발견합니다.
+
+  '
+promptTemplate: '## Reversal Inversion 분석
+
+
+  이 프로젝트가 문제를 역전시켜 바라본 흔적을 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **관점 역전**: 문제를 반대 방향에서 접근한 증거는?
+
+  2. **역발상 적용**: "만약 반대로 한다면?"이라는 질문을 한 흔적은?
+
+  3. **반직관적 해결**: 일반적인 상식과 다른 접근법이 있는가?
+
+  4. **새로운 인사이트**: 역전을 통해 발견한 새로운 통찰은?
+
+
+  ### 점수 기준:
+
+  - 5점: 문제의 완전한 역전으로 획기적 돌파구 발견
+
+  - 4점: 주요 가정의 역전 시도와 새로운 해결책 제시
+
+  - 3점: 부분적 관점 전환
+
+  - 2점: 전통적 접근 유지
+
+  - 1점: 역발상 흔적 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 완전한 역전으로 획기적 돌파구
+    4: 주요 가정 역전 및 새 해결책
+    3: 부분적 관점 전환
+    2: 전통적 접근 유지
+    1: 역발상 없음
+outputSchema:
+  score: number
+  reversalEvidence: string[]
+  counterIntuitiveApproach: string
+  newInsights: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 600
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Edward de Bono
+requiredSources: either

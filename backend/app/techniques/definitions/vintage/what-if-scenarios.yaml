@@ -1,0 +1,70 @@
+id: what-if-scenarios
+name: What If Scenarios
+nameKo: 가정 시나리오
+category: vintage
+applicableHats:
+- yellow
+- green
+evaluationDimensions:
+- A3
+- D1
+- D3
+description: '"만약 ~라면?"이라는 가정을 통해
+
+  새로운 가능성을 탐색하는 기법.
+
+  제약을 제거하고 가능성을 확장합니다.
+
+  '
+promptTemplate: '## What If Scenarios 분석
+
+
+  프로젝트가 "만약 ~라면?" 사고를 활용했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **가정 설정**: 다양한 "What If" 질문을 던졌는가?
+
+  2. **제약 제거**: 현재 제약을 무시하고 상상했는가?
+
+  3. **가능성 탐색**: 새로운 가능성을 발견했는가?
+
+  4. **실행 연결**: 발견된 가능성을 실행 계획으로 연결했는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 다양한 What If, 획기적 가능성 발견, 실행 연결
+
+  - 4점: 의미 있는 What If 질문과 가능성 탐색
+
+  - 3점: 일부 가상 시나리오 고려
+
+  - 2점: 피상적 가정만
+
+  - 1점: What If 사고 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 다양한 What If, 획기적 가능성, 실행 연결
+    4: 의미 있는 질문과 탐색
+    3: 일부 가상 시나리오
+    2: 피상적 가정만
+    1: What If 없음
+outputSchema:
+  score: number
+  whatIfQuestions: string[]
+  possibilitiesDiscovered: string[]
+  actionableInsights: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 550
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Strategic Planning / Scenario Planning
+requiredSources: either
