@@ -7,15 +7,33 @@ from langchain_core.runnables import RunnableConfig
 from app.core.config import settings
 from app.graph.state import EvaluationState
 
+_README_MAX_LEN = 2000
+_FILE_TREE_MAX_LEN = 1000
+_METADATA_MAX_LEN = 500
+
+_openai_client = None
+
+
+def _get_openai_client():
+    global _openai_client
+    if _openai_client is None:
+        import openai
+
+        _openai_client = openai.OpenAI(
+            api_key=settings.SYNTHETIC_API_KEY,
+            base_url=settings.SYNTHETIC_BASE_URL,
+        )
+    return _openai_client
+
 
 def _build_documents_from_context(repo_context: dict) -> List[Dict[str, str]]:
     docs = []
 
     if readme := repo_context.get("readme"):
-        docs.append({"text": readme[:2000], "source": "readme"})
+        docs.append({"text": readme[:_README_MAX_LEN], "source": "readme"})
 
     if file_tree := repo_context.get("file_tree"):
-        tree_str = str(file_tree)[:1000]
+        tree_str = str(file_tree)[:_FILE_TREE_MAX_LEN]
         docs.append({"text": tree_str, "source": "file_tree"})
 
     if languages := repo_context.get("languages"):
@@ -23,7 +41,7 @@ def _build_documents_from_context(repo_context: dict) -> List[Dict[str, str]]:
         docs.append({"text": lang_str, "source": "languages"})
 
     if metadata := repo_context.get("metadata"):
-        meta_str = str(metadata)[:500]
+        meta_str = str(metadata)[:_METADATA_MAX_LEN]
         docs.append({"text": meta_str, "source": "metadata"})
 
     return docs
@@ -45,12 +63,7 @@ def _cosine_similarity(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
 
 
 def _get_embeddings(texts: List[str]) -> List[List[float]]:
-    import openai
-
-    client = openai.OpenAI(
-        api_key=settings.SYNTHETIC_API_KEY,
-        base_url=settings.SYNTHETIC_BASE_URL,
-    )
+    client = _get_openai_client()
 
     response = client.embeddings.create(
         model=settings.RAG_EMBEDDING_MODEL,
@@ -92,9 +105,6 @@ async def rag_enrich(
         return {"rag_context": existing}
 
     repo_context = state.get("repo_context", {})
-    if existing := repo_context.get("rag_context"):
-        return {"rag_context": existing}
-
     query = _create_query(state)
 
     try:
