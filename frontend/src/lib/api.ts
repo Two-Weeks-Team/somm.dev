@@ -105,16 +105,34 @@ export const api = {
 
   getEvaluationResult: async (evaluationId: string): Promise<EvaluationResult> => {
     const response = await fetchWithConfig(`/api/evaluate/${evaluationId}/result`);
-    // Transform backend response to frontend format
+
+    const SOMMELIER_ROLES: Record<string, string> = {
+      'Marcel': 'Cellar Master',
+      'Isabella': 'Wine Critic',
+      'Heinrich': 'Quality Inspector',
+      'Sofia': 'Vineyard Scout',
+      'Laurent': 'Winemaker',
+    };
+
+    const sommelierOutputs = response.final_evaluation?.sommelier_outputs || [];
+    const results = sommelierOutputs.map((output: any) => ({
+      id: output.sommelier_name?.toLowerCase() || '',
+      name: output.sommelier_name || '',
+      role: SOMMELIER_ROLES[output.sommelier_name] || 'Sommelier',
+      score: output.score || 0,
+      feedback: output.summary || '',
+      pairingSuggestion: output.recommendations?.[0] || undefined,
+    }));
+
     return {
       id: response.evaluation_id,
-      repoUrl: '', // Will be populated from evaluation data
+      repoUrl: '',
       status: 'completed',
       createdAt: response.created_at,
       finalVerdict: response.final_evaluation?.summary || '',
       totalScore: response.final_evaluation?.overall_score || 0,
       tier: response.final_evaluation?.rating_tier || '',
-      results: response.final_evaluation?.sommelier_outputs || [],
+      results,
     };
   },
 
