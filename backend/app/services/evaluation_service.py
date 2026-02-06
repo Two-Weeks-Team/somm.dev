@@ -8,6 +8,7 @@ This module provides the main evaluation orchestration logic:
 """
 
 import logging
+import uuid
 from asyncio import Queue
 from typing import Any, Dict, Optional
 
@@ -135,6 +136,7 @@ async def run_evaluation_pipeline(
     graph = get_evaluation_graph()
     config = {
         "configurable": {
+            "thread_id": str(uuid.uuid4()),
             "provider": provider or "gemini",
             "api_key": resolved_key,
             "model": model,
