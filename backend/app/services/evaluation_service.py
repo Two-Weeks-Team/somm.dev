@@ -166,7 +166,7 @@ async def save_evaluation_results(
 
     from app.models.results import get_rating_tier
 
-    final_eval = evaluation_data.get("jeanpierre_result", {})
+    final_eval = evaluation_data.get("jeanpierre_result") or {}
     overall_score = final_eval.get("overall_score", 0)
     rating_tier = get_rating_tier(overall_score)
 
@@ -296,11 +296,12 @@ async def run_full_evaluation(
         await save_evaluation_results(eval_id, result)
         await eval_repo.update_status(eval_id, "completed")
 
+        jeanpierre = result.get("jeanpierre_result") or {}
         return {
             "evaluation_id": eval_id,
             "status": "completed",
-            "score": result.get("jeanpierre_result", {}).get("overall_score", 0),
-            "rating_tier": result.get("jeanpierre_result", {}).get("rating_tier", ""),
+            "score": jeanpierre.get("overall_score", 0),
+            "rating_tier": jeanpierre.get("rating_tier", ""),
         }
     except Exception as e:
         error_msg = str(e)
