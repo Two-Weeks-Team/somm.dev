@@ -1,25 +1,12 @@
 'use client';
 
 import React from 'react';
-import { Wine, Award, Star } from 'lucide-react';
+import { Wine, Star } from 'lucide-react';
 import { EvaluationResult } from '../types';
+import { ScoreCircle } from './ScoreCircle';
 
 interface TastingNotesTabProps {
   result: EvaluationResult;
-}
-
-function getTierColor(score: number): string {
-  if (score >= 90) return 'text-[#722F37] bg-[#F7E7CE]';
-  if (score >= 80) return 'text-emerald-800 bg-emerald-100';
-  if (score >= 70) return 'text-blue-800 bg-blue-100';
-  return 'text-gray-800 bg-gray-100';
-}
-
-function getTierName(score: number): string {
-  if (score >= 90) return 'Grand Cru';
-  if (score >= 80) return 'Premier Cru';
-  if (score >= 70) return 'Village';
-  return 'Table Wine';
 }
 
 export function TastingNotesTab({ result }: TastingNotesTabProps) {
@@ -34,15 +21,8 @@ export function TastingNotesTab({ result }: TastingNotesTabProps) {
         
         <div className="p-8">
           <div className="flex flex-col md:flex-row items-center justify-center md:justify-between gap-8">
-            <div className="text-center md:text-left">
-              <div className={`inline-flex items-center px-4 py-1 rounded-full text-sm font-bold mb-2 ${getTierColor(result.totalScore || 0)}`}>
-                <Award size={16} className="mr-2" />
-                {getTierName(result.totalScore || 0)}
-              </div>
-              <h2 className="text-5xl font-bold text-[#722F37] mb-2">
-                {result.totalScore}<span className="text-2xl text-gray-400 font-normal">/100</span>
-              </h2>
-              <p className="text-gray-500">Total Score</p>
+            <div className="flex flex-col items-center">
+              <ScoreCircle score={result.totalScore || 0} size="lg" />
             </div>
 
             <div className="flex-1 max-w-xl bg-[#FAFAFA] p-6 rounded-xl border border-gray-100">
