@@ -1,13 +1,15 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useAuth } from '@/contexts/AuthContext';
 import { api } from '../../lib/api';
 import { EvaluationHistoryItem } from '../../types';
 import { Calendar, ChevronRight, Search, Loader2 } from 'lucide-react';
 
 export default function HistoryPage() {
   const router = useRouter();
+  const { isAuthenticated, isLoading: authLoading } = useAuth();
   const [history, setHistory] = useState<EvaluationHistoryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -15,6 +17,13 @@ export default function HistoryPage() {
   const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
+    if (authLoading) return;
+    
+    if (!isAuthenticated) {
+      router.push('/evaluate');
+      return;
+    }
+
     const fetchHistory = async () => {
       try {
         setLoading(true);
@@ -29,7 +38,7 @@ export default function HistoryPage() {
     };
 
     fetchHistory();
-  }, [page]);
+  }, [page, isAuthenticated, authLoading, router]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -51,6 +60,14 @@ export default function HistoryPage() {
         return 'bg-gray-100 text-gray-800';
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="flex min-h-[60vh] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[#722F37]" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#FAFAFA] py-12 px-4 sm:px-6 lg:px-8">
