@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import asyncio
 import logging
+import threading
 from typing import Dict, Optional
 
 logger = logging.getLogger(__name__)
@@ -16,6 +17,7 @@ logger = logging.getLogger(__name__)
 _running_tasks: Dict[str, asyncio.Task] = {}
 _cleanup_tasks: set[asyncio.Task] = set()
 _tasks_lock = asyncio.Lock()
+_fallback_lock = threading.Lock()
 
 
 async def register_task(evaluation_id: str, task: asyncio.Task) -> None:
@@ -47,9 +49,10 @@ async def register_task(evaluation_id: str, task: asyncio.Task) -> None:
                 _cleanup_tasks.add(cleanup_task)
                 cleanup_task.add_done_callback(_cleanup_tasks.discard)
             except RuntimeError:
-                if _running_tasks.get(evaluation_id) is completed_task:
-                    _running_tasks.pop(evaluation_id, None)
-                    logger.info(f"Task cleanup (no loop) for {evaluation_id}")
+                with _fallback_lock:
+                    if _running_tasks.get(evaluation_id) is completed_task:
+                        _running_tasks.pop(evaluation_id, None)
+                        logger.info(f"Task cleanup (no loop) for {evaluation_id}")
 
         task.add_done_callback(cleanup_callback)
         logger.info(f"Registered task for {evaluation_id}")

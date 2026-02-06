@@ -151,7 +151,7 @@ async def create_evaluation(
             await register_task(eval_id, task)
         except Exception as e:
             await event_channel.close_channel(eval_id)
-            raise CorkedError(f"Failed to start background task: {str(e)}")
+            raise CorkedError(f"Failed to start background task: {e!s}") from e
 
         logger.info(f"[Evaluate] Background task started: {eval_id}")
 
@@ -168,7 +168,7 @@ async def create_evaluation(
         import traceback
 
         logger.error(f"[Evaluate] Traceback: {traceback.format_exc()}")
-        raise CorkedError(f"Failed to start evaluation: {str(e)}")
+        raise CorkedError(f"Failed to start evaluation: {e!s}") from e
 
 
 @router.get("/{evaluation_id}/stream")
@@ -190,7 +190,7 @@ async def stream_evaluation(
     try:
         progress = await get_evaluation_progress(evaluation_id)
     except EmptyCellarError:
-        raise EmptyCellarError(f"Evaluation not found: {evaluation_id}")
+        raise EmptyCellarError(f"Evaluation not found: {evaluation_id}") from None
 
     if progress.get("user_id") != user.id:
         raise CorkedError("Access denied: evaluation belongs to another user")
@@ -265,9 +265,9 @@ async def get_result(
     try:
         result = await get_evaluation_result(evaluation_id)
     except EmptyCellarError:
-        raise EmptyCellarError(f"Evaluation not found: {evaluation_id}")
-    except CorkedError as e:
-        raise e
+        raise EmptyCellarError(f"Evaluation not found: {evaluation_id}") from None
+    except CorkedError:
+        raise
 
     if result is None:
         raise EmptyCellarError(f"Evaluation result not found: {evaluation_id}")
