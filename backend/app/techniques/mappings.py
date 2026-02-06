@@ -9,6 +9,7 @@ from typing import Dict, List, Optional
 __all__ = [
     "TastingNote",
     "Priority",
+    "InvalidMappingError",
     "get_techniques_for_category",
     "get_primary_technique",
     "get_technique_priority",
