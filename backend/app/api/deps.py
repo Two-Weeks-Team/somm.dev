@@ -1,5 +1,6 @@
 """API dependencies for authentication and common operations."""
 
+import logging
 from typing import Optional
 
 from fastapi import HTTPException, Request, Depends
@@ -9,6 +10,7 @@ from jose import JWTError, jwt
 from app.database.repositories.user import UserRepository
 from app.core.config import settings
 
+logger = logging.getLogger(__name__)
 security = HTTPBearer(auto_error=False)
 
 
@@ -92,17 +94,30 @@ async def get_current_user(
     if not token:
         token = request.query_params.get("token")
 
+    logger.debug(
+        f"[Auth] Token source - credentials: {bool(credentials)}, query: {bool(request.query_params.get('token'))}"
+    )
+
     if not token:
+        logger.warning("[Auth] No token provided")
         raise HTTPException(
             status_code=401,
             detail="Not authenticated. Please provide a valid token.",
         )
 
     # Decode and validate token
-    payload = decode_token(token)
+    try:
+        payload = decode_token(token)
+        logger.debug(
+            f"[Auth] Token decoded successfully, user_id: {payload.get('sub')}"
+        )
+    except HTTPException as e:
+        logger.warning(f"[Auth] Token decode failed: {e.detail}")
+        raise
 
     user_id = payload.get("sub")
     if not user_id:
+        logger.warning("[Auth] Token missing user ID")
         raise HTTPException(
             status_code=401,
             detail="Invalid token: missing user ID.",
@@ -113,6 +128,7 @@ async def get_current_user(
     user_doc = await user_repo.get_by_id(user_id)
 
     if not user_doc:
+        logger.warning(f"[Auth] User not found: {user_id}")
         raise HTTPException(
             status_code=404,
             detail="User not found.",
