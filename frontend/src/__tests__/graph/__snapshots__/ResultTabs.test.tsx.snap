@@ -1,0 +1,251 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ResultTabs matches snapshot 1`] = `
+<div
+  class="sticky top-0 z-10 bg-white border-b border-gray-200 mb-6"
+>
+  <div
+    class="flex overflow-x-auto scrollbar-hide"
+  >
+    <button
+      aria-selected="true"
+      class="
+                flex items-center gap-2 px-6 py-4 font-medium text-sm whitespace-nowrap
+                transition-all duration-150 border-b-2
+                flex
+                text-[#722F37] border-[#722F37] bg-[#F7E7CE]/30
+              "
+      role="tab"
+      tabindex="0"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-wine"
+        fill="none"
+        height="18"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="18"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M8 22h8"
+        />
+        <path
+          d="M7 10h10"
+        />
+        <path
+          d="M12 15v7"
+        />
+        <path
+          d="M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z"
+        />
+      </svg>
+      Tasting Notes
+    </button>
+    <button
+      aria-selected="false"
+      class="
+                flex items-center gap-2 px-6 py-4 font-medium text-sm whitespace-nowrap
+                transition-all duration-150 border-b-2
+                flex
+                text-gray-600 border-transparent hover:text-[#722F37] hover:bg-gray-50
+              "
+      role="tab"
+      tabindex="-1"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-chart-column"
+        fill="none"
+        height="18"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="18"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M3 3v16a2 2 0 0 0 2 2h16"
+        />
+        <path
+          d="M18 17V9"
+        />
+        <path
+          d="M13 17V5"
+        />
+        <path
+          d="M8 17v-3"
+        />
+      </svg>
+      2D Graph
+    </button>
+    <button
+      aria-selected="false"
+      class="
+                flex items-center gap-2 px-6 py-4 font-medium text-sm whitespace-nowrap
+                transition-all duration-150 border-b-2
+                hidden md:flex
+                text-gray-600 border-transparent hover:text-[#722F37] hover:bg-gray-50
+              "
+      role="tab"
+      tabindex="-1"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-box"
+        fill="none"
+        height="18"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="18"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"
+        />
+        <path
+          d="m3.3 7 8.7 5 8.7-5"
+        />
+        <path
+          d="M12 22V12"
+        />
+      </svg>
+      3D Graph
+    </button>
+  </div>
+</div>
+`;
+
+exports[`ResultTabs matches snapshot with graph-2d active 1`] = `
+<div
+  class="sticky top-0 z-10 bg-white border-b border-gray-200 mb-6"
+>
+  <div
+    class="flex overflow-x-auto scrollbar-hide"
+  >
+    <button
+      aria-selected="false"
+      class="
+                flex items-center gap-2 px-6 py-4 font-medium text-sm whitespace-nowrap
+                transition-all duration-150 border-b-2
+                flex
+                text-gray-600 border-transparent hover:text-[#722F37] hover:bg-gray-50
+              "
+      role="tab"
+      tabindex="-1"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-wine"
+        fill="none"
+        height="18"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="18"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M8 22h8"
+        />
+        <path
+          d="M7 10h10"
+        />
+        <path
+          d="M12 15v7"
+        />
+        <path
+          d="M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z"
+        />
+      </svg>
+      Tasting Notes
+    </button>
+    <button
+      aria-selected="true"
+      class="
+                flex items-center gap-2 px-6 py-4 font-medium text-sm whitespace-nowrap
+                transition-all duration-150 border-b-2
+                flex
+                text-[#722F37] border-[#722F37] bg-[#F7E7CE]/30
+              "
+      role="tab"
+      tabindex="0"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-chart-column"
+        fill="none"
+        height="18"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="18"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M3 3v16a2 2 0 0 0 2 2h16"
+        />
+        <path
+          d="M18 17V9"
+        />
+        <path
+          d="M13 17V5"
+        />
+        <path
+          d="M8 17v-3"
+        />
+      </svg>
+      2D Graph
+    </button>
+    <button
+      aria-selected="false"
+      class="
+                flex items-center gap-2 px-6 py-4 font-medium text-sm whitespace-nowrap
+                transition-all duration-150 border-b-2
+                hidden md:flex
+                text-gray-600 border-transparent hover:text-[#722F37] hover:bg-gray-50
+              "
+      role="tab"
+      tabindex="-1"
+    >
+      <svg
+        aria-hidden="true"
+        class="lucide lucide-box"
+        fill="none"
+        height="18"
+        stroke="currentColor"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        viewBox="0 0 24 24"
+        width="18"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"
+        />
+        <path
+          d="m3.3 7 8.7 5 8.7-5"
+        />
+        <path
+          d="M12 22V12"
+        />
+      </svg>
+      3D Graph
+    </button>
+  </div>
+</div>
+`;

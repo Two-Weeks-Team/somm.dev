@@ -1,0 +1,109 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ModeIndicatorBadge matches snapshot for full_techniques mode 1`] = `
+<div
+  class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-200 shadow-sm"
+>
+  <div
+    class="p-1.5 bg-amber-100 rounded-full text-amber-700"
+  >
+    <svg
+      aria-hidden="true"
+      class="lucide lucide-trophy"
+      fill="none"
+      height="16"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="16"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"
+      />
+      <path
+        d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"
+      />
+      <path
+        d="M18 9h1.5a1 1 0 0 0 0-5H18"
+      />
+      <path
+        d="M4 22h16"
+      />
+      <path
+        d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"
+      />
+      <path
+        d="M6 9H4.5a1 1 0 0 1 0-5H6"
+      />
+    </svg>
+  </div>
+  <div
+    class="flex flex-col"
+  >
+    <span
+      class="text-xs font-bold text-amber-800 uppercase tracking-wider"
+    >
+      Grand Tasting
+    </span>
+    <span
+      class="text-xs text-amber-700 font-medium"
+    >
+      Sommelier Masterclass · 75 techniques · ~5min
+    </span>
+  </div>
+</div>
+`;
+
+exports[`ModeIndicatorBadge matches snapshot for six_hats mode 1`] = `
+<div
+  class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-[#F7E7CE]/30 to-[#F7E7CE]/10 border border-[#F7E7CE] shadow-sm"
+>
+  <div
+    class="p-1.5 bg-[#722F37]/10 rounded-full text-[#722F37]"
+  >
+    <svg
+      aria-hidden="true"
+      class="lucide lucide-wine"
+      fill="none"
+      height="16"
+      stroke="currentColor"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      viewBox="0 0 24 24"
+      width="16"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M8 22h8"
+      />
+      <path
+        d="M7 10h10"
+      />
+      <path
+        d="M12 15v7"
+      />
+      <path
+        d="M12 15a5 5 0 0 0 5-5c0-2-.5-4-2-8H9c-1.5 4-2 6-2 8a5 5 0 0 0 5 5Z"
+      />
+    </svg>
+  </div>
+  <div
+    class="flex flex-col"
+  >
+    <span
+      class="text-xs font-bold text-[#722F37] uppercase tracking-wider"
+    >
+      Standard Tasting
+    </span>
+    <span
+      class="text-xs text-[#722F37]/80 font-medium"
+    >
+      Six Sommeliers · ~2min
+    </span>
+  </div>
+</div>
+`;
