@@ -2,13 +2,14 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+import { AlertCircle, RefreshCw } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Graph3DPayload } from '@/types/graph';
 import { TimelinePlayer } from './graph/TimelinePlayer';
 import { useTimelinePlayer } from '@/hooks/useTimelinePlayer';
 import { ModeIndicatorBadge } from './ModeIndicatorBadge';
 import { GraphLegend } from './graph/GraphLegend';
+import { GraphSkeleton } from './graph/GraphSkeleton';
 
 interface Graph3DTabProps {
   evaluationId: string;
@@ -17,9 +18,8 @@ interface Graph3DTabProps {
 const GraphView3D = dynamic(() => import('./graph/GraphView3D'), {
   ssr: false,
   loading: () => (
-    <div className="flex flex-col items-center justify-center h-full text-white">
-      <Loader2 className="w-10 h-10 text-[#722F37] animate-spin mb-4" />
-      <p className="text-gray-500">Loading 3D Engine...</p>
+    <div className="h-full w-full">
+      <GraphSkeleton />
     </div>
   ),
 });
@@ -63,16 +63,15 @@ export function Graph3DTab({ evaluationId }: Graph3DTabProps) {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-[600px] bg-white rounded-2xl shadow-sm border border-gray-100">
-        <Loader2 className="w-10 h-10 text-[#722F37] animate-spin mb-4" />
-        <p className="text-gray-500 font-medium">Loading 3D graph visualization...</p>
+      <div className="md:h-[600px] h-[400px]">
+        <GraphSkeleton />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-[600px] bg-white rounded-2xl shadow-sm border border-gray-100">
+      <div className="flex flex-col items-center justify-center md:h-[600px] h-[400px] bg-white rounded-2xl shadow-sm border border-gray-100">
         <AlertCircle className="w-10 h-10 text-red-500 mb-4" />
         <p className="text-gray-800 font-medium mb-2">{error}</p>
         <button 
@@ -96,7 +95,7 @@ export function Graph3DTab({ evaluationId }: Graph3DTabProps) {
         <ModeIndicatorBadge mode={data.mode} />
       </div>
 
-      <div className="h-[600px] bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 overflow-hidden relative">
+      <div className="md:h-[600px] h-[400px] bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 overflow-hidden relative">
         <GraphLegend mode={data.mode} />
         <GraphView3D data={data} currentStep={currentStep} />
       </div>
