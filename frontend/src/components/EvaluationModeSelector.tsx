@@ -7,7 +7,15 @@ interface EvaluationModeSelectorProps {
   onChange: (value: EvaluationMode) => void;
 }
 
-const modeOptions: { value: EvaluationMode; label: string; description: string; icon: React.ElementType; badge?: string }[] = [
+interface ModeOption {
+  value: EvaluationMode;
+  label: string;
+  description: string;
+  icon: React.ElementType;
+  badge?: string;
+}
+
+const modeOptions: ModeOption[] = [
   {
     value: 'six_sommeliers',
     label: 'Six Sommeliers',
