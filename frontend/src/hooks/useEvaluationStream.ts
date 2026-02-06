@@ -92,6 +92,15 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
         setCurrentSommelier(null);
         break;
 
+      case 'evaluation_error':
+        setIsComplete(true);
+        setStatus('failed');
+        setCurrentSommelier(null);
+        if (event.message) {
+          setErrors((prev) => [...prev, event.message!]);
+        }
+        break;
+
       case 'heartbeat':
         break;
 

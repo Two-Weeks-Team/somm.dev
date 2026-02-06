@@ -25,7 +25,11 @@ from app.services.evaluation_service import (
     run_evaluation_pipeline_with_events,
     start_evaluation,
 )
-from app.services.event_channel import get_event_channel, EventType
+from app.services.event_channel import (
+    get_event_channel,
+    EventType,
+    create_sommelier_event,
+)
 from app.services.task_registry import register_task
 
 logger = logging.getLogger(__name__)
@@ -126,6 +130,16 @@ async def create_evaluation(
                 )
             except Exception as e:
                 logger.exception(f"Background evaluation failed: {eval_id}")
+                await event_channel.emit(
+                    eval_id,
+                    create_sommelier_event(
+                        evaluation_id=eval_id,
+                        sommelier="system",
+                        event_type=EventType.EVALUATION_ERROR.value,
+                        progress_percent=-1,
+                        message="Evaluation failed",
+                    ),
+                )
                 await handle_evaluation_error(eval_id, str(e))
             finally:
                 await event_channel.close_channel(eval_id)
