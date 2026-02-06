@@ -1,13 +1,13 @@
 import React from 'react';
 import { CriteriaType } from '../types';
-import { Wine, Award, BookOpen, Settings } from 'lucide-react';
+import { Wine, Award, BookOpen, Settings, LucideIcon } from 'lucide-react';
 
 interface CriteriaSelectorProps {
   value: CriteriaType;
   onChange: (value: CriteriaType) => void;
 }
 
-const criteriaOptions: { value: CriteriaType; label: string; description: string; icon: React.ElementType }[] = [
+const criteriaOptions: { value: CriteriaType; label: string; description: string; icon: LucideIcon }[] = [
   {
     value: 'basic',
     label: 'House Blend (Basic)',
