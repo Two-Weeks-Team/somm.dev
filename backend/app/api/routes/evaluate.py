@@ -10,6 +10,7 @@ import asyncio
 from typing import Any
 
 from fastapi import APIRouter, Depends
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from app.api.deps import get_current_user
@@ -190,7 +191,14 @@ async def stream_evaluation(
         finally:
             sse_manager.unsubscribe(evaluation_id, queue)
 
-    return send_events()
+    return StreamingResponse(
+        send_events(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+        },
+    )
 
 
 @router.get("/{evaluation_id}/result", response_model=ResultResponse)
