@@ -51,7 +51,9 @@ def _check_ownership(evaluation: dict[str, Any], user) -> None:
         CorkedError: If user does not own the evaluation.
     """
     if evaluation.get("user_id") != user.id:
-        raise CorkedError("Access denied: evaluation belongs to another user")
+        raise CorkedError(
+            "Access denied: evaluation belongs to another user", status_code=403
+        )
 
 
 def _determine_mode(evaluation: dict[str, Any]) -> EvaluationMode:
@@ -152,20 +154,7 @@ async def get_timeline(
         # Return empty timeline as placeholder
         return []
 
-    # Convert to TraceEvent models and sort by step
-    events = [
-        TraceEvent(
-            step=event.get("step", 0),
-            timestamp=event.get("timestamp", ""),
-            agent=event.get("agent", ""),
-            technique_id=event.get("technique_id", ""),
-            item_id=event.get("item_id"),
-            action=event.get("action", ""),
-            score_delta=event.get("score_delta"),
-            evidence_ref=event.get("evidence_ref"),
-        )
-        for event in methodology_trace
-    ]
+    events = [TraceEvent.model_validate(event) for event in methodology_trace]
 
     # Sort by step number
     events.sort(key=lambda e: e.step)
