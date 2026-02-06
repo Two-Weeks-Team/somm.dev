@@ -16,7 +16,7 @@ class Settings(BaseSettings):
     """
 
     APP_NAME: str = "Somm.dev API"
-    API_V1_STR: str = "/api/v1"
+    API_V1_STR: str = "/api"
 
     ENVIRONMENT: str = "development"
 
