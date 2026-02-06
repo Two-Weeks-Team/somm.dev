@@ -440,3 +440,11 @@ class AgentContribution(BaseModel):
         default_factory=dict,
         description="Dictionary of artifacts produced by this agent",
     )
+
+
+class ModeResponse(BaseModel):
+    """Response model for the evaluation mode endpoint."""
+
+    mode: str = Field(..., description="Evaluation mode (six_hats or full_techniques)")
+    evaluation_id: str = Field(..., description="The evaluation ID")
+
