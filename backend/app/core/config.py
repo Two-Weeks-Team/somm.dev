@@ -56,6 +56,15 @@ class Settings(BaseSettings):
     # Optional: Rate Limiting
     RATE_LIMIT_PER_MINUTE: int = 60
 
+    # RAG Enrichment (adds context retrieval before evaluation)
+    RAG_ENABLED: bool = True
+    RAG_TOP_K: int = 4
+    RAG_EMBEDDING_MODEL: str = "hf:nomic-ai/nomic-embed-text-v1.5"
+
+    # Synthetic API (for embeddings - free tier)
+    SYNTHETIC_API_KEY: str = ""
+    SYNTHETIC_BASE_URL: str = "https://api.synthetic.new/openai/v1"
+
     # Server settings
     PORT: int = 8000
     DEBUG: bool = False

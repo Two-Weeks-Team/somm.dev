@@ -5,6 +5,7 @@ with fan-out parallel execution from __start__ and fan-in to Jean-Pierre for syn
 """
 
 from langgraph.graph import StateGraph, END
+from app.core.config import settings
 from app.graph.state import EvaluationState
 from app.graph.checkpoint import get_checkpointer
 from app.graph.nodes.marcel import MarcelNode
@@ -13,13 +14,15 @@ from app.graph.nodes.heinrich import HeinrichNode
 from app.graph.nodes.sofia import SofiaNode
 from app.graph.nodes.laurent import LaurentNode
 from app.graph.nodes.jeanpierre import JeanPierreNode
+from app.graph.nodes.rag_enrich import rag_enrich
 
 
 def create_evaluation_graph():
     """Create and configure the evaluation graph.
 
     The graph follows a fan-out/fan-in pattern:
-    - Fan-out: 5 sommelier nodes run in parallel from __start__
+    - Optional: RAG enrichment node runs first (if RAG_ENABLED)
+    - Fan-out: 5 sommelier nodes run in parallel
     - Fan-in: All must complete before Jean-Pierre synthesis
     - End: Jean-Pierre connects to END after synthesis
 
@@ -35,7 +38,11 @@ def create_evaluation_graph():
 
     builder = StateGraph(EvaluationState)
 
-    # Add all sommelier nodes
+    sommelier_nodes = ["marcel", "isabella", "heinrich", "sofia", "laurent"]
+
+    if settings.RAG_ENABLED:
+        builder.add_node("rag_enrich", rag_enrich)
+
     builder.add_node("marcel", marcel.evaluate)
     builder.add_node("isabella", isabella.evaluate)
     builder.add_node("heinrich", heinrich.evaluate)
@@ -43,21 +50,17 @@ def create_evaluation_graph():
     builder.add_node("laurent", laurent.evaluate)
     builder.add_node("jeanpierre", jeanpierre.evaluate)
 
-    # Fan-out: Parallel execution from start
-    builder.add_edge("__start__", "marcel")
-    builder.add_edge("__start__", "isabella")
-    builder.add_edge("__start__", "heinrich")
-    builder.add_edge("__start__", "sofia")
-    builder.add_edge("__start__", "laurent")
+    if settings.RAG_ENABLED:
+        builder.add_edge("__start__", "rag_enrich")
+        for node in sommelier_nodes:
+            builder.add_edge("rag_enrich", node)
+    else:
+        for node in sommelier_nodes:
+            builder.add_edge("__start__", node)
 
-    # Fan-in: All must complete before Jean-Pierre
-    builder.add_edge("marcel", "jeanpierre")
-    builder.add_edge("isabella", "jeanpierre")
-    builder.add_edge("heinrich", "jeanpierre")
-    builder.add_edge("sofia", "jeanpierre")
-    builder.add_edge("laurent", "jeanpierre")
+    for node in sommelier_nodes:
+        builder.add_edge(node, "jeanpierre")
 
-    # End after synthesis
     builder.add_edge("jeanpierre", END)
 
     checkpointer = get_checkpointer()
