@@ -132,6 +132,15 @@ async def create_evaluation(
                 )
             except Exception as e:
                 logger.exception(f"Background evaluation failed: {eval_id}")
+                error_msg = str(e)
+                if "Resource not found" in error_msg or "404" in error_msg:
+                    user_message = "Repository not found or is private. Please check the URL and try again."
+                elif "rate limit" in error_msg.lower():
+                    user_message = (
+                        "GitHub API rate limit exceeded. Please try again later."
+                    )
+                else:
+                    user_message = f"Evaluation failed: {error_msg}"
                 await event_channel.emit(
                     eval_id,
                     create_sommelier_event(
@@ -139,10 +148,10 @@ async def create_evaluation(
                         sommelier="system",
                         event_type=EventType.EVALUATION_ERROR.value,
                         progress_percent=-1,
-                        message="Evaluation failed",
+                        message=user_message,
                     ),
                 )
-                await handle_evaluation_error(eval_id, str(e))
+                await handle_evaluation_error(eval_id, error_msg)
             finally:
                 await event_channel.close_channel(eval_id)
 

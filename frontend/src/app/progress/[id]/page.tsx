@@ -3,23 +3,23 @@
 import React, { useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useEvaluationStream } from '../../../hooks/useEvaluationStream';
-import { Wine, CheckCircle2, Loader2, AlertTriangle } from 'lucide-react';
+import { Wine, CheckCircle2, Loader2, AlertTriangle, XCircle, ArrowLeft } from 'lucide-react';
 
 export default function ProgressPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
   
-  const { completedSommeliers, errors, isComplete, progress } = useEvaluationStream(id);
+  const { completedSommeliers, errors, isComplete, progress, status } = useEvaluationStream(id);
 
   useEffect(() => {
-    if (isComplete) {
+    if (isComplete && status === 'completed') {
       const timeout = setTimeout(() => {
         router.push(`/evaluate/${id}/result`);
       }, 1500);
       return () => clearTimeout(timeout);
     }
-  }, [isComplete, id, router]);
+  }, [isComplete, status, id, router]);
 
   const sommeliers = [
     { name: 'Marcel', role: 'Structure & Metrics' },
@@ -98,11 +98,28 @@ export default function ProgressPage() {
           </div>
         </div>
 
-        {errors.length > 0 && (
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-700">
+        {status === 'failed' && (
+          <div className="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+            <XCircle className="mx-auto text-red-500 mb-4" size={48} />
+            <h2 className="text-xl font-bold text-red-700 mb-2">Evaluation Failed</h2>
+            <p className="text-red-600 mb-4">
+              {errors.length > 0 ? errors[errors.length - 1] : 'An unexpected error occurred during evaluation.'}
+            </p>
+            <button
+              onClick={() => router.push('/evaluate')}
+              className="inline-flex items-center px-4 py-2 bg-[#722F37] text-white rounded-lg hover:bg-[#5a252c] transition-colors"
+            >
+              <ArrowLeft size={16} className="mr-2" />
+              Try Another Repository
+            </button>
+          </div>
+        )}
+
+        {errors.length > 0 && status !== 'failed' && (
+          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 text-yellow-700">
             <div className="flex items-center mb-2">
               <AlertTriangle className="mr-2" size={20} />
-              <h3 className="font-semibold">Issues Detected</h3>
+              <h3 className="font-semibold">Warnings</h3>
             </div>
             <ul className="list-disc list-inside text-sm">
               {errors.map((err, index) => (
