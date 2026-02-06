@@ -17,11 +17,13 @@ class EvaluationState(TypedDict):
     tracking inputs, sommelier results, synthesis, and progress.
     """
 
-    # Input fields
+    evaluation_id: Required[str]
     repo_url: Required[str]
     repo_context: Required[dict]
     evaluation_criteria: Required[str]
     user_id: Required[str]
+    progress_percent: NotRequired[int]
+    current_stage: NotRequired[str]
 
     # Sommelier results
     marcel_result: NotRequired[Optional[dict]]

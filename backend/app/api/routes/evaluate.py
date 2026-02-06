@@ -6,8 +6,11 @@ This module provides endpoints for:
 - Getting evaluation results (GET /api/evaluate/{evaluation_id}/result)
 """
 
+from __future__ import annotations
+
 import asyncio
 import json
+import logging
 from typing import Any
 
 from fastapi import APIRouter, Depends
@@ -18,9 +21,14 @@ from app.api.deps import get_current_user
 from app.core.exceptions import CorkedError, EmptyCellarError
 from app.services.evaluation_service import (
     get_evaluation_result,
-    run_full_evaluation,
+    handle_evaluation_error,
+    run_evaluation_pipeline_with_events,
+    start_evaluation,
 )
-from app.services.sse_manager import get_sse_manager
+from app.services.event_channel import get_event_channel, EventType
+from app.services.task_registry import register_task
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/evaluate", tags=["evaluate"])
 
@@ -79,63 +87,54 @@ class ResultResponse(BaseModel):
     created_at: str
 
 
-async def event_generator(
-    evaluation_id: str,
-    queue: asyncio.Queue,
-) -> None:
-    """Generate SSE events from the evaluation queue.
-
-    Args:
-        evaluation_id: The evaluation ID.
-        queue: The asyncio Queue to read from.
-    """
-    sse_manager = get_sse_manager()
-
-    try:
-        while True:
-            try:
-                event = await asyncio.wait_for(queue.get(), timeout=30.0)
-                yield f"data: {json.dumps(event)}\n\n"
-
-                if event.get("type") == "close":
-                    break
-            except asyncio.TimeoutError:
-                yield f"data: {json.dumps({'type': 'ping'})}\n\n"
-    except asyncio.CancelledError:
-        pass
-    finally:
-        sse_manager.unsubscribe(evaluation_id, queue)
-
-
 @router.post("", response_model=EvaluateResponse)
 async def create_evaluation(
     request: EvaluateRequest,
     user=Depends(get_current_user),
 ) -> EvaluateResponse:
-    """Start a new code evaluation for a GitHub repository."""
-    import logging
+    """Start a new code evaluation for a GitHub repository.
 
-    logger = logging.getLogger(__name__)
-
+    The evaluation runs as a background task, allowing immediate response.
+    Use the /stream endpoint to receive real-time progress updates.
+    """
     logger.info(
-        f"[Evaluate] Request received: repo_url={request.repo_url}, criteria={request.criteria}, user={user.id}"
+        f"[Evaluate] Request received: repo_url={request.repo_url}, "
+        f"criteria={request.criteria}, user={user.id}"
     )
 
     try:
-        evaluation_id = await run_full_evaluation(
+        eval_id = await start_evaluation(
             repo_url=request.repo_url,
             criteria=request.criteria,
             user_id=user.id,
-            provider=request.provider,
-            model=request.model,
-            temperature=request.temperature,
-            api_key=request.api_key,
         )
 
-        logger.info(f"[Evaluate] Evaluation started: {evaluation_id}")
+        event_channel = get_event_channel()
+        await event_channel.create_channel(eval_id)
+
+        async def run_in_background():
+            try:
+                await run_evaluation_pipeline_with_events(
+                    evaluation_id=eval_id,
+                    repo_url=request.repo_url,
+                    criteria=request.criteria,
+                    user_id=user.id,
+                    provider=request.provider,
+                    model=request.model,
+                    temperature=request.temperature,
+                    api_key=request.api_key,
+                )
+            except Exception as e:
+                logger.exception(f"Background evaluation failed: {eval_id}")
+                await handle_evaluation_error(eval_id, str(e))
+
+        task = asyncio.create_task(run_in_background())
+        await register_task(eval_id, task)
+
+        logger.info(f"[Evaluate] Background task started: {eval_id}")
 
         return EvaluateResponse(
-            evaluation_id=evaluation_id["evaluation_id"],
+            evaluation_id=eval_id,
             status="pending",
             estimated_time=30,
         )
@@ -159,45 +158,34 @@ async def stream_evaluation(
 
     This endpoint provides real-time updates about the evaluation progress,
     including:
-    - Status changes
-    - Sommelier completion events
-    - Errors and warnings
-    - Final result
-
-    Args:
-        evaluation_id: The evaluation ID to stream.
-        user: The authenticated user.
-
-    Returns:
-        An SSE stream of evaluation events.
+    - sommelier_start: When a sommelier begins analysis
+    - sommelier_complete: When a sommelier finishes analysis
+    - sommelier_error: When a sommelier encounters an error
+    - evaluation_complete: When the entire evaluation is finished
+    - heartbeat: Keep-alive signal (every 30 seconds)
     """
-    sse_manager = get_sse_manager()
-    queue = asyncio.Queue()
+    event_channel = get_event_channel()
+    await event_channel.create_channel(evaluation_id)
 
-    sse_manager.subscribe(evaluation_id, queue)
-
-    async def send_events():
+    async def generate():
         try:
-            while True:
-                try:
-                    event = await asyncio.wait_for(queue.get(), timeout=30.0)
-                    yield f"data: {json.dumps(event)}\n\n"
+            async for event in event_channel.subscribe(evaluation_id):
+                yield f"data: {json.dumps(event.to_dict())}\n\n"
 
-                    if event.get("type") == "close":
-                        break
-                except asyncio.TimeoutError:
-                    yield f"data: {json.dumps({'type': 'ping'})}\n\n"
+                if event.event_type == EventType.EVALUATION_COMPLETE:
+                    break
         except asyncio.CancelledError:
-            pass
+            logger.info(f"SSE stream cancelled for {evaluation_id}")
         finally:
-            sse_manager.unsubscribe(evaluation_id, queue)
+            await event_channel.close_channel(evaluation_id)
 
     return StreamingResponse(
-        send_events(),
+        generate(),
         media_type="text/event-stream",
         headers={
             "Cache-Control": "no-cache",
             "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
         },
     )
 
