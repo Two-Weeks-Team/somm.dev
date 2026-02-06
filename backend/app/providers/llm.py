@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional, Protocol, runtime_checkable
+from typing import Optional
 
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
@@ -9,22 +9,8 @@ from langchain_core.language_models.chat_models import BaseChatModel
 from app.core.config import settings
 
 
-@runtime_checkable
-class LLMProvider(Protocol):
-    """Protocol defining the interface for LLM providers.
-
-    All providers must support async invocation and expose model metadata.
-    This documents the contract that build_llm() returns.
-    """
-
-    async def ainvoke(self, messages: list, **kwargs) -> object:
-        """Asynchronously invoke the model with messages."""
-        ...
-
-    @property
-    def model(self) -> str:
-        """Return the model identifier."""
-        ...
+DEFAULT_TEMPERATURE = 0.3
+DEFAULT_MAX_OUTPUT_TOKENS = 2048
 
 
 @dataclass
@@ -102,24 +88,29 @@ def build_llm(
     if byok_error:
         resolved_key = None
 
+    resolved_temperature = (
+        temperature if temperature is not None else DEFAULT_TEMPERATURE
+    )
+    resolved_max_tokens = max_output_tokens or DEFAULT_MAX_OUTPUT_TOKENS
+
     if provider_key == "gemini":
         llm = ChatGoogleGenerativeAI(
             model=model or PROVIDER_DEFAULTS["gemini"],
-            temperature=temperature if temperature is not None else 0.3,
-            max_output_tokens=max_output_tokens or 2048,
+            temperature=resolved_temperature,
+            max_output_tokens=resolved_max_tokens,
             google_api_key=resolved_key or settings.GEMINI_API_KEY,
             convert_system_message_to_human=True,
         )
     elif provider_key == "openai":
         llm = ChatOpenAI(
             model=model or PROVIDER_DEFAULTS["openai"],
-            temperature=temperature if temperature is not None else 0.3,
+            temperature=resolved_temperature,
             api_key=resolved_key or settings.OPENAI_API_KEY,
         )
     elif provider_key == "anthropic":
         llm = ChatAnthropic(
             model=model or PROVIDER_DEFAULTS["anthropic"],
-            temperature=temperature if temperature is not None else 0.3,
+            temperature=resolved_temperature,
             api_key=resolved_key or settings.ANTHROPIC_API_KEY,
         )
     else:
