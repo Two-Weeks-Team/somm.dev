@@ -1,7 +1,22 @@
-import { EvaluationResult, EvaluationHistoryItem, CriteriaType } from '../types';
+import { EvaluationResult, EvaluationHistoryItem, CriteriaType, EvaluationMode } from '../types';
 
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.somm.dev';
 const TOKEN_STORAGE_KEY = 'somm_auth_token';
+
+interface BackendSommelierOutput {
+  sommelier_name?: string;
+  score?: number;
+  summary?: string;
+  recommendations?: string[];
+}
+
+interface BackendHistoryItem {
+  id: string;
+  repo_context?: { repo_url?: string };
+  created_at: string;
+  status: string;
+  score?: number;
+}
 
 export class AuthError extends Error {
   constructor(message: string = 'Authentication required') {
@@ -77,13 +92,11 @@ export interface User {
 }
 
 export const api = {
-  startEvaluation: async (repoUrl: string, criteria: CriteriaType): Promise<{ id: string }> => {
+  startEvaluation: async (repoUrl: string, criteria: CriteriaType, evaluationMode: EvaluationMode = 'six_sommeliers'): Promise<{ id: string }> => {
     const response = await fetchWithConfig('/api/evaluate', {
       method: 'POST',
-      body: JSON.stringify({ repo_url: repoUrl, criteria }),
+      body: JSON.stringify({ repo_url: repoUrl, criteria, evaluation_mode: evaluationMode }),
     });
-    // Backend returns { evaluation_id, status, estimated_time }
-    // Frontend expects { id }
     return { id: response.evaluation_id };
   },
 
@@ -115,10 +128,10 @@ export const api = {
     };
 
     const sommelierOutputs = response.final_evaluation?.sommelier_outputs || [];
-    const results = sommelierOutputs.map((output: any) => ({
+    const results = sommelierOutputs.map((output: BackendSommelierOutput) => ({
       id: output.sommelier_name?.toLowerCase() || '',
       name: output.sommelier_name || '',
-      role: SOMMELIER_ROLES[output.sommelier_name] || 'Sommelier',
+      role: SOMMELIER_ROLES[output.sommelier_name || ''] || 'Sommelier',
       score: output.score || 0,
       feedback: output.summary || '',
       pairingSuggestion: output.recommendations?.[0] || undefined,
@@ -144,8 +157,7 @@ export const api = {
     });
     const response = await fetchWithConfig(`/api/history?${queryParams.toString()}`);
 
-    // Transform backend response to frontend format
-    const items = response.items.map((item: any) => ({
+    const items = response.items.map((item: BackendHistoryItem) => ({
       id: item.id,
       repoUrl: item.repo_context?.repo_url || '',
       createdAt: item.created_at,

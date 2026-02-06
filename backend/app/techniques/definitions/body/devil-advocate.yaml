@@ -1,0 +1,70 @@
+id: devil-advocate
+name: Devil's Advocate
+nameKo: 악마의 옹호자
+category: body
+applicableHats:
+- black
+evaluationDimensions:
+- A3
+- B3
+- C3
+description: '의도적으로 반대 입장에서 비판하는 역할을 맡아
+
+  아이디어의 약점을 찾아내는 기법.
+
+  건설적 비판을 통해 아이디어를 강화합니다.
+
+  '
+promptTemplate: '## Devil''s Advocate 분석
+
+
+  프로젝트가 악마의 옹호자 역할을 통해 검증했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **비판적 검토**: 의도적으로 반대 입장에서 검토했는가?
+
+  2. **약점 발굴**: 아이디어의 약점을 적극적으로 찾았는가?
+
+  3. **반론 대응**: 발견된 약점에 대한 반박을 준비했는가?
+
+  4. **아이디어 강화**: 비판을 통해 아이디어가 강화되었는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 체계적 비판, 모든 약점 대응, 아이디어 강화
+
+  - 4점: 주요 약점 식별 및 대응 준비
+
+  - 3점: 일부 비판적 검토
+
+  - 2점: 피상적 검토
+
+  - 1점: 비판적 검토 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 체계적 비판, 아이디어 강화
+    4: 주요 약점 대응
+    3: 일부 비판적 검토
+    2: 피상적 검토
+    1: 비판 없음
+outputSchema:
+  score: number
+  critiquesRaised: string[]
+  weaknessesFound: string[]
+  counterArguments: string[]
+  improvements: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 550
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Critical Thinking / Debate
+requiredSources: either

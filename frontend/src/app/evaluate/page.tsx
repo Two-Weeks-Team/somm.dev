@@ -4,19 +4,19 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { EvaluationForm } from '../../components/EvaluationForm';
 import { api } from '../../lib/api';
-import { CriteriaType } from '../../types';
+import { CriteriaType, EvaluationMode } from '../../types';
 
 export default function EvaluatePage() {
   const router = useRouter();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleEvaluationSubmit = async (repoUrl: string, criteria: CriteriaType) => {
+  const handleEvaluationSubmit = async (repoUrl: string, criteria: CriteriaType, evaluationMode: EvaluationMode) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const { id } = await api.startEvaluation(repoUrl, criteria);
+      const { id } = await api.startEvaluation(repoUrl, criteria, evaluationMode);
       router.push(`/progress/${id}`);
     } catch (err) {
       console.error('Evaluation failed:', err);

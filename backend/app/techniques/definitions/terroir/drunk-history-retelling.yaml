@@ -1,0 +1,70 @@
+id: drunk-history-retelling
+name: Drunk History Retelling
+nameKo: 취중 역사 리텔링
+category: terroir
+applicableHats:
+- green
+- red
+evaluationDimensions:
+- D2
+- D3
+description: '복잡한 이야기를 친구에게 술자리에서
+
+  설명하듯 단순하고 재미있게 전달하는 기법.
+
+  핵심만 남기고 재미있게 풀어냅니다.
+
+  '
+promptTemplate: '## Drunk History Retelling 분석
+
+
+  프로젝트를 단순하고 재미있게 설명할 수 있는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **단순화**: 복잡한 것을 쉽게 설명할 수 있는가?
+
+  2. **핵심 추출**: 가장 중요한 포인트가 명확한가?
+
+  3. **재미 요소**: 이야기에 재미가 있는가?
+
+  4. **기억성**: 한 줄로 기억할 수 있는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 한 줄 요약 가능, 재미있고 기억에 남음
+
+  - 4점: 쉬운 설명과 명확한 핵심
+
+  - 3점: 어느 정도 단순화
+
+  - 2점: 여전히 복잡
+
+  - 1점: 단순화 불가
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 한 줄 요약, 재미, 기억성
+    4: 쉬운 설명, 명확한 핵심
+    3: 어느 정도 단순화
+    2: 여전히 복잡
+    1: 단순화 불가
+outputSchema:
+  score: number
+  oneLiner: string
+  keyPoints: string[]
+  funElements: string[]
+  memorableHook: string
+  reasoning: string
+metadata:
+  complexity: low
+  estimatedTokens: 500
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Comedy Central / Storytelling
+requiredSources: pdf_only

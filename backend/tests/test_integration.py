@@ -57,13 +57,13 @@ class TestAuthFlowIntegration:
 
     def test_protected_endpoint_requires_auth(self):
         """Test that protected endpoints require authentication."""
-        response = client.get("/api/v1/repositories")
+        response = client.get("/repositories")
         assert response.status_code == 401
 
     def test_protected_endpoint_with_invalid_token(self):
         """Test that invalid token returns 401."""
         response = client.get(
-            "/api/v1/repositories", headers={"Authorization": "Bearer invalid_token"}
+            "/repositories", headers={"Authorization": "Bearer invalid_token"}
         )
         assert response.status_code == 401
 

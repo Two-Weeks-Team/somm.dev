@@ -1,0 +1,85 @@
+id: swot-analysis
+name: SWOT Analysis
+nameKo: SWOT 분석
+category: body
+applicableHats:
+- white
+- black
+- yellow
+evaluationDimensions:
+- A4
+- B3
+- B4
+description: 'Albert Humphrey(Stanford Research Institute)가 체계화한 전략 분석 도구.
+
+  Strengths(강점), Weaknesses(약점), Opportunities(기회), Threats(위협)의
+
+  내부/외부 요인을 분석하여 전략적 의사결정을 지원.
+
+  '
+promptTemplate: '## SWOT 분석
+
+
+  이 프로젝트가 SWOT 4가지 요소를 체계적으로 분석했는지 평가하세요.
+
+
+  ### SWOT 4가지 요소:
+
+  1. **Strengths (강점)**: 경쟁 우위가 되는 내부 역량?
+
+  2. **Weaknesses (약점)**: 개선이 필요한 내부 한계?
+
+  3. **Opportunities (기회)**: 활용 가능한 외부 환경?
+
+  4. **Threats (위협)**: 대비해야 할 외부 리스크?
+
+
+  ### 전략 도출:
+
+  - SO전략: 강점으로 기회 활용
+
+  - WO전략: 약점 보완하며 기회 포착
+
+  - ST전략: 강점으로 위협 대응
+
+  - WT전략: 약점과 위협 최소화
+
+
+  ### 점수 기준:
+
+  - 5점: 4가지 요소 심층 분석, TOWS 전략 도출
+
+  - 4점: 4가지 요소 분석, 대응 전략 수립
+
+  - 3점: 강점/약점 또는 기회/위협 분석
+
+  - 2점: 일부 요소만 간략히 언급
+
+  - 1점: SWOT 분석 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 4요소 심층분석, TOWS 전략
+    4: 4요소 분석, 대응 전략
+    3: 내부 또는 외부 분석
+    2: 일부 요소만 언급
+    1: SWOT 분석 없음
+outputSchema:
+  score: number
+  strengths: string[]
+  weaknesses: string[]
+  opportunities: string[]
+  threats: string[]
+  strategicImplications: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 650
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Albert Humphrey, Stanford Research Institute (1960s)
+  academicReference: 전 산업 채택, MBA 필수 프레임워크
+requiredSources: either

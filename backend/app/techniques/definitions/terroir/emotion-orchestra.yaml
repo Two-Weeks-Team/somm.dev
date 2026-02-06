@@ -1,0 +1,70 @@
+id: emotion-orchestra
+name: Emotion Orchestra
+nameKo: 감정 오케스트라
+category: terroir
+applicableHats:
+- red
+evaluationDimensions:
+- C2
+- D2
+- D3
+description: '프레젠테이션의 감정 흐름을 오케스트라처럼
+
+  조율하는 기법. 긴장, 이완, 클라이맥스를
+
+  의도적으로 설계합니다.
+
+  '
+promptTemplate: '## Emotion Orchestra 분석
+
+
+  프로젝트 발표가 감정 흐름을 효과적으로 설계했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **감정 곡선**: 발표의 감정 흐름이 설계되었는가?
+
+  2. **긴장과 이완**: 긴장-이완의 리듬이 있는가?
+
+  3. **클라이맥스**: 감정의 정점이 있는가?
+
+  4. **여운**: 끝맺음의 감정적 여운이 있는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 완벽한 감정 곡선, 강렬한 클라이맥스, 깊은 여운
+
+  - 4점: 효과적인 감정 흐름 설계
+
+  - 3점: 일부 감정 변화
+
+  - 2점: 평탄한 감정
+
+  - 1점: 감정 고려 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 완벽한 곡선, 클라이맥스, 여운
+    4: 효과적 감정 흐름
+    3: 일부 감정 변화
+    2: 평탄한 감정
+    1: 감정 무고려
+outputSchema:
+  score: number
+  emotionalCurve: string
+  tensionPoints: string[]
+  climax: string
+  resolution: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 550
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Presentation Design / Emotional Design
+requiredSources: pdf_only
