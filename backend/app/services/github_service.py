@@ -38,7 +38,7 @@ def parse_github_url(url: str) -> tuple[str, str]:
     if not re.match(r"^https?://(www\.)?github\.com/", url):
         raise CorkedError("URL must be a GitHub repository URL")
 
-    pattern = r"github\.com[/:]([^/]+)/([^/.]+)"
+    pattern = r"github\.com[/:]([^/]+)/([^/?#\s]+)"
     match = re.search(pattern, url)
 
     if not match:
@@ -46,7 +46,8 @@ def parse_github_url(url: str) -> tuple[str, str]:
 
     owner, repo = match.groups()
 
-    repo = repo.replace(".git", "")
+    if repo.endswith(".git"):
+        repo = repo[:-4]
 
     return owner, repo
 
