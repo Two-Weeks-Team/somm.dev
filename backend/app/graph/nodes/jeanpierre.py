@@ -10,10 +10,11 @@ from typing import Any, Dict, Optional
 
 from langchain_core.runnables import RunnableConfig
 
-from app.graph.nodes.base import BaseSommelierNode
+from app.graph.nodes.base import BaseSommelierNode, SOMMELIER_PROGRESS
 from app.graph.state import EvaluationState
 from app.prompts.jeanpierre import get_jeanpierre_prompt
 from app.providers.llm import build_llm
+from app.services.event_channel import create_sommelier_event, get_event_channel
 
 
 class JeanPierreNode(BaseSommelierNode):
@@ -38,6 +39,24 @@ class JeanPierreNode(BaseSommelierNode):
         Unlike other sommeliers, Jean-Pierre needs access to all previous
         sommelier results for synthesis.
         """
+        evaluation_id = state.get("evaluation_id", "")
+        progress_config = SOMMELIER_PROGRESS.get(
+            self.name, {"start": 85, "complete": 100}
+        )
+        event_channel = get_event_channel()
+
+        if evaluation_id:
+            event_channel.emit_sync(
+                evaluation_id,
+                create_sommelier_event(
+                    evaluation_id=evaluation_id,
+                    sommelier=self.name,
+                    event_type="sommelier_start",
+                    progress_percent=progress_config["start"],
+                    message=f"{self.name} synthesis starting...",
+                ),
+            )
+
         started_at = datetime.now(timezone.utc).isoformat()
         configurable = (config or {}).get("configurable", {})
         provider = configurable.get("provider", "gemini")
@@ -95,6 +114,30 @@ class JeanPierreNode(BaseSommelierNode):
                 timezone.utc
             ).isoformat()
             result = self.parser.parse(response.content)
+
+            if evaluation_id:
+                event_channel.emit_sync(
+                    evaluation_id,
+                    create_sommelier_event(
+                        evaluation_id=evaluation_id,
+                        sommelier=self.name,
+                        event_type="sommelier_complete",
+                        progress_percent=progress_config["complete"],
+                        message=f"{self.name} synthesis complete",
+                        tokens_used=usage.get("total_tokens", 0),
+                    ),
+                )
+                event_channel.emit_sync(
+                    evaluation_id,
+                    create_sommelier_event(
+                        evaluation_id=evaluation_id,
+                        sommelier=self.name,
+                        event_type="evaluation_complete",
+                        progress_percent=100,
+                        message="Evaluation complete!",
+                    ),
+                )
+
             return {
                 f"{self.name}_result": result.dict(),
                 **observability,
@@ -103,6 +146,19 @@ class JeanPierreNode(BaseSommelierNode):
             observability["trace_metadata"][self.name]["completed_at"] = datetime.now(
                 timezone.utc
             ).isoformat()
+
+            if evaluation_id:
+                event_channel.emit_sync(
+                    evaluation_id,
+                    create_sommelier_event(
+                        evaluation_id=evaluation_id,
+                        sommelier=self.name,
+                        event_type="sommelier_error",
+                        progress_percent=progress_config["start"],
+                        message=f"{self.name} synthesis encountered an error",
+                    ),
+                )
+
             return {
                 "errors": [f"{self.name} evaluation failed: {e!s}"],
                 f"{self.name}_result": None,
