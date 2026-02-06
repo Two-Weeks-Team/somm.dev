@@ -29,6 +29,7 @@ export const RepositoryCard: React.FC<RepositoryCardProps> = ({
 
   return (
     <div
+      data-testid="repository-card"
       onClick={handleClick}
       className={`
         relative p-4 rounded-lg border cursor-pointer transition-all duration-200

@@ -38,10 +38,9 @@ describe('Repository Selection Flow Integration', () => {
     });
 
     it('shows selected state when isSelected is true', () => {
-      const { container } = render(<RepositoryCard repository={mockRepository} isSelected={true} />);
+      render(<RepositoryCard repository={mockRepository} isSelected={true} />);
 
-      // The outer wrapper div has the border class
-      const card = container.firstChild as HTMLElement;
+      const card = screen.getByTestId('repository-card');
       expect(card).toHaveClass('border-[#722F37]');
     });
   });
