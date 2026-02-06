@@ -41,6 +41,7 @@ from app.models.graph import (
     ExcludedTechnique,
     AgentContribution,
     ModeResponse,
+    ExcludedVisualization,
 )
 
 __all__ = [
@@ -75,4 +76,5 @@ __all__ = [
     "ExcludedTechnique",
     "AgentContribution",
     "ModeResponse",
+    "ExcludedVisualization",
 ]

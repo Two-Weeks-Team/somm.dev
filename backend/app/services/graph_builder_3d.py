@@ -4,13 +4,18 @@ This module provides deterministic 3D graph visualization building:
 - Layered z-axis layout (0-400) for different node types
 - Step tracking from methodology_trace for animation
 - Stable, reproducible coordinates for identical inputs
+- FDEB edge bundling for cleaner visualization (Phase G4)
+- Graph3DBuilder class for fluent graph construction (Phase G4)
 """
+
+from typing import Optional
 
 from app.models.graph import (
     Graph3DPayload,
     Graph3DNode,
     Graph3DEdge,
     Position3D,
+    ExcludedVisualization,
 )
 
 
@@ -332,3 +337,404 @@ def build_3d_graph(
         nodes=nodes,
         edges=edges,
     )
+
+
+# =============================================================================
+# Phase G4: FDEB Edge Bundling and Graph3DBuilder
+# =============================================================================
+
+NUMERICAL_STABILITY_EPSILON = 1e-10
+
+LAYER_Z = {
+    1: 0,
+    2: 200,
+    3: 250,
+    4: 300,
+    5: 400,
+}
+
+AGENT_LAYER = 2
+TECHNIQUE_LAYER = 3
+ITEM_LAYER = 4
+SYNTHESIS_LAYER = 5
+
+
+def generate_step_number(parent_step: str, child_index: int) -> str:
+    """Generate hierarchical step number (e.g., '1.1', '1.1.1')."""
+    return f"{parent_step}.{child_index + 1}"
+
+
+def compute_fdeb_bundling(
+    edges: list[Graph3DEdge],
+    nodes: dict[str, Graph3DNode],
+    iterations: int = 20,
+    compatibility_threshold: float = 0.6,
+) -> list[Graph3DEdge]:
+    """Apply Force-Directed Edge Bundling (FDEB) algorithm.
+
+    FDEB algorithm (Holten & van Wijk 2009) bundles similar edges together
+    for cleaner visualization of parallel connections.
+    """
+    iterations = max(1, min(iterations, 100))
+    compatibility_threshold = max(0.0, min(compatibility_threshold, 1.0))
+
+    for edge in edges:
+        source = nodes.get(edge.source)
+        target = nodes.get(edge.target)
+        if source and target:
+            edge.bundled_path = [source.position, target.position]
+
+    if not edges or len(edges) < 2:
+        return edges
+
+    def compute_compatibility(e1: Graph3DEdge, e2: Graph3DEdge) -> float:
+        s1, t1 = nodes.get(e1.source), nodes.get(e1.target)
+        s2, t2 = nodes.get(e2.source), nodes.get(e2.target)
+
+        if not all([s1, t1, s2, t2]):
+            return 0.0
+
+        v1 = t1.position - s1.position
+        v2 = t2.position - s2.position
+
+        len1, len2 = v1.magnitude(), v2.magnitude()
+        if len1 < NUMERICAL_STABILITY_EPSILON or len2 < NUMERICAL_STABILITY_EPSILON:
+            return 0.0
+
+        cos_angle = (v1.dot(v2)) / (len1 * len2)
+        angle_compat = abs(cos_angle)
+
+        scale_compat = 2 / (
+            1 + max(len1, len2) / (min(len1, len2) + NUMERICAL_STABILITY_EPSILON)
+        )
+
+        mid1 = (s1.position + t1.position) * 0.5
+        mid2 = (s2.position + t2.position) * 0.5
+        mid_dist = (mid1 - mid2).magnitude()
+        avg_len = (len1 + len2) * 0.5
+        pos_compat = 1 / (1 + mid_dist / (avg_len + NUMERICAL_STABILITY_EPSILON))
+
+        return angle_compat * scale_compat * pos_compat
+
+    n_edges = len(edges)
+    compatible_pairs = []
+    for i in range(n_edges):
+        for j in range(i + 1, n_edges):
+            compat = compute_compatibility(edges[i], edges[j])
+            if compat >= compatibility_threshold:
+                compatible_pairs.append((i, j, compat))
+
+    for iteration in range(iterations):
+        n_subdivisions = min(8, 1 + iteration // 10)
+
+        for edge_idx, edge in enumerate(edges):
+            source = nodes.get(edge.source)
+            target = nodes.get(edge.target)
+            if not source or not target:
+                continue
+
+            points = []
+            for i in range(n_subdivisions + 2):
+                t = i / (n_subdivisions + 1)
+                point = source.position + (target.position - source.position) * t
+                points.append(point)
+
+            bundled_points = [points[0]]
+
+            for i in range(1, len(points) - 1):
+                point = points[i]
+                force = Position3D(x=0, y=0, z=0)
+
+                for other_idx, other_compat, compat in compatible_pairs:
+                    if edge_idx not in (other_idx, other_compat):
+                        continue
+
+                    other_edge = edges[
+                        other_idx if edge_idx == other_compat else other_compat
+                    ]
+                    other_source = nodes.get(other_edge.source)
+                    other_target = nodes.get(other_edge.target)
+
+                    if not other_source or not other_target:
+                        continue
+
+                    other_point = other_source.position + (
+                        other_target.position - other_source.position
+                    ) * (i / (n_subdivisions + 1))
+
+                    diff = other_point - point
+                    force_mag = compat * 0.1
+                    force = force + diff * force_mag
+
+                for node in nodes.values():
+                    diff = point - node.position
+                    dist = diff.magnitude()
+                    if dist > NUMERICAL_STABILITY_EPSILON and dist < 100:
+                        repulsion = diff.normalize() * (500 / (dist * dist + 1))
+                        force = force + repulsion
+
+                damping = 0.5 * (1 - iteration / iterations)
+                new_point = point + force * damping
+
+                new_point = Position3D(
+                    x=max(-1000, min(1000, new_point.x)),
+                    y=max(-1000, min(1000, new_point.y)),
+                    z=max(0, min(500, new_point.z)),
+                )
+
+                bundled_points.append(new_point)
+
+            bundled_points.append(points[-1])
+
+            for p in bundled_points:
+                import math
+
+                if not (
+                    math.isfinite(p.x) and math.isfinite(p.y) and math.isfinite(p.z)
+                ):
+                    edge.bundled_path = [source.position, target.position]
+                    break
+            else:
+                edge.bundled_path = bundled_points
+
+    return edges
+
+
+class Graph3DBuilder:
+    """Fluent builder for constructing 3D graphs with multi-layer topology."""
+
+    def __init__(self, seed: int = 42):
+        self.seed = seed
+        self.nodes: dict[str, Graph3DNode] = {}
+        self.edges: list[Graph3DEdge] = []
+        self.excluded: list[ExcludedVisualization] = []
+        self.node_counter = 0
+        self.edge_counter = 0
+
+    def _generate_id(self, prefix: str) -> str:
+        self.node_counter += 1
+        return f"{prefix}_{self.node_counter}"
+
+    def _generate_position(
+        self, layer: int, parent_pos: Optional[Position3D] = None
+    ) -> Position3D:
+        import random
+
+        random.seed(self.seed + self.node_counter)
+        offset_x = random.uniform(-50, 50)
+        offset_y = random.uniform(-50, 50)
+
+        if parent_pos:
+            return Position3D(
+                x=parent_pos.x + offset_x,
+                y=parent_pos.y + offset_y,
+                z=LAYER_Z[layer],
+            )
+        return Position3D(x=offset_x, y=offset_y, z=LAYER_Z[layer])
+
+    def add_agent_node(
+        self,
+        agent_name: str,
+        step_number: str,
+        metadata: Optional[dict] = None,
+    ) -> Graph3DNode:
+        node_id = self._generate_id(f"agent_{agent_name.lower()}")
+        position = self._generate_position(AGENT_LAYER)
+
+        node = Graph3DNode(
+            node_id=node_id,
+            label=agent_name,
+            node_type="agent",
+            position=position,
+            step_number=int(step_number) if step_number.isdigit() else 0,
+        )
+        self.nodes[node_id] = node
+        return node
+
+    def add_technique_node(
+        self,
+        technique_name: str,
+        parent_agent: Graph3DNode,
+        child_index: int,
+        metadata: Optional[dict] = None,
+    ) -> Graph3DNode:
+        node_id = self._generate_id(f"tech_{technique_name.lower()}")
+        position = self._generate_position(TECHNIQUE_LAYER, parent_agent.position)
+
+        node = Graph3DNode(
+            node_id=node_id,
+            label=technique_name,
+            node_type="technique",
+            position=position,
+            step_number=parent_agent.step_number,
+        )
+        self.nodes[node_id] = node
+
+        self._add_edge(parent_agent.node_id, node_id, "default")
+
+        return node
+
+    def add_item_node(
+        self,
+        item_name: str,
+        parent_technique: Graph3DNode,
+        child_index: int,
+        metadata: Optional[dict] = None,
+    ) -> Graph3DNode:
+        node_id = self._generate_id(f"item_{item_name.lower()}")
+        position = self._generate_position(ITEM_LAYER, parent_technique.position)
+
+        node = Graph3DNode(
+            node_id=node_id,
+            label=item_name,
+            node_type="item",
+            position=position,
+            step_number=parent_technique.step_number,
+        )
+        self.nodes[node_id] = node
+
+        self._add_edge(parent_technique.node_id, node_id, "default")
+
+        return node
+
+    def add_excluded_technique(
+        self,
+        technique_name: str,
+        parent_agent: Graph3DNode,
+        reason: str,
+        child_index: int,
+    ) -> Graph3DNode:
+        node_id = self._generate_id(f"excluded_{technique_name.lower()}")
+        position = self._generate_position(TECHNIQUE_LAYER, parent_agent.position)
+
+        node = Graph3DNode(
+            node_id=node_id,
+            label=f"{technique_name} (excluded)",
+            node_type="excluded",
+            position=position,
+            step_number=parent_agent.step_number,
+        )
+        self.nodes[node_id] = node
+
+        self._add_edge(parent_agent.node_id, node_id, "excluded")
+
+        excluded_viz = ExcludedVisualization(
+            technique_id=node_id,
+            reason=reason,
+        )
+        self.excluded.append(excluded_viz)
+
+        return node
+
+    def add_synthesis_node(
+        self,
+        synthesis_name: str = "Synthesis",
+        metadata: Optional[dict] = None,
+    ) -> Graph3DNode:
+        node_id = self._generate_id("synthesis")
+        position = Position3D(x=0, y=0, z=LAYER_Z[SYNTHESIS_LAYER])
+
+        node = Graph3DNode(
+            node_id=node_id,
+            label=synthesis_name,
+            node_type="synthesis",
+            position=position,
+            step_number=99,
+        )
+        self.nodes[node_id] = node
+        return node
+
+    def _add_edge(
+        self,
+        source_id: str,
+        target_id: str,
+        edge_type: str = "default",
+    ) -> Graph3DEdge:
+        self.edge_counter += 1
+        edge_id = f"edge_{self.edge_counter}"
+
+        edge = Graph3DEdge(
+            edge_id=edge_id,
+            source=source_id,
+            target=target_id,
+            edge_type=edge_type,
+            step_number=0,
+        )
+        self.edges.append(edge)
+        return edge
+
+    def connect_to_synthesis(
+        self, node: Graph3DNode, synthesis: Graph3DNode
+    ) -> Graph3DEdge:
+        return self._add_edge(node.node_id, synthesis.node_id, "default")
+
+    def apply_edge_bundling(
+        self,
+        iterations: int = 20,
+        compatibility_threshold: float = 0.6,
+    ) -> "Graph3DBuilder":
+        self.edges = compute_fdeb_bundling(
+            self.edges,
+            self.nodes,
+            iterations=iterations,
+            compatibility_threshold=compatibility_threshold,
+        )
+        return self
+
+    def build(self, apply_bundling: bool = True) -> Graph3DPayload:
+        if apply_bundling and self.edges:
+            self.apply_edge_bundling()
+
+        nodes_list = list(self.nodes.values())
+        return Graph3DPayload.create(
+            evaluation_id="builder",
+            mode="builder",
+            nodes=nodes_list,
+            edges=self.edges,
+            excluded_techniques=[
+                {"technique_id": e.technique_id, "reason": e.reason}
+                for e in self.excluded
+            ]
+            if self.excluded
+            else None,
+        )
+
+
+def build_sample_3d_graph(seed: int = 42) -> Graph3DPayload:
+    """Build a sample 3D graph for testing."""
+    builder = Graph3DBuilder(seed=seed)
+
+    agents = [
+        builder.add_agent_node("Marcel", "1", {"role": "cellar_master"}),
+        builder.add_agent_node("Isabella", "2", {"role": "wine_critic"}),
+        builder.add_agent_node("Heinrich", "3", {"role": "quality_inspector"}),
+    ]
+
+    synthesis = builder.add_synthesis_node("Final Synthesis")
+
+    for agent in agents:
+        for t_idx in range(2):
+            tech = builder.add_technique_node(
+                f"Tech_{agent.label}_{t_idx + 1}",
+                agent,
+                t_idx,
+                {"technique_type": "analysis"},
+            )
+
+            for i_idx in range(2):
+                item = builder.add_item_node(
+                    f"Item_{tech.label}_{i_idx + 1}",
+                    tech,
+                    i_idx,
+                    {"item_data": "sample"},
+                )
+                builder.connect_to_synthesis(item, synthesis)
+
+        builder.add_excluded_technique(
+            f"Excluded_{agent.label}",
+            agent,
+            reason="Incompatible with current criteria",
+            child_index=2,
+        )
+
+    return builder.build(apply_bundling=True)
