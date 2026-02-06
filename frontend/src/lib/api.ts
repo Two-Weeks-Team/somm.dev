@@ -125,6 +125,13 @@ export const api = {
       'Heinrich': 'Quality Inspector',
       'Sofia': 'Vineyard Scout',
       'Laurent': 'Winemaker',
+      'Aroma Notes': 'Problem Analysis',
+      'Palate Notes': 'Innovation',
+      'Body Notes': 'Risk Analysis',
+      'Finish Notes': 'User-Centricity',
+      'Balance Notes': 'Feasibility',
+      'Vintage Notes': 'Opportunity',
+      'Terroir Notes': 'Presentation',
     };
 
     const sommelierOutputs = response.final_evaluation?.sommelier_outputs || [];
