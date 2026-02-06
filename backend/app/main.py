@@ -37,10 +37,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# API v1 routes - centralized prefix management
+# API routes - centralized prefix management
 app.include_router(evaluate.router, prefix=settings.API_V1_STR)
 app.include_router(history.router, prefix=settings.API_V1_STR)
-app.include_router(repositories.router, prefix=settings.API_V1_STR)
+
+# Repositories route - mounted at root level (frontend expects /repositories, not /api/repositories)
+app.include_router(repositories.router)
 
 # Auth routes - kept at root level for OAuth callback compatibility
 app.include_router(auth.router)
