@@ -74,6 +74,9 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
         break;
 
       case 'sommelier_error':
+        if (event.progress_percent !== undefined && event.progress_percent >= 0) {
+          setProgress(event.progress_percent);
+        }
         if (event.message) {
           setErrors((prev) => [...prev, event.message!]);
         }
