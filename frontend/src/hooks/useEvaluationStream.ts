@@ -20,6 +20,8 @@ const SOMMELIER_NAMES: Record<string, { name: string; role: string }> = {
   jeanpierre: { name: 'Jean-Pierre', role: 'Master Sommelier' },
 };
 
+const TOTAL_SOMMELIERS = 6;
+
 export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamResult => {
   const [status, setStatus] = useState<EvaluationStatus>('pending');
   const [completedSommeliers, setCompletedSommeliers] = useState<SommelierResult[]>([]);
@@ -27,30 +29,41 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
   const [isComplete, setIsComplete] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentSommelier, setCurrentSommelier] = useState<string | null>(null);
+  
+  const progressRef = useRef(0);
 
   const isCompleteRef = useRef(isComplete);
   useEffect(() => {
     isCompleteRef.current = isComplete;
   }, [isComplete]);
+  
+  const updateProgressFromCompleted = useCallback((completedCount: number, hasActiveTask: boolean) => {
+    const baseProgress = Math.round((completedCount / TOTAL_SOMMELIERS) * 100);
+    const activeBonus = hasActiveTask ? 5 : 0;
+    const newProgress = Math.min(99, baseProgress + activeBonus);
+    
+    if (newProgress > progressRef.current) {
+      progressRef.current = newProgress;
+      setProgress(newProgress);
+    }
+  }, []);
 
   const handleSSEEvent = useCallback((event: SSEEvent) => {
     const eventType = event.event_type;
 
     switch (eventType) {
       case 'sommelier_start':
-        if (event.progress_percent !== undefined && event.progress_percent >= 0) {
-          setProgress(event.progress_percent);
-        }
         if (event.sommelier) {
           setCurrentSommelier(event.sommelier);
         }
         setStatus('processing');
+        setCompletedSommeliers((prev) => {
+          updateProgressFromCompleted(prev.length, true);
+          return prev;
+        });
         break;
 
       case 'sommelier_complete':
-        if (event.progress_percent !== undefined && event.progress_percent >= 0) {
-          setProgress(event.progress_percent);
-        }
         if (event.sommelier) {
           const sommelierInfo = SOMMELIER_NAMES[event.sommelier] || {
             name: event.sommelier,
@@ -58,7 +71,7 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
           };
           setCompletedSommeliers((prev) => {
             if (prev.find((s) => s.id === event.sommelier)) return prev;
-            return [
+            const newList = [
               ...prev,
               {
                 id: event.sommelier!,
@@ -68,15 +81,14 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
                 feedback: event.message || `${sommelierInfo.name} analysis complete`,
               },
             ];
+            updateProgressFromCompleted(newList.length, false);
+            return newList;
           });
           setCurrentSommelier(null);
         }
         break;
 
       case 'sommelier_error':
-        if (event.progress_percent !== undefined && event.progress_percent >= 0) {
-          setProgress(event.progress_percent);
-        }
         if (event.message) {
           setErrors((prev) => [...prev, event.message!]);
         }
@@ -88,6 +100,7 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
       case 'evaluation_complete':
         setIsComplete(true);
         setStatus('completed');
+        progressRef.current = 100;
         setProgress(100);
         setCurrentSommelier(null);
         break;
@@ -115,7 +128,7 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
       default:
         console.warn('Unknown event type:', eventType);
     }
-  }, []);
+  }, [updateProgressFromCompleted]);
 
   useEffect(() => {
     if (!evaluationId || isCompleteRef.current) return;
