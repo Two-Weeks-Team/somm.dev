@@ -21,6 +21,7 @@ from app.techniques import (
     filter_techniques,
     load_techniques,
 )
+from app.providers.llm import resolve_byok
 
 logger = logging.getLogger(__name__)
 
@@ -74,6 +75,10 @@ async def start_evaluation(
 async def run_evaluation_pipeline(
     repo_url: str,
     criteria: str,
+    provider: Optional[str] = None,
+    model: Optional[str] = None,
+    temperature: Optional[float] = None,
+    api_key: Optional[str] = None,
     progress_queue: Optional[Queue] = None,
 ) -> Dict[str, Any]:
     """Run the LangGraph evaluation pipeline.
@@ -101,6 +106,10 @@ async def run_evaluation_pipeline(
     filtered = filter_techniques(techniques, available_inputs)
     repo_context["techniques"] = [tech.model_dump() for tech in filtered]
 
+    resolved_key, byok_error = resolve_byok(api_key)
+    if byok_error:
+        repo_context["byok_error"] = byok_error
+
     state: EvaluationState = {
         "repo_url": repo_url,
         "repo_context": repo_context,
@@ -124,7 +133,16 @@ async def run_evaluation_pipeline(
     from app.graph.graph import get_evaluation_graph
 
     graph = get_evaluation_graph()
-    result = await graph.ainvoke(state)
+    config = {
+        "configurable": {
+            "provider": provider or "gemini",
+            "api_key": resolved_key,
+            "model": model,
+            "temperature": temperature,
+            "max_output_tokens": 2048,
+        }
+    }
+    result = await graph.ainvoke(state, config=config)
 
     return result
 
@@ -244,6 +262,10 @@ async def run_full_evaluation(
     repo_url: str,
     criteria: str,
     user_id: str,
+    provider: Optional[str] = None,
+    model: Optional[str] = None,
+    temperature: Optional[float] = None,
+    api_key: Optional[str] = None,
 ) -> Dict[str, Any]:
     """Run a complete evaluation from start to finish.
 
@@ -261,7 +283,14 @@ async def run_full_evaluation(
     await eval_repo.update_status(eval_id, "running")
 
     try:
-        result = await run_evaluation_pipeline(repo_url, criteria)
+        result = await run_evaluation_pipeline(
+            repo_url,
+            criteria,
+            provider=provider,
+            model=model,
+            temperature=temperature,
+            api_key=api_key,
+        )
         await save_evaluation_results(eval_id, result)
         await eval_repo.update_status(eval_id, "completed")
 
