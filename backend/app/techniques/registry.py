@@ -53,7 +53,7 @@ class TechniqueRegistry:
     Usage:
         registry = TechniqueRegistry()
         technique = registry.get("five-whys")
-        aroma_techniques = registry.get_by_category("aroma")
+        aroma_techniques = registry.get_techniques_by_category("aroma")
     """
 
     _instance: Optional["TechniqueRegistry"] = None
@@ -135,7 +135,7 @@ class TechniqueRegistry:
         logger.info(
             "Technique registry initialized",
             extra={
-                "total": len(techniques),
+                "total": len(self._techniques),
                 "categories": len(self._categories),
                 "errors": len(self._load_errors),
             },
