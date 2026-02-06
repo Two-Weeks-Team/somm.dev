@@ -1,6 +1,5 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { AuthProvider } from '@/contexts/AuthContext';
-import { EvaluationForm } from '@/components/EvaluationForm';
 import { RepositoryPicker } from '@/components/RepositoryPicker';
 import { RepositoryCard } from '@/components/RepositoryCard';
 import { Repository } from '@/lib/api';
