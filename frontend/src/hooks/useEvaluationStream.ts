@@ -122,6 +122,9 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
         }
         break;
 
+      case 'sommelier_retry':
+        break;
+
       case 'evaluation_complete':
         setIsComplete(true);
         setStatus('completed');
