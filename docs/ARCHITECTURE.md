@@ -80,12 +80,12 @@ from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.runnables import RunnablePassthrough, RunnableParallel
 from langchain_core.messages import HumanMessage, SystemMessage
 
-# LLM Configuration
-llm = ChatGoogleGenerativeAI(
-    model="gemini-3-flash",
-    temperature=0.3,
+# LLM Configuration (see build_llm() in providers/llm.py)
+llm = build_llm(
+    provider="gemini",
+    model="gemini-3-flash-preview",  # Default model
+    temperature=0.7,                  # Default temperature
     max_output_tokens=2048,
-    google_api_key=settings.GOOGLE_API_KEY
 )
 
 # Structured Output Schema
@@ -261,12 +261,9 @@ class BaseSommelierNode(ABC):
     """Base class for all sommelier nodes following LangChain patterns."""
     
     def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-3-flash",
-            temperature=0.3,
-            google_api_key=settings.GOOGLE_API_KEY,
-            streaming=False  # Individual calls not streamed
-        )
+        # LLM is created at evaluate() time via build_llm()
+        # Default: gemini-3-flash-preview, temperature=0.7
+        self.parser = PydanticOutputParser(pydantic_object=SommelierOutput)
     
     @property
     @abstractmethod
@@ -617,9 +614,12 @@ POST /api/evaluate:
   request:
     repo_url: string
     criteria: enum(basic, hackathon, academic, custom)
+    evaluation_mode: enum(six_sommeliers, grand_tasting)  # default: six_sommeliers
   response:
     evaluation_id: string
     status: string
+    evaluation_mode: string
+    estimated_time: integer  # 30s for six_sommeliers, 60s for grand_tasting
     
 GET /api/evaluate/{id}/stream:
   description: SSE stream for progress updates
