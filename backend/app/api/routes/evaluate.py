@@ -20,6 +20,7 @@ from pydantic import BaseModel, Field
 from app.api.deps import get_current_user
 from app.core.exceptions import CorkedError, EmptyCellarError
 from app.services.evaluation_service import (
+    get_evaluation_progress,
     get_evaluation_result,
     handle_evaluation_error,
     run_evaluation_pipeline_with_events,
@@ -28,6 +29,7 @@ from app.services.evaluation_service import (
 from app.services.event_channel import (
     get_event_channel,
     EventType,
+    SommelierProgressEvent,
     create_sommelier_event,
 )
 from app.services.task_registry import register_task
@@ -144,8 +146,12 @@ async def create_evaluation(
             finally:
                 await event_channel.close_channel(eval_id)
 
-        task = asyncio.create_task(run_in_background())
-        await register_task(eval_id, task)
+        try:
+            task = asyncio.create_task(run_in_background())
+            await register_task(eval_id, task)
+        except Exception as e:
+            await event_channel.close_channel(eval_id)
+            raise CorkedError(f"Failed to start background task: {str(e)}")
 
         logger.info(f"[Evaluate] Background task started: {eval_id}")
 
@@ -178,17 +184,46 @@ async def stream_evaluation(
     - sommelier_complete: When a sommelier finishes analysis
     - sommelier_error: When a sommelier encounters an error
     - evaluation_complete: When the entire evaluation is finished
+    - evaluation_error: When the entire evaluation fails
     - heartbeat: Keep-alive signal (every 30 seconds)
     """
+    try:
+        progress = await get_evaluation_progress(evaluation_id)
+    except EmptyCellarError:
+        raise EmptyCellarError(f"Evaluation not found: {evaluation_id}")
+
+    if progress.get("user_id") != user.id:
+        raise CorkedError("Access denied: evaluation belongs to another user")
+
     event_channel = get_event_channel()
     await event_channel.create_channel(evaluation_id)
 
     async def generate():
         try:
+            status = progress.get("status")
+            if status in ("completed", "failed"):
+                event_type = (
+                    EventType.EVALUATION_COMPLETE
+                    if status == "completed"
+                    else EventType.EVALUATION_ERROR
+                )
+                fallback_event = SommelierProgressEvent(
+                    evaluation_id=evaluation_id,
+                    event_type=event_type,
+                    sommelier="system",
+                    message=f"Evaluation already {status}",
+                    progress_percent=100 if status == "completed" else -1,
+                )
+                yield f"data: {json.dumps(fallback_event.to_dict())}\n\n"
+                return
+
             async for event in event_channel.subscribe(evaluation_id):
                 yield f"data: {json.dumps(event.to_dict())}\n\n"
 
-                if event.event_type == EventType.EVALUATION_COMPLETE:
+                if event.event_type in (
+                    EventType.EVALUATION_COMPLETE,
+                    EventType.EVALUATION_ERROR,
+                ):
                     break
         except asyncio.CancelledError:
             logger.info(f"SSE stream cancelled for {evaluation_id}")

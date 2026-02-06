@@ -14,6 +14,7 @@ from typing import Dict, Optional
 logger = logging.getLogger(__name__)
 
 _running_tasks: Dict[str, asyncio.Task] = {}
+_cleanup_tasks: set[asyncio.Task] = set()
 _tasks_lock = asyncio.Lock()
 
 
@@ -40,7 +41,11 @@ async def register_task(evaluation_id: str, task: asyncio.Task) -> None:
         def cleanup_callback(completed_task: asyncio.Task) -> None:
             try:
                 loop = asyncio.get_running_loop()
-                loop.create_task(_safe_cleanup(evaluation_id, completed_task))
+                cleanup_task = loop.create_task(
+                    _safe_cleanup(evaluation_id, completed_task)
+                )
+                _cleanup_tasks.add(cleanup_task)
+                cleanup_task.add_done_callback(_cleanup_tasks.discard)
             except RuntimeError:
                 if _running_tasks.get(evaluation_id) is completed_task:
                     _running_tasks.pop(evaluation_id, None)

@@ -224,12 +224,14 @@ async def get_evaluation_progress(
 
     status = evaluation.get("status", "pending")
     completed = evaluation.get("completed_sommeliers", [])
+    user_id = evaluation.get("user_id")
 
     total_steps = 6
 
     if status == "pending":
         return {
             "status": "pending",
+            "user_id": user_id,
             "completed_steps": 0,
             "total_steps": total_steps,
             "percentage": 0,
@@ -237,6 +239,7 @@ async def get_evaluation_progress(
     elif status == "failed":
         return {
             "status": "failed",
+            "user_id": user_id,
             "completed_steps": len(completed),
             "total_steps": total_steps,
             "percentage": round(len(completed) / total_steps * 100, 2),
@@ -245,6 +248,7 @@ async def get_evaluation_progress(
     elif status == "running":
         return {
             "status": "running",
+            "user_id": user_id,
             "completed_steps": len(completed),
             "remaining_steps": total_steps - len(completed),
             "total_steps": total_steps,
@@ -254,6 +258,7 @@ async def get_evaluation_progress(
     else:
         return {
             "status": "completed",
+            "user_id": user_id,
             "completed_steps": total_steps,
             "total_steps": total_steps,
             "percentage": 100,
