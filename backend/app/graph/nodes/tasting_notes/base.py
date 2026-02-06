@@ -1,3 +1,5 @@
+import asyncio
+import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
@@ -15,6 +17,11 @@ from app.techniques.mappings import (
     Priority,
 )
 from app.techniques.schema import TechniqueDefinition
+
+logger = logging.getLogger(__name__)
+
+MAX_RETRIES = 3
+RETRY_DELAYS = [1, 2, 4]
 
 TASTING_NOTE_PROGRESS = {
     "aroma": {"start": 10, "complete": 20},
@@ -123,34 +130,51 @@ Provide structured output with technique results and an aggregate summary."""
             },
         }
 
-        try:
-            prompt = self.build_evaluation_prompt(techniques)
-            messages = prompt.format_messages(repo_context=state["repo_context"])
-            response = await llm.ainvoke(messages, config=config)
+        prompt = self.build_evaluation_prompt(techniques)
+        messages = prompt.format_messages(repo_context=state["repo_context"])
 
-            usage = getattr(response, "usage_metadata", {}) or {}
-            observability["token_usage"] = {
-                self.category.value: {
-                    "input_tokens": usage.get("input_tokens"),
-                    "output_tokens": usage.get("output_tokens"),
-                    "total_tokens": usage.get("total_tokens"),
+        last_error: Optional[Exception] = None
+        for attempt in range(MAX_RETRIES):
+            try:
+                response = await llm.ainvoke(messages, config=config)
+
+                usage = getattr(response, "usage_metadata", {}) or {}
+                observability["token_usage"] = {
+                    self.category.value: {
+                        "input_tokens": usage.get("input_tokens"),
+                        "output_tokens": usage.get("output_tokens"),
+                        "total_tokens": usage.get("total_tokens"),
+                    }
                 }
-            }
-            observability["trace_metadata"][self.category.value]["completed_at"] = (
-                datetime.now(timezone.utc).isoformat()
-            )
+                observability["trace_metadata"][self.category.value]["completed_at"] = (
+                    datetime.now(timezone.utc).isoformat()
+                )
 
-            result = self.parser.parse(response.content)
-            return {
-                f"{self.category.value}_result": result.model_dump(),
-                **observability,
-            }
-        except Exception as e:
-            observability["trace_metadata"][self.category.value]["completed_at"] = (
-                datetime.now(timezone.utc).isoformat()
-            )
-            return {
-                "errors": [f"{self.category.value} evaluation failed: {e!s}"],
-                f"{self.category.value}_result": None,
-                **observability,
-            }
+                result = self.parser.parse(response.content)
+                return {
+                    f"{self.category.value}_result": result.model_dump(),
+                    **observability,
+                }
+            except Exception as e:
+                last_error = e
+                if attempt < MAX_RETRIES - 1:
+                    delay = RETRY_DELAYS[attempt]
+                    logger.warning(
+                        f"{self.category.value} attempt {attempt + 1} failed: {e!s}. "
+                        f"Retrying in {delay}s..."
+                    )
+                    await asyncio.sleep(delay)
+                else:
+                    logger.error(
+                        f"{self.category.value} failed after {MAX_RETRIES} attempts: "
+                        f"{e!s}"
+                    )
+
+        observability["trace_metadata"][self.category.value]["completed_at"] = (
+            datetime.now(timezone.utc).isoformat()
+        )
+        return {
+            "errors": [f"{self.category.value} evaluation failed: {last_error!s}"],
+            f"{self.category.value}_result": None,
+            **observability,
+        }
