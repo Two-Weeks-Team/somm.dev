@@ -163,7 +163,8 @@ def get_primary_technique(
         category: The tasting note category.
 
     Returns:
-        The P0 technique, or None if category is empty.
+        The highest priority technique (may be P0, P1, or P2 depending on
+        what's available), or None if category is empty.
     """
     techniques = get_techniques_for_category(category)
     return techniques[0] if techniques else None

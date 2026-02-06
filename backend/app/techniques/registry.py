@@ -4,6 +4,7 @@ This module provides a singleton registry for accessing technique definitions
 with validation, caching, and efficient lookup by ID or category.
 """
 
+import threading
 from pathlib import Path
 from typing import Dict, List, Optional, Set
 
@@ -57,26 +58,32 @@ class TechniqueRegistry:
 
     _instance: Optional["TechniqueRegistry"] = None
     _initialized: bool = False
+    _lock: threading.Lock = threading.Lock()
 
     def __new__(cls) -> "TechniqueRegistry":
         if cls._instance is None:
-            cls._instance = super().__new__(cls)
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
         return cls._instance
 
-    def __init__(self, definitions_dir: Optional[Path] = None):
-        """Initialize the registry (only runs once due to singleton)."""
+    def __init__(self) -> None:
         if TechniqueRegistry._initialized:
             return
 
-        self._definitions_dir = definitions_dir or DEFAULT_TECHNIQUES_DIR
-        self._techniques: List[TechniqueDefinition] = []
-        self._by_id: Dict[str, TechniqueDefinition] = {}
-        self._by_category: Dict[str, List[TechniqueDefinition]] = {}
-        self._categories: Set[str] = set()
-        self._loaded = False
-        self._load_errors: List[str] = []
+        with TechniqueRegistry._lock:
+            if TechniqueRegistry._initialized:
+                return
 
-        TechniqueRegistry._initialized = True
+            self._definitions_dir = DEFAULT_TECHNIQUES_DIR
+            self._techniques: List[TechniqueDefinition] = []
+            self._by_id: Dict[str, TechniqueDefinition] = {}
+            self._by_category: Dict[str, List[TechniqueDefinition]] = {}
+            self._categories: Set[str] = set()
+            self._loaded = False
+            self._load_errors: List[str] = []
+
+            TechniqueRegistry._initialized = True
 
     def _ensure_loaded(self) -> None:
         """Ensure techniques are loaded before access."""
@@ -97,8 +104,9 @@ class TechniqueRegistry:
                 extra={"loaded": len(techniques), "errors": len(errors)},
             )
 
-        # Check for duplicate IDs
+        # Check for duplicate IDs and filter them out
         seen_ids: Dict[str, str] = {}
+        unique_techniques: List[TechniqueDefinition] = []
         for tech in techniques:
             if tech.id in seen_ids:
                 errors.append(
@@ -107,16 +115,17 @@ class TechniqueRegistry:
                 )
             else:
                 seen_ids[tech.id] = tech.category
+                unique_techniques.append(tech)
 
-        if errors and not techniques:
+        if errors and not unique_techniques:
             raise TechniqueValidationError(errors)
 
-        # Build indexes
-        self._techniques = techniques
-        self._by_id = {t.id: t for t in techniques}
-        self._categories = {t.category for t in techniques}
+        # Build indexes (using deduplicated list)
+        self._techniques = unique_techniques
+        self._by_id = {t.id: t for t in unique_techniques}
+        self._categories = {t.category for t in unique_techniques}
 
-        for tech in techniques:
+        for tech in unique_techniques:
             if tech.category not in self._by_category:
                 self._by_category[tech.category] = []
             self._by_category[tech.category].append(tech)
