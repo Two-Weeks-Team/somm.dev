@@ -5,8 +5,15 @@ Color: #4169E1
 Style: Wise, synthesizing, final verdict.
 """
 
+from datetime import datetime, timezone
+from typing import Any, Dict, Optional
+
+from langchain_core.runnables import RunnableConfig
+
 from app.graph.nodes.base import BaseSommelierNode
+from app.graph.state import EvaluationState
 from app.prompts.jeanpierre import get_jeanpierre_prompt
+from app.providers.llm import build_llm
 
 
 class JeanPierreNode(BaseSommelierNode):
@@ -22,3 +29,82 @@ class JeanPierreNode(BaseSommelierNode):
     def get_prompt(self, criteria: str):
         """Return Jean-Pierre's synthesis prompt template."""
         return get_jeanpierre_prompt()
+
+    async def evaluate(
+        self, state: EvaluationState, config: Optional[RunnableConfig] = None
+    ) -> Dict[str, Any]:
+        """Execute the synthesis evaluation with all sommelier results.
+
+        Unlike other sommeliers, Jean-Pierre needs access to all previous
+        sommelier results for synthesis.
+        """
+        started_at = datetime.now(timezone.utc).isoformat()
+        configurable = (config or {}).get("configurable", {})
+        provider = configurable.get("provider", "gemini")
+        api_key = configurable.get("api_key")
+        model = configurable.get("model")
+        temperature = configurable.get("temperature")
+        max_output_tokens = configurable.get("max_output_tokens", 2048)
+        llm = build_llm(
+            provider=provider,
+            api_key=api_key,
+            model=model,
+            temperature=temperature,
+            max_output_tokens=max_output_tokens,
+        )
+        model_name = model or getattr(
+            llm, "model", getattr(llm, "model_name", "unknown")
+        )
+        observability = {
+            "completed_sommeliers": [self.name],
+            "token_usage": {self.name: {}},
+            "cost_usage": {self.name: None},
+            "trace_metadata": {
+                self.name: {
+                    "started_at": started_at,
+                    "completed_at": None,
+                    "model": model_name,
+                    "provider": provider,
+                }
+            },
+        }
+        try:
+            prompt = self.get_prompt(state["evaluation_criteria"])
+            prompt_inputs = {
+                "repo_context": state["repo_context"],
+                "criteria": state["evaluation_criteria"],
+                "format_instructions": self.parser.get_format_instructions(),
+                "marcel_result": state.get("marcel_result") or "Not available",
+                "isabella_result": state.get("isabella_result") or "Not available",
+                "heinrich_result": state.get("heinrich_result") or "Not available",
+                "sofia_result": state.get("sofia_result") or "Not available",
+                "laurent_result": state.get("laurent_result") or "Not available",
+            }
+            messages = prompt.format_messages(**prompt_inputs)
+            response = await llm.ainvoke(messages, config=config)
+            usage = getattr(response, "usage_metadata", {}) or {}
+            observability["token_usage"] = {
+                self.name: {
+                    "input_tokens": usage.get("input_tokens"),
+                    "output_tokens": usage.get("output_tokens"),
+                    "total_tokens": usage.get("total_tokens"),
+                }
+            }
+            observability["cost_usage"] = {self.name: usage.get("total_cost")}
+            observability["trace_metadata"][self.name]["completed_at"] = datetime.now(
+                timezone.utc
+            ).isoformat()
+            result = self.parser.parse(response.content)
+            return {
+                f"{self.name}_result": result.dict(),
+                **observability,
+            }
+        except Exception as e:
+            observability["trace_metadata"][self.name]["completed_at"] = datetime.now(
+                timezone.utc
+            ).isoformat()
+            return {
+                "errors": [f"{self.name} evaluation failed: {e!s}"],
+                f"{self.name}_result": None,
+                **observability,
+            }

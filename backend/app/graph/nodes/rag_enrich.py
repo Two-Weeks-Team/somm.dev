@@ -107,6 +107,23 @@ async def rag_enrich(
     repo_context = state.get("repo_context", {})
     query = _create_query(state)
 
+    # Skip RAG if no API key configured
+    if not settings.SYNTHETIC_API_KEY:
+        return {
+            "rag_context": {
+                "query": query,
+                "chunks": [],
+                "error": "RAG disabled: no API key configured",
+            },
+            "trace_metadata": {
+                "rag_enrich": {
+                    "started_at": started_at,
+                    "completed_at": datetime.now(timezone.utc).isoformat(),
+                    "skipped": True,
+                }
+            },
+        }
+
     try:
         docs = _build_documents_from_context(repo_context)
         if not docs:
