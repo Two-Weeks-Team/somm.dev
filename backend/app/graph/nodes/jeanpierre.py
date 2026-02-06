@@ -155,7 +155,7 @@ class JeanPierreNode(BaseSommelierNode):
                         sommelier=self.name,
                         event_type="sommelier_error",
                         progress_percent=progress_config["start"],
-                        message=f"{self.name} error: {e!s}",
+                        message=f"{self.name} synthesis encountered an error",
                     ),
                 )
 

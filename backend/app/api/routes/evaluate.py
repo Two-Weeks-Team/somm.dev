@@ -127,6 +127,8 @@ async def create_evaluation(
             except Exception as e:
                 logger.exception(f"Background evaluation failed: {eval_id}")
                 await handle_evaluation_error(eval_id, str(e))
+            finally:
+                await event_channel.close_channel(eval_id)
 
         task = asyncio.create_task(run_in_background())
         await register_task(eval_id, task)

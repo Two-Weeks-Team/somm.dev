@@ -17,12 +17,6 @@ _running_tasks: Dict[str, asyncio.Task] = {}
 _tasks_lock = asyncio.Lock()
 
 
-def _cleanup_task_sync(evaluation_id: str) -> None:
-    """Callback to clean up task entry after completion."""
-    _running_tasks.pop(evaluation_id, None)
-    logger.info(f"Task cleanup for {evaluation_id}")
-
-
 async def register_task(evaluation_id: str, task: asyncio.Task) -> None:
     """Register an evaluation task for tracking.
 
@@ -36,10 +30,33 @@ async def register_task(evaluation_id: str, task: asyncio.Task) -> None:
             if not old_task.done():
                 logger.warning(f"Cancelling existing task for {evaluation_id}")
                 old_task.cancel()
+                try:
+                    await asyncio.wait_for(asyncio.shield(old_task), timeout=1.0)
+                except (asyncio.CancelledError, asyncio.TimeoutError):
+                    pass
 
         _running_tasks[evaluation_id] = task
-        task.add_done_callback(lambda t: _cleanup_task_sync(evaluation_id))
+
+        def cleanup_callback(completed_task: asyncio.Task) -> None:
+            try:
+                loop = asyncio.get_running_loop()
+                loop.create_task(_safe_cleanup(evaluation_id, completed_task))
+            except RuntimeError:
+                if _running_tasks.get(evaluation_id) is completed_task:
+                    _running_tasks.pop(evaluation_id, None)
+                    logger.info(f"Task cleanup (no loop) for {evaluation_id}")
+
+        task.add_done_callback(cleanup_callback)
         logger.info(f"Registered task for {evaluation_id}")
+
+
+async def _safe_cleanup(evaluation_id: str, completed_task: asyncio.Task) -> None:
+    """Safely clean up a completed task with proper locking."""
+    async with _tasks_lock:
+        current_task = _running_tasks.get(evaluation_id)
+        if current_task is completed_task:
+            _running_tasks.pop(evaluation_id, None)
+            logger.info(f"Task cleanup for {evaluation_id}")
 
 
 async def cancel_task(evaluation_id: str) -> bool:
@@ -78,6 +95,7 @@ async def get_task_status(evaluation_id: str) -> Optional[str]:
         return "running"
 
 
-def get_running_task_count() -> int:
+async def get_running_task_count() -> int:
     """Get the number of currently running tasks."""
-    return sum(1 for t in _running_tasks.values() if not t.done())
+    async with _tasks_lock:
+        return sum(1 for t in _running_tasks.values() if not t.done())
