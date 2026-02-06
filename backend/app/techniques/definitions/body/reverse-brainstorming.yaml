@@ -1,0 +1,70 @@
+id: reverse-brainstorming
+name: Reverse Brainstorming
+nameKo: 역브레인스토밍
+category: body
+applicableHats:
+- black
+- green
+evaluationDimensions:
+- B3
+- B4
+- C3
+description: '"어떻게 하면 실패할 수 있을까?"라고 역으로 질문하여
+
+  잠재적 문제점을 발견하는 기법.
+
+  부정적 시나리오를 통해 위험을 사전에 식별합니다.
+
+  '
+promptTemplate: '## Reverse Brainstorming 분석
+
+
+  프로젝트가 역발상을 통해 위험을 식별했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **실패 시나리오**: "어떻게 하면 실패할까?"를 고려했는가?
+
+  2. **역전 발상**: 문제를 뒤집어 생각했는가?
+
+  3. **위험 발견**: 역발상에서 위험 요소를 도출했는가?
+
+  4. **예방 조치**: 발견된 위험에 대한 대응책이 있는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 체계적 역발상, 다양한 실패 시나리오, 예방책 수립
+
+  - 4점: 주요 실패 가능성 식별 및 대응
+
+  - 3점: 일부 부정적 시나리오 고려
+
+  - 2점: 피상적 위험 언급
+
+  - 1점: 역발상 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 체계적 역발상, 예방책 수립
+    4: 주요 실패 식별 및 대응
+    3: 일부 부정 시나리오
+    2: 피상적 위험
+    1: 역발상 없음
+outputSchema:
+  score: number
+  failureScenarios: string[]
+  risksIdentified: string[]
+  preventionMeasures: string[]
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 550
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Creative Problem Solving
+requiredSources: either

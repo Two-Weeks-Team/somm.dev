@@ -1,0 +1,71 @@
+id: trait-transfer
+name: Trait Transfer
+nameKo: 특성 전이
+category: balance
+applicableHats:
+- green
+- yellow
+evaluationDimensions:
+- A3
+- B1
+- B2
+description: '한 영역의 성공적인 특성을 다른 영역으로 전이하는 기법.
+
+  입증된 패턴이나 원리를 새로운 맥락에 적용하여
+
+  실현 가능성을 높입니다.
+
+  '
+promptTemplate: '## Trait Transfer 분석
+
+
+  프로젝트가 검증된 특성을 효과적으로 전이했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **원천 식별**: 어떤 성공 사례에서 특성을 가져왔는가?
+
+  2. **특성 추출**: 어떤 핵심 특성을 추출했는가?
+
+  3. **적용성 검증**: 새 맥락에서의 적용 가능성을 검토했는가?
+
+  4. **전이 성공**: 특성 전이가 효과적으로 이루어졌는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 다양한 소스에서 핵심 특성 추출 및 창의적 적용
+
+  - 4점: 명확한 특성 전이와 맥락화
+
+  - 3점: 일부 특성 참조
+
+  - 2점: 피상적 벤치마킹
+
+  - 1점: 특성 전이 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 다양한 소스, 창의적 적용
+    4: 명확한 특성 전이
+    3: 일부 특성 참조
+    2: 피상적 벤치마킹
+    1: 특성 전이 없음
+outputSchema:
+  score: number
+  sourceTraits: string[]
+  extractedPrinciples: string[]
+  applicationContext: string
+  transferSuccess: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 550
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Knowledge Transfer / Best Practices
+requiredSources: either

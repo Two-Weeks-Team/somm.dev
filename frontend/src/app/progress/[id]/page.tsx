@@ -1,16 +1,46 @@
 'use client';
 
-import React, { useEffect } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import React, { useEffect, useMemo } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { useEvaluationStream } from '../../../hooks/useEvaluationStream';
-import { Wine, CheckCircle2, Loader2, AlertTriangle, XCircle, ArrowLeft } from 'lucide-react';
+import { Wine, Sparkles, CheckCircle2, Loader2, AlertTriangle, XCircle, ArrowLeft, WifiOff } from 'lucide-react';
+import { EvaluationMode } from '../../../types';
+
+const SIX_SOMMELIERS = [
+  { id: 'marcel', name: 'Marcel', role: 'Structure & Metrics' },
+  { id: 'isabella', name: 'Isabella', role: 'Code Quality' },
+  { id: 'heinrich', name: 'Heinrich', role: 'Security & Testing' },
+  { id: 'sofia', name: 'Sofia', role: 'Innovation' },
+  { id: 'laurent', name: 'Laurent', role: 'Implementation' },
+  { id: 'jeanpierre', name: 'Jean-Pierre', role: 'Final Verdict' },
+];
+
+const GRAND_TASTING_NOTES = [
+  { id: 'aroma', name: 'Aroma', role: 'Problem Analysis' },
+  { id: 'palate', name: 'Palate', role: 'Innovation & Creativity' },
+  { id: 'body', name: 'Body', role: 'Technical Depth' },
+  { id: 'finish', name: 'Finish', role: 'User Experience' },
+  { id: 'balance', name: 'Balance', role: 'Architecture & Design' },
+  { id: 'vintage', name: 'Vintage', role: 'Market Opportunity' },
+  { id: 'terroir', name: 'Terroir', role: 'Presentation Quality' },
+  { id: 'cellar', name: 'Cellar', role: 'Final Synthesis' },
+];
 
 export default function ProgressPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const id = params.id as string;
+  const modeParam = searchParams.get('mode');
+  const mode: EvaluationMode = modeParam === 'grand_tasting' ? 'grand_tasting' : 'six_sommeliers';
   
-  const { completedSommeliers, errors, isComplete, progress, status } = useEvaluationStream(id);
+  const { completedSommeliers, errors, isComplete, progress, status, connectionStatus, retryInfo } = useEvaluationStream(id);
+
+  const evaluators = useMemo(() => {
+    return mode === 'grand_tasting' ? GRAND_TASTING_NOTES : SIX_SOMMELIERS;
+  }, [mode]);
+
+  const isGrandTasting = mode === 'grand_tasting';
 
   useEffect(() => {
     if (isComplete && status === 'completed') {
@@ -21,25 +51,25 @@ export default function ProgressPage() {
     }
   }, [isComplete, status, id, router]);
 
-  const sommeliers = [
-    { name: 'Marcel', role: 'Structure & Metrics' },
-    { name: 'Isabella', role: 'Code Quality' },
-    { name: 'Heinrich', role: 'Security & Testing' },
-    { name: 'Sofia', role: 'Innovation' },
-    { name: 'Laurent', role: 'Implementation' },
-    { name: 'Jean-Pierre', role: 'Final Verdict' },
-  ];
-
   return (
     <div className="min-h-screen bg-[#FAFAFA] py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-12">
           <h1 className="text-3xl font-bold text-[#722F37] mb-4 font-serif">
-            Tasting in Progress
+            {isGrandTasting ? 'Grand Tasting in Progress' : 'Tasting in Progress'}
           </h1>
           <p className="text-gray-600">
-            Our sommeliers are analyzing the notes and nuances of your codebase.
+            {isGrandTasting 
+              ? 'Our expert panel is conducting a comprehensive analysis with 75 techniques.'
+              : 'Our sommeliers are analyzing the notes and nuances of your codebase.'
+            }
           </p>
+          {isGrandTasting && (
+            <div className="mt-2 inline-flex items-center px-3 py-1 bg-amber-100 text-amber-800 rounded-full text-sm">
+              <Sparkles size={14} className="mr-1" />
+              Hackathon Mode
+            </div>
+          )}
         </div>
 
         <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-8 mb-8">
@@ -50,44 +80,64 @@ export default function ProgressPage() {
             </div>
             <div className="w-full bg-gray-100 rounded-full h-2.5 overflow-hidden">
               <div 
-                className="bg-[#722F37] h-2.5 rounded-full transition-all duration-500 ease-out"
+                className={`h-2.5 rounded-full transition-all duration-500 ease-out ${
+                  isGrandTasting ? 'bg-amber-600' : 'bg-[#722F37]'
+                }`}
                 style={{ width: `${progress}%` }}
               ></div>
             </div>
+            {connectionStatus === 'retrying' && retryInfo && (
+              <div className="mt-3 flex items-center text-sm text-amber-600">
+                <WifiOff size={14} className="mr-2" />
+                <span>
+                  Connection lost - retrying ({retryInfo.attempt}/{retryInfo.maxAttempts})...
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="space-y-4">
-            {sommeliers.map((somm) => {
-              const isCompleted = completedSommeliers.some(s => s.name === somm.name);
-              const isNext = !isCompleted && completedSommeliers.length === sommeliers.indexOf(somm);
+            {evaluators.map((evaluator, index) => {
+              const isCompleted = completedSommeliers.some(s => s.id === evaluator.id);
+              const isActive = !isCompleted && completedSommeliers.length >= index && completedSommeliers.length < evaluators.length;
               
               return (
                 <div 
-                  key={somm.name}
+                  key={evaluator.id}
                   className={`flex items-center p-4 rounded-lg border transition-all duration-300 ${
                     isCompleted 
-                      ? 'bg-[#F7E7CE] bg-opacity-20 border-[#F7E7CE]' 
-                      : isNext
-                        ? 'bg-white border-[#722F37] border-opacity-30 shadow-sm'
+                      ? isGrandTasting 
+                        ? 'bg-amber-50 border-amber-200'
+                        : 'bg-[#F7E7CE] bg-opacity-20 border-[#F7E7CE]'
+                      : isActive
+                        ? isGrandTasting
+                          ? 'bg-white border-amber-400 border-opacity-50 shadow-sm'
+                          : 'bg-white border-[#722F37] border-opacity-30 shadow-sm'
                         : 'bg-gray-50 border-transparent opacity-60'
                   }`}
                 >
                   <div className={`p-2 rounded-full mr-4 ${
-                    isCompleted ? 'bg-[#722F37] text-white' : 'bg-gray-200 text-gray-400'
+                    isCompleted 
+                      ? isGrandTasting ? 'bg-amber-600 text-white' : 'bg-[#722F37] text-white'
+                      : 'bg-gray-200 text-gray-400'
                   }`}>
-                    <Wine size={20} />
+                    {isGrandTasting ? <Sparkles size={20} /> : <Wine size={20} />}
                   </div>
                   <div className="flex-1">
-                    <h3 className={`font-medium ${isCompleted ? 'text-[#722F37]' : 'text-gray-900'}`}>
-                      {somm.name}
+                    <h3 className={`font-medium ${
+                      isCompleted 
+                        ? isGrandTasting ? 'text-amber-800' : 'text-[#722F37]'
+                        : 'text-gray-900'
+                    }`}>
+                      {evaluator.name}
                     </h3>
-                    <p className="text-sm text-gray-500">{somm.role}</p>
+                    <p className="text-sm text-gray-500">{evaluator.role}</p>
                   </div>
-                  <div className="text-[#722F37]">
+                  <div>
                     {isCompleted ? (
                       <CheckCircle2 className="text-green-600" />
-                    ) : isNext ? (
-                      <Loader2 className="animate-spin text-[#722F37]" />
+                    ) : isActive ? (
+                      <Loader2 className={`animate-spin ${isGrandTasting ? 'text-amber-600' : 'text-[#722F37]'}`} />
                     ) : (
                       <div className="w-6 h-6 rounded-full border-2 border-gray-200"></div>
                     )}

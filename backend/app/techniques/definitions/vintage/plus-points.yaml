@@ -1,0 +1,73 @@
+id: plus-points
+name: Plus Points Analysis
+nameKo: 플러스 포인트
+category: vintage
+applicableHats:
+- yellow
+evaluationDimensions:
+- A3
+- A4
+- C1
+description: '프로젝트의 긍정적인 측면과 강점을 체계적으로 식별하는 기법.
+
+  비판 이전에 가치 있는 부분을 먼저 인정하고 발굴.
+
+  '
+promptTemplate: '## Plus Points Analysis (플러스 포인트 분석)
+
+
+  이 프로젝트의 긍정적인 측면과 강점을 찾으세요.
+
+  비판적 시각은 배제하고, 오직 좋은 점만 집중적으로 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **핵심 강점**: 이 프로젝트의 가장 큰 강점은?
+
+  2. **독창성**: 다른 프로젝트와 차별화되는 긍정적 요소는?
+
+  3. **실행력**: 팀이 잘 해낸 부분은?
+
+  4. **가치 제공**: 사용자에게 제공하는 명확한 가치는?
+
+  5. **기술적 장점**: 기술적으로 잘 구현된 부분은?
+
+
+  ### 점수 기준:
+
+  - 5점: 5개 이상의 명확한 강점, 차별화된 가치
+
+  - 4점: 3-4개의 강점, 좋은 실행력
+
+  - 3점: 2개의 강점, 평균적 수준
+
+  - 2점: 1개의 강점, 미흡한 부분이 많음
+
+  - 1점: 명확한 강점을 찾기 어려움
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 5개+ 명확한 강점, 차별화된 가치
+    4: 3-4개 강점, 좋은 실행력
+    3: 2개 강점, 평균 수준
+    2: 1개 강점
+    1: 명확한 강점 없음
+outputSchema:
+  score: number
+  coreStrengths: string[]
+  uniqueness: string
+  execution: string
+  valueProvided: string
+  technicalMerits: string
+  reasoning: string
+metadata:
+  complexity: low
+  estimatedTokens: 500
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Yellow Hat Thinking / Positive Analysis
+requiredSources: pdf_only

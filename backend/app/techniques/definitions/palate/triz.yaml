@@ -1,0 +1,74 @@
+id: triz
+name: TRIZ
+nameKo: 트리즈
+category: palate
+applicableHats:
+- green
+- white
+evaluationDimensions:
+- A3
+- B1
+- B2
+description: 'Genrich Altshuller가 200,000+ 특허 분석을 통해 개발한 체계적 발명 방법론.
+
+  모순 해결, 40가지 발명 원리, 기술 진화 법칙을 활용하여
+
+  혁신적인 문제 해결을 이끌어내는 공학적 창의성 기법.
+
+  '
+promptTemplate: '## TRIZ 분석
+
+
+  이 프로젝트가 TRIZ 원리를 얼마나 활용했는지 분석하세요.
+
+
+  ### TRIZ 핵심 개념:
+
+  1. **모순 식별**: 기술적/물리적 모순을 인식했는가?
+
+  2. **40가지 발명 원리**: 분할, 추출, 국소적 품질 등 원리 적용?
+
+  3. **이상적 최종 결과**: 이상적인 솔루션을 정의했는가?
+
+  4. **자원 활용**: 기존 자원을 창의적으로 활용했는가?
+
+  5. **기술 진화**: 기술 발전 패턴을 고려했는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 모순 해결, 다수 발명 원리 적용, 이상적 결과 달성
+
+  - 4점: 명확한 모순 인식, 2-3개 발명 원리 적용
+
+  - 3점: 일부 모순 인식, 1개 발명 원리 적용
+
+  - 2점: 암묵적 모순 해결 시도
+
+  - 1점: TRIZ 개념 미적용
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 모순 해결, 다수 원리 적용
+    4: 명확한 모순, 2-3개 원리
+    3: 일부 모순, 1개 원리
+    2: 암묵적 모순 해결
+    1: TRIZ 미적용
+outputSchema:
+  score: number
+  contradictionsIdentified: string[]
+  inventivePrinciplesUsed: string[]
+  idealFinalResult: string
+  resourceUtilization: string
+  reasoning: string
+metadata:
+  complexity: high
+  estimatedTokens: 750
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Genrich Altshuller (1946-1956)
+  academicReference: 200,000+ 특허 분석 기반, Samsung/GE/Intel 도입
+requiredSources: both

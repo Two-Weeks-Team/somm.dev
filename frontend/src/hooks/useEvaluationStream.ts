@@ -2,6 +2,14 @@ import { useState, useEffect, useRef, useCallback } from 'react';
 import { api } from '../lib/api';
 import { SommelierResult, EvaluationStatus, SSEEvent } from '../types';
 
+type ConnectionStatus = 'connecting' | 'open' | 'retrying' | 'failed';
+
+interface RetryInfo {
+  attempt: number;
+  maxAttempts: number;
+  nextRetryAt: Date | null;
+}
+
 interface UseEvaluationStreamResult {
   status: EvaluationStatus;
   completedSommeliers: SommelierResult[];
@@ -9,6 +17,8 @@ interface UseEvaluationStreamResult {
   isComplete: boolean;
   progress: number;
   currentSommelier: string | null;
+  connectionStatus: ConnectionStatus;
+  retryInfo: RetryInfo | null;
 }
 
 const SOMMELIER_NAMES: Record<string, { name: string; role: string }> = {
@@ -20,7 +30,19 @@ const SOMMELIER_NAMES: Record<string, { name: string; role: string }> = {
   jeanpierre: { name: 'Jean-Pierre', role: 'Master Sommelier' },
 };
 
+const TASTING_NOTE_NAMES: Record<string, { name: string; role: string }> = {
+  aroma: { name: 'Aroma', role: 'Problem Analysis' },
+  palate: { name: 'Palate', role: 'Innovation & Creativity' },
+  body: { name: 'Body', role: 'Technical Depth' },
+  finish: { name: 'Finish', role: 'User Experience' },
+  balance: { name: 'Balance', role: 'Architecture & Design' },
+  vintage: { name: 'Vintage', role: 'Market Opportunity' },
+  terroir: { name: 'Terroir', role: 'Presentation Quality' },
+  cellar: { name: 'Cellar', role: 'Final Synthesis' },
+};
+
 const TOTAL_SOMMELIERS = 6;
+const TOTAL_TASTING_NOTES = 8;
 
 export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamResult => {
   const [status, setStatus] = useState<EvaluationStatus>('pending');
@@ -29,6 +51,8 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
   const [isComplete, setIsComplete] = useState(false);
   const [progress, setProgress] = useState(0);
   const [currentSommelier, setCurrentSommelier] = useState<string | null>(null);
+  const [connectionStatus, setConnectionStatus] = useState<ConnectionStatus>('connecting');
+  const [retryInfo, setRetryInfo] = useState<RetryInfo | null>(null);
   
   const progressRef = useRef(0);
 
@@ -38,7 +62,9 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
   }, [isComplete]);
   
   const updateProgressFromCompleted = useCallback((completedCount: number, hasActiveTask: boolean) => {
-    const baseProgress = Math.round((completedCount / TOTAL_SOMMELIERS) * 100);
+    const isTastingMode = completedSommeliers.some(s => s.id in TASTING_NOTE_NAMES);
+    const total = isTastingMode ? TOTAL_TASTING_NOTES : TOTAL_SOMMELIERS;
+    const baseProgress = Math.round((completedCount / total) * 100);
     const activeBonus = hasActiveTask ? 5 : 0;
     const newProgress = Math.min(99, baseProgress + activeBonus);
     
@@ -65,10 +91,11 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
 
       case 'sommelier_complete':
         if (event.sommelier) {
-          const sommelierInfo = SOMMELIER_NAMES[event.sommelier] || {
-            name: event.sommelier,
-            role: 'Sommelier',
-          };
+          const sommelierInfo = SOMMELIER_NAMES[event.sommelier] || 
+            TASTING_NOTE_NAMES[event.sommelier] || {
+              name: event.sommelier,
+              role: 'Evaluator',
+            };
           setCompletedSommeliers((prev) => {
             if (prev.find((s) => s.id === event.sommelier)) return prev;
             const newList = [
@@ -95,6 +122,9 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
         if (event.sommelier) {
           setCurrentSommelier(null);
         }
+        break;
+
+      case 'sommelier_retry':
         break;
 
       case 'evaluation_complete':
@@ -143,6 +173,8 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
         eventSource.close();
       }
 
+      setConnectionStatus('connecting');
+
       eventSource = api.getEvaluationStream(
         evaluationId,
         (event) => {
@@ -150,22 +182,39 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
             const parsedData: SSEEvent = JSON.parse(event.data);
             handleSSEEvent(parsedData);
             retryCount = 0;
+            setConnectionStatus('open');
+            setRetryInfo(null);
           } catch (err) {
             console.error('Error parsing SSE data:', err);
           }
         },
         (error) => {
-          console.error('SSE Error:', error);
+          const readyState = eventSource?.readyState;
+          const readyStateLabel = readyState === 0 ? 'CONNECTING' : readyState === 1 ? 'OPEN' : 'CLOSED';
+          console.error('SSE connection error:', {
+            readyState: `${readyState} (${readyStateLabel})`,
+            retryCount,
+            maxRetries: MAX_RETRIES,
+            isOnline: typeof navigator !== 'undefined' ? navigator.onLine : 'unknown',
+            evaluationId,
+          });
+          
           if (eventSource) eventSource.close();
 
           if (!isCompleteRef.current && retryCount < MAX_RETRIES) {
             retryCount += 1;
             const timeout = Math.min(Math.pow(2, retryCount) * 1000, 30000);
+            const nextRetryAt = new Date(Date.now() + timeout);
+            
+            setConnectionStatus('retrying');
+            setRetryInfo({ attempt: retryCount, maxAttempts: MAX_RETRIES, nextRetryAt });
+            
             retryTimeout = setTimeout(() => {
-              console.log(`Retrying connection... (${retryCount}/${MAX_RETRIES})`);
               connect();
             }, timeout);
           } else if (retryCount >= MAX_RETRIES) {
+            setConnectionStatus('failed');
+            setRetryInfo(null);
             setErrors((prev) => [...prev, 'Connection lost. Please refresh the page.']);
           }
         }
@@ -191,5 +240,7 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
     isComplete,
     progress,
     currentSommelier,
+    connectionStatus,
+    retryInfo,
   };
 };

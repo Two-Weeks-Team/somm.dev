@@ -1,0 +1,71 @@
+id: evolutionary-pressure
+name: Evolutionary Pressure Analysis
+nameKo: 진화적 압력
+category: balance
+applicableHats:
+- black
+- yellow
+evaluationDimensions:
+- A2
+- B3
+- D1
+description: '시장과 환경의 진화적 압력을 분석하여
+
+  장기적 생존 가능성을 평가하는 기법.
+
+  적응력과 변화 대응 능력을 검토합니다.
+
+  '
+promptTemplate: '## Evolutionary Pressure Analysis 분석
+
+
+  프로젝트가 환경 변화에 대한 적응력을 갖추었는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **환경 변화**: 시장/기술 환경의 변화 트렌드를 파악했는가?
+
+  2. **적응 전략**: 변화에 대응할 전략이 있는가?
+
+  3. **유연성**: 피벗이나 조정이 가능한 구조인가?
+
+  4. **장기 생존**: 장기적 생존 가능성을 고려했는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 트렌드 예측, 유연한 적응 전략, 장기 비전
+
+  - 4점: 환경 변화 인식 및 대응 계획
+
+  - 3점: 일부 변화 요소 고려
+
+  - 2점: 현재 상황에만 집중
+
+  - 1점: 환경 변화 무시
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 트렌드 예측, 유연한 적응, 장기 비전
+    4: 변화 인식 및 대응
+    3: 일부 변화 고려
+    2: 현재만 집중
+    1: 변화 무시
+outputSchema:
+  score: number
+  environmentalChanges: string[]
+  adaptationStrategies: string[]
+  flexibility: string
+  longTermViability: string
+  reasoning: string
+metadata:
+  complexity: high
+  estimatedTokens: 600
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Evolutionary Biology / Strategic Management
+requiredSources: either

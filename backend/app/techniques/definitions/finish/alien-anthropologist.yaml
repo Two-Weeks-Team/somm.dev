@@ -1,0 +1,70 @@
+id: alien-anthropologist
+name: Alien Anthropologist
+nameKo: 외계인 인류학자
+category: finish
+applicableHats:
+- white
+- green
+evaluationDimensions:
+- A1
+- C1
+- D1
+description: '완전한 외부인(외계인)의 시선으로 상황을 관찰하는 기법.
+
+  당연하게 여기는 것들을 낯설게 보면서
+
+  숨겨진 가정과 관행을 발견합니다.
+
+  '
+promptTemplate: '## Alien Anthropologist 분석
+
+
+  프로젝트가 외부인의 신선한 시각으로 문제를 바라보았는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **낯설게 보기**: 당연한 것들에 의문을 제기했는가?
+
+  2. **문화적 관행 발견**: 숨겨진 관행이나 가정을 발견했는가?
+
+  3. **순수한 관찰**: 선입견 없이 현상을 관찰했는가?
+
+  4. **새로운 해석**: 기존과 다른 해석을 시도했는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 근본적 관행에 의문 제기, 혁신적 관점 제시
+
+  - 4점: 여러 당연한 가정에 도전
+
+  - 3점: 일부 관행에 의문 제기
+
+  - 2점: 대부분 기존 시각 유지
+
+  - 1점: 순수한 외부 관점 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 근본적 관행 도전, 혁신적 관점
+    4: 여러 가정에 도전
+    3: 일부 관행에 의문
+    2: 기존 시각 유지
+    1: 외부 관점 없음
+outputSchema:
+  score: number
+  takenForGranted: string[]
+  newObservations: string[]
+  freshPerspectives: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 550
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Anthropology / Design Research
+requiredSources: either

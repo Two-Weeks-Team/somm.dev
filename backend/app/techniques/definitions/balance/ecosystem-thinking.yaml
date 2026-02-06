@@ -1,0 +1,71 @@
+id: ecosystem-thinking
+name: Ecosystem Thinking
+nameKo: 생태계적 사고
+category: balance
+applicableHats:
+- blue
+- white
+evaluationDimensions:
+- A2
+- B1
+- D1
+description: '제품/서비스를 독립적으로 보지 않고
+
+  더 넓은 생태계 맥락에서 바라보는 기법.
+
+  이해관계자, 경쟁자, 보완재를 종합적으로 고려합니다.
+
+  '
+promptTemplate: '## Ecosystem Thinking 분석
+
+
+  프로젝트가 생태계 맥락을 얼마나 잘 이해했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **생태계 매핑**: 관련 이해관계자를 식별했는가?
+
+  2. **상호작용**: 각 요소 간의 관계를 이해했는가?
+
+  3. **포지셔닝**: 생태계 내 위치를 명확히 했는가?
+
+  4. **시너지**: 생태계를 활용한 성장 전략이 있는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 완전한 생태계 맵, 전략적 포지셔닝
+
+  - 4점: 주요 이해관계자 및 관계 파악
+
+  - 3점: 일부 생태계 요소 고려
+
+  - 2점: 생태계 시각 부족
+
+  - 1점: 생태계 고려 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 완전한 생태계 맵, 전략적 포지셔닝
+    4: 주요 이해관계자 파악
+    3: 일부 생태계 요소
+    2: 시각 부족
+    1: 생태계 무고려
+outputSchema:
+  score: number
+  stakeholders: string[]
+  relationships: string[]
+  positioning: string
+  synergyStrategy: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 600
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Business Ecosystem / Platform Strategy
+requiredSources: either

@@ -1,0 +1,72 @@
+id: strength-analysis
+name: Strength Analysis
+nameKo: 강점 분석
+category: vintage
+applicableHats:
+- yellow
+evaluationDimensions:
+- A3
+- B1
+- C1
+description: '프로젝트의 경쟁 우위와 핵심 강점을 체계적으로 식별하고
+
+  분석하는 기법. SWOT의 Strengths에 집중한 심층 분석.
+
+  '
+promptTemplate: '## Strength Analysis (강점 분석)
+
+
+  이 프로젝트의 핵심 강점과 경쟁 우위를 심층 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **핵심 역량**: 팀이 가진 독특한 역량은?
+
+  2. **기술적 강점**: 기술적으로 뛰어난 부분은?
+
+  3. **차별화 요소**: 경쟁자와 구별되는 점은?
+
+  4. **자원 강점**: 팀이 보유한 특별한 자원은?
+
+  5. **실행 강점**: 실행력에서 뛰어난 부분은?
+
+
+  ### 점수 기준:
+
+  - 5점: 명확하고 지속 가능한 경쟁 우위 3개 이상
+
+  - 4점: 2개의 명확한 강점
+
+  - 3점: 1개의 명확한 강점
+
+  - 2점: 강점이 있으나 지속 가능성 의문
+
+  - 1점: 특별한 강점 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 3개+ 지속 가능한 경쟁 우위
+    4: 2개 명확한 강점
+    3: 1개 명확한 강점
+    2: 강점 있으나 지속성 의문
+    1: 특별한 강점 없음
+outputSchema:
+  score: number
+  coreCompetencies: string[]
+  technicalStrengths: string[]
+  differentiators: string[]
+  resourceStrengths: string[]
+  executionStrengths: string[]
+  sustainabilityAssessment: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 550
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Yellow Hat Thinking / SWOT Analysis
+requiredSources: either

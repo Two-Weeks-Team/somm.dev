@@ -1,0 +1,69 @@
+id: future-self-interview
+name: Future Self Interview
+nameKo: 미래 자아 인터뷰
+category: vintage
+applicableHats:
+- yellow
+- blue
+evaluationDimensions:
+- D1
+- D3
+description: '성공한 미래의 자신을 상상하고
+
+  그 관점에서 현재를 돌아보는 기법.
+
+  비전을 명확히 하고 역방향으로 계획을 세웁니다.
+
+  '
+promptTemplate: '## Future Self Interview 분석
+
+
+  프로젝트가 미래 성공 관점에서 현재를 설계했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **성공 비전**: 성공한 미래를 구체적으로 그렸는가?
+
+  2. **역방향 계획**: 미래에서 현재로 역산했는가?
+
+  3. **마일스톤**: 중간 목표를 설정했는가?
+
+  4. **현재 행동**: 지금 해야 할 일을 명확히 했는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 생생한 성공 비전, 역방향 계획, 명확한 마일스톤
+
+  - 4점: 명확한 미래 비전과 계획
+
+  - 3점: 일부 미래 목표 설정
+
+  - 2점: 막연한 미래 언급
+
+  - 1점: 미래 비전 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 생생한 비전, 역방향 계획, 마일스톤
+    4: 명확한 비전과 계획
+    3: 일부 미래 목표
+    2: 막연한 미래
+    1: 미래 비전 없음
+outputSchema:
+  score: number
+  successVision: string
+  milestones: string[]
+  currentActions: string[]
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 500
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Visualization / Goal Setting
+requiredSources: either

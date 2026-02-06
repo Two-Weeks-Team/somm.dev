@@ -1,0 +1,47 @@
+id: priority-matrix
+name: Priority Matrix
+nameKo: 우선순위 매트릭스
+category: cellar
+applicableHats:
+- blue
+evaluationDimensions:
+- C5
+- D4
+description: '여러 요소들을 중요도와 긴급도(또는 영향도와 노력도)의
+
+  2차원 매트릭스로 분류하여 우선순위를 결정하는 기법.
+
+  Eisenhower Matrix의 변형.
+
+  '
+promptTemplate: "## Priority Matrix (우선순위 매트릭스)\n\n이 프로젝트의 개선점과 다음 단계를 우선순위로 분류하세요.\n\
+  \n### 우선순위 매트릭스:\n```\n            │ 영향도 낮음 │ 영향도 높음\n────────────┼────────────┼────────────\n\
+  노력 낮음   │  선택적    │  즉시 실행\n노력 높음   │  제외      │  계획 수립\n```\n\n### 분석 관점:\n1. **즉시\
+  \ 실행 (Quick Wins)**: 적은 노력으로 큰 효과\n2. **계획 수립 (Major Projects)**: 큰 노력이지만 큰 효과\n\
+  3. **선택적 (Fill-ins)**: 여유 있을 때 진행\n4. **제외 (Thankless Tasks)**: 투자 대비 효과 낮음\n\n\
+  ### 점수 기준:\n- 5점: 우선순위가 명확하고 실행 계획이 구체적\n- 4점: 우선순위 설정됨, 계획은 부분적\n- 3점: 우선순위 인식\
+  \ 있으나 명확하지 않음\n- 2점: 우선순위 없이 나열만\n- 1점: 다음 단계에 대한 고려 없음\n"
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 명확한 우선순위 + 구체적 계획
+    4: 우선순위 설정, 부분적 계획
+    3: 우선순위 인식 있으나 불명확
+    2: 우선순위 없이 나열
+    1: 다음 단계 고려 없음
+outputSchema:
+  score: number
+  quickWins: string[]
+  majorProjects: string[]
+  fillIns: string[]
+  thanklessTasks: string[]
+  recommendedOrder: string[]
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 550
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Eisenhower Matrix / Blue Hat Thinking
+requiredSources: either

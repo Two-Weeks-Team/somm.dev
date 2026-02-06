@@ -85,11 +85,14 @@ class TestMissingInputHandling:
             "user_id": "user1",
         }
 
-        result = await rag_enrich(state)
+        with patch("app.graph.nodes.rag_enrich.settings") as mock_settings:
+            mock_settings.SYNTHETIC_API_KEY = "test_key"
 
-        assert "rag_context" in result
-        assert result["rag_context"]["chunks"] == []
-        assert result["rag_context"]["error"] is None
+            result = await rag_enrich(state)
+
+            assert "rag_context" in result
+            assert result["rag_context"]["chunks"] == []
+            assert result["rag_context"]["error"] is None
 
 
 class TestRAGFailureHandling:
@@ -104,15 +107,18 @@ class TestRAGFailureHandling:
             "user_id": "user1",
         }
 
-        with patch("app.graph.nodes.rag_enrich._get_embeddings") as mock_embed:
-            mock_embed.side_effect = Exception("Embedding API unavailable")
+        with patch("app.graph.nodes.rag_enrich.settings") as mock_settings:
+            mock_settings.SYNTHETIC_API_KEY = "test_key"
 
-            result = await rag_enrich(state)
+            with patch("app.graph.nodes.rag_enrich._get_embeddings") as mock_embed:
+                mock_embed.side_effect = Exception("Embedding API unavailable")
 
-            assert "rag_context" in result
-            assert result["rag_context"]["chunks"] == []
-            assert "Embedding API unavailable" in result["rag_context"]["error"]
-            assert "errors" in result
+                result = await rag_enrich(state)
+
+                assert "rag_context" in result
+                assert result["rag_context"]["chunks"] == []
+                assert "Embedding API unavailable" in result["rag_context"]["error"]
+                assert "errors" in result
 
     @pytest.mark.asyncio
     async def test_rag_returns_cached_context_if_exists(self):

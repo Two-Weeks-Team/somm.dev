@@ -2,9 +2,12 @@ export type EvaluationStatus = 'pending' | 'processing' | 'completed' | 'failed'
 
 export type CriteriaType = 'basic' | 'hackathon' | 'academic' | 'custom';
 
+export type EvaluationMode = 'six_sommeliers' | 'grand_tasting';
+
 export interface EvaluationRequest {
   repoUrl: string;
   criteria: CriteriaType;
+  evaluationMode: EvaluationMode;
 }
 
 export interface SommelierResult {
@@ -40,6 +43,7 @@ export type SSEEventType =
   | 'sommelier_start'
   | 'sommelier_complete'
   | 'sommelier_error'
+  | 'sommelier_retry'
   | 'evaluation_complete'
   | 'evaluation_error'
   | 'heartbeat'

@@ -220,16 +220,9 @@ class BaseSommelierNode(ABC):
     """
     
     def __init__(self):
-        # Initialize LLM with Gemini 3 Flash
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-3-flash",
-            temperature=0.3,
-            max_output_tokens=2048,
-            google_api_key=settings.GOOGLE_API_KEY,
-            convert_system_message_to_human=True
-        )
-        
-        # Initialize output parser
+        # LLM is created at evaluate() time via build_llm()
+        # Default: gemini-3-flash-preview, temperature=0.7
+        # Supports BYOK (Bring Your Own Key) per-request
         self.parser = PydanticOutputParser(pydantic_object=SommelierOutput)
     
     @property
