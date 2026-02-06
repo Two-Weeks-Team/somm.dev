@@ -4,12 +4,11 @@ from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
 from langchain_core.runnables import RunnableConfig
-from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
-from app.core.config import settings
 from app.graph.state import EvaluationState
 from app.graph.schemas import SommelierOutput
+from app.providers.llm import build_llm
 
 
 class BaseSommelierNode(ABC):
@@ -20,13 +19,6 @@ class BaseSommelierNode(ABC):
     """
 
     def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-1.5-flash",
-            temperature=0.3,
-            max_output_tokens=2048,
-            google_api_key=settings.GEMINI_API_KEY,
-            convert_system_message_to_human=True,
-        )
         self.parser = PydanticOutputParser(pydantic_object=SommelierOutput)
 
     @property
@@ -59,7 +51,22 @@ class BaseSommelierNode(ABC):
             Dictionary containing the sommelier result and completion status.
         """
         started_at = datetime.now(timezone.utc).isoformat()
-        model_name = getattr(self.llm, "model", "gemini-1.5-flash")
+        configurable = (config or {}).get("configurable", {})
+        provider = configurable.get("provider", "gemini")
+        api_key = configurable.get("api_key")
+        model = configurable.get("model")
+        temperature = configurable.get("temperature")
+        max_output_tokens = configurable.get("max_output_tokens", 2048)
+        llm = build_llm(
+            provider=provider,
+            api_key=api_key,
+            model=model,
+            temperature=temperature,
+            max_output_tokens=max_output_tokens,
+        )
+        model_name = model or getattr(
+            llm, "model", getattr(llm, "model_name", "unknown")
+        )
         observability = {
             "completed_sommeliers": [self.name],
             "token_usage": {self.name: {}},
@@ -69,7 +76,7 @@ class BaseSommelierNode(ABC):
                     "started_at": started_at,
                     "completed_at": None,
                     "model": model_name,
-                    "provider": "gemini",
+                    "provider": provider,
                 }
             },
         }
@@ -81,7 +88,7 @@ class BaseSommelierNode(ABC):
                 "format_instructions": self.parser.get_format_instructions(),
             }
             messages = prompt.format_messages(**prompt_inputs)
-            response = await self.llm.ainvoke(messages, config=config)
+            response = await llm.ainvoke(messages, config=config)
             usage = getattr(response, "usage_metadata", {}) or {}
             observability["token_usage"] = {
                 self.name: {
