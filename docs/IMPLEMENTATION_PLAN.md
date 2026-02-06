@@ -260,11 +260,9 @@ from app.core.config import settings
 
 class BaseSommelierNode(ABC):
     def __init__(self):
-        self.llm = ChatGoogleGenerativeAI(
-            model="gemini-3-flash",
-            temperature=0.3,
-            google_api_key=settings.GOOGLE_API_KEY
-        )
+        # LLM is created at evaluate() time via build_llm()
+        # Default: gemini-3-flash-preview, temperature=0.7
+        self.parser = PydanticOutputParser(pydantic_object=SommelierOutput)
     
     @property
     @abstractmethod
@@ -319,27 +317,27 @@ from app.models.evaluation import EvaluationCreate, EvaluationResponse
 router = APIRouter()
 evaluation_service = EvaluationService()
 
-@router.post("/evaluate", response_model=EvaluationResponse)
+@router.post("/evaluate", response_model=EvaluateResponse)
 async def create_evaluation(
-    request: EvaluationCreate,
-    current_user: User = Depends(get_current_user)
+    request: EvaluateRequest,
+    user: User = Depends(get_current_user)
 ):
     """Start new code evaluation."""
     
-    # Validate criteria
-    if request.criteria not in ["basic", "hackathon", "academic", "custom"]:
-        raise HTTPException(400, "Invalid criteria")
-    
-    # Start evaluation
-    evaluation_id = await evaluation_service.start(
+    # Start evaluation with mode selection
+    eval_id = await start_evaluation(
         repo_url=request.repo_url,
         criteria=request.criteria,
-        user_id=current_user.id
+        user_id=user.id,
+        evaluation_mode=request.evaluation_mode,  # "six_sommeliers" or "grand_tasting"
     )
     
-    return EvaluationResponse(
-        evaluation_id=evaluation_id,
-        status="pending"
+    estimated = 30 if request.evaluation_mode == "six_sommeliers" else 60
+    return EvaluateResponse(
+        evaluation_id=eval_id,
+        status="pending",
+        evaluation_mode=request.evaluation_mode,
+        estimated_time=estimated,
     )
 ```
 
