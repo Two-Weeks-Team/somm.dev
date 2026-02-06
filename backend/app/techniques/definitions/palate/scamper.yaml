@@ -77,4 +77,4 @@ metadata:
   requiresWebSearch: false
   requiresRAG: false
   source: Bob Eberle / Alex Osborn
-requiredSources: both
+  requiredSources: either

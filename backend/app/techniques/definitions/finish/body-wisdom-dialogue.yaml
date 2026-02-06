@@ -65,4 +65,4 @@ metadata:
   requiresWebSearch: false
   requiresRAG: false
   source: Somatic Psychology / Embodied Design
-requiredSources: either
+  requiredSources: either

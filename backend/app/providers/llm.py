@@ -77,7 +77,7 @@ def build_llm(
         provider: Provider name (gemini, openai, anthropic)
         api_key: User-provided API key (BYOK) or None for server-side key
         model: Model name or None for provider default
-        temperature: Temperature setting or None for default (0.3)
+        temperature: Temperature setting or None for default (0.7)
         max_output_tokens: Max output tokens or None for default (2048)
         enable_fallback: If True, attach fallback to provider's default model
 
@@ -104,7 +104,7 @@ def build_llm(
             "google_api_key": resolved_key or settings.GEMINI_API_KEY,
             "timeout": DEFAULT_REQUEST_TIMEOUT,
         }
-        if "gemini-3" in resolved_model:
+        if "gemini-3" in resolved_model.lower():
             gemini_kwargs["thinking_budget"] = GEMINI3_THINKING_BUDGET
         llm = ChatGoogleGenerativeAI(**gemini_kwargs)
     elif provider_key == "openai":
