@@ -11,10 +11,13 @@ from app.database.repositories.base import BaseRepository
 from app.database.repositories.user import UserRepository
 from app.database.repositories.evaluation import EvaluationRepository
 from app.database.repositories.result import ResultRepository
+from app.database.repositories.graph_cache import GraphCacheRepository, create_indexes
 
 __all__ = [
     "BaseRepository",
     "UserRepository",
     "EvaluationRepository",
     "ResultRepository",
+    "GraphCacheRepository",
+    "create_indexes",
 ]
