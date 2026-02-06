@@ -30,7 +30,19 @@ const SOMMELIER_NAMES: Record<string, { name: string; role: string }> = {
   jeanpierre: { name: 'Jean-Pierre', role: 'Master Sommelier' },
 };
 
+const TASTING_NOTE_NAMES: Record<string, { name: string; role: string }> = {
+  aroma: { name: 'Aroma', role: 'Problem Analysis' },
+  palate: { name: 'Palate', role: 'Innovation & Creativity' },
+  body: { name: 'Body', role: 'Technical Depth' },
+  finish: { name: 'Finish', role: 'User Experience' },
+  balance: { name: 'Balance', role: 'Architecture & Design' },
+  vintage: { name: 'Vintage', role: 'Market Opportunity' },
+  terroir: { name: 'Terroir', role: 'Presentation Quality' },
+  cellar: { name: 'Cellar', role: 'Final Synthesis' },
+};
+
 const TOTAL_SOMMELIERS = 6;
+const TOTAL_TASTING_NOTES = 8;
 
 export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamResult => {
   const [status, setStatus] = useState<EvaluationStatus>('pending');
@@ -77,10 +89,11 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
 
       case 'sommelier_complete':
         if (event.sommelier) {
-          const sommelierInfo = SOMMELIER_NAMES[event.sommelier] || {
-            name: event.sommelier,
-            role: 'Sommelier',
-          };
+          const sommelierInfo = SOMMELIER_NAMES[event.sommelier] || 
+            TASTING_NOTE_NAMES[event.sommelier] || {
+              name: event.sommelier,
+              role: 'Evaluator',
+            };
           setCompletedSommeliers((prev) => {
             if (prev.find((s) => s.id === event.sommelier)) return prev;
             const newList = [

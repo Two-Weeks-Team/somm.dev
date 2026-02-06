@@ -17,7 +17,7 @@ export default function EvaluatePage() {
 
     try {
       const { id } = await api.startEvaluation(repoUrl, criteria, evaluationMode);
-      router.push(`/progress/${id}`);
+      router.push(`/progress/${id}?mode=${evaluationMode}`);
     } catch (err) {
       console.error('Evaluation failed:', err);
       setError(err instanceof Error ? err.message : 'Failed to start evaluation. Please try again.');
