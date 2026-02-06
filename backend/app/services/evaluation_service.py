@@ -99,6 +99,9 @@ async def run_evaluation_pipeline(
         "jeanpierre_result": None,
         "completed_sommeliers": [],
         "errors": [],
+        "token_usage": {},
+        "cost_usage": {},
+        "trace_metadata": {},
         "started_at": "",
         "completed_at": None,
     }
