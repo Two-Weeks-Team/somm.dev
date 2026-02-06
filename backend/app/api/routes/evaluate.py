@@ -110,22 +110,15 @@ async def create_evaluation(
     request: EvaluateRequest,
     user=Depends(get_current_user),
 ) -> EvaluateResponse:
-    """Start a new code evaluation for a GitHub repository.
+    """Start a new code evaluation for a GitHub repository."""
+    import logging
 
-    This endpoint initiates a new evaluation of the specified repository
-    using the provided criteria mode. The evaluation runs asynchronously
-    and progress can be tracked via the stream endpoint.
+    logger = logging.getLogger(__name__)
 
-    Args:
-        request: The evaluation request containing repo URL and criteria.
-        user: The authenticated user.
+    logger.info(
+        f"[Evaluate] Request received: repo_url={request.repo_url}, criteria={request.criteria}, user={user.id}"
+    )
 
-    Returns:
-        An evaluation response containing the evaluation ID and status.
-
-    Raises:
-        CorkedError: If the request is invalid.
-    """
     try:
         evaluation_id = await run_full_evaluation(
             repo_url=request.repo_url,
@@ -137,14 +130,21 @@ async def create_evaluation(
             api_key=request.api_key,
         )
 
+        logger.info(f"[Evaluate] Evaluation started: {evaluation_id}")
+
         return EvaluateResponse(
             evaluation_id=evaluation_id["evaluation_id"],
             status="pending",
             estimated_time=30,
         )
     except CorkedError as e:
+        logger.error(f"[Evaluate] CorkedError: {e.detail}")
         raise e
     except Exception as e:
+        logger.error(f"[Evaluate] Exception: {type(e).__name__}: {str(e)}")
+        import traceback
+
+        logger.error(f"[Evaluate] Traceback: {traceback.format_exc()}")
         raise CorkedError(f"Failed to start evaluation: {str(e)}")
 
 
