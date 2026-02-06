@@ -1,5 +1,6 @@
 """Base class for all sommelier nodes."""
 
+import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import Any, Dict, Optional
@@ -8,8 +9,13 @@ from langchain_core.output_parsers import PydanticOutputParser
 from langchain_core.prompts import ChatPromptTemplate
 from app.graph.state import EvaluationState
 from app.graph.schemas import SommelierOutput
-from app.providers.llm import build_llm
+from app.providers.llm import build_llm, extract_text_content
+from app.providers.llm_policy import invoke_with_policy, RetryConfig
+from app.providers.llm_errors import ErrorCategory
 from app.services.event_channel import create_sommelier_event, get_event_channel
+from app.services.llm_context import render_repo_context, get_context_budget
+
+logger = logging.getLogger(__name__)
 
 SOMMELIER_PROGRESS = {
     "marcel": {"start": 10, "complete": 25},
@@ -95,6 +101,12 @@ class BaseSommelierNode(ABC):
         model_name = model or getattr(
             llm, "model", getattr(llm, "model_name", "unknown")
         )
+
+        context_budget = get_context_budget(provider, model)
+        rendered_context, context_meta = render_repo_context(
+            state["repo_context"], max_tokens=context_budget
+        )
+
         observability = {
             "completed_sommeliers": [self.name],
             "token_usage": {self.name: {}},
@@ -105,18 +117,54 @@ class BaseSommelierNode(ABC):
                     "completed_at": None,
                     "model": model_name,
                     "provider": provider,
+                    "estimated_input_tokens": context_meta["estimated_tokens"],
+                    "context_truncated": context_meta["truncated"],
                 }
             },
         }
-        try:
-            prompt = self.get_prompt(state["evaluation_criteria"])
-            prompt_inputs = {
-                "repo_context": state["repo_context"],
-                "criteria": state["evaluation_criteria"],
-                "format_instructions": self.parser.get_format_instructions(),
-            }
-            messages = prompt.format_messages(**prompt_inputs)
-            response = await llm.ainvoke(messages, config=config)
+        prompt = self.get_prompt(state["evaluation_criteria"])
+        prompt_inputs = {
+            "repo_context": rendered_context,
+            "criteria": state["evaluation_criteria"],
+            "format_instructions": self.parser.get_format_instructions(),
+        }
+        messages = prompt.format_messages(**prompt_inputs)
+
+        def on_retry(attempt: int, delay: float, msg: str) -> None:
+            logger.info(f"{self.name}: {msg}")
+            if evaluation_id:
+                event_channel.emit_sync(
+                    evaluation_id,
+                    create_sommelier_event(
+                        evaluation_id=evaluation_id,
+                        sommelier=self.name,
+                        event_type="sommelier_retry",
+                        progress_percent=progress_config["start"],
+                        message=f"{self.name} retrying ({attempt}/3)...",
+                    ),
+                )
+
+        invocation_result = await invoke_with_policy(
+            llm=llm,
+            messages=messages,
+            provider=provider,
+            config=RetryConfig(max_attempts=3, base_delay=2.0, max_delay=60.0),
+            langchain_config=config,
+            on_retry=on_retry,
+        )
+
+        observability["trace_metadata"][self.name]["completed_at"] = datetime.now(
+            timezone.utc
+        ).isoformat()
+        observability["trace_metadata"][self.name]["attempts"] = (
+            invocation_result.attempts
+        )
+        observability["trace_metadata"][self.name]["total_wait_seconds"] = (
+            invocation_result.total_wait_seconds
+        )
+
+        if invocation_result.success:
+            response = invocation_result.response
             usage = getattr(response, "usage_metadata", {}) or {}
             observability["token_usage"] = {
                 self.name: {
@@ -126,10 +174,28 @@ class BaseSommelierNode(ABC):
                 }
             }
             observability["cost_usage"] = {self.name: usage.get("total_cost")}
-            observability["trace_metadata"][self.name]["completed_at"] = datetime.now(
-                timezone.utc
-            ).isoformat()
-            result = self.parser.parse(response.content)
+
+            try:
+                text_content = extract_text_content(response.content)
+                result = self.parser.parse(text_content)
+            except Exception as parse_error:
+                logger.error(f"{self.name} failed to parse response: {parse_error!s}")
+                if evaluation_id:
+                    event_channel.emit_sync(
+                        evaluation_id,
+                        create_sommelier_event(
+                            evaluation_id=evaluation_id,
+                            sommelier=self.name,
+                            event_type="sommelier_error",
+                            progress_percent=progress_config["start"],
+                            message=f"{self.name} analysis failed (parse error)",
+                        ),
+                    )
+                return {
+                    "errors": [f"{self.name} parse error: {parse_error!s}"],
+                    f"{self.name}_result": None,
+                    **observability,
+                }
 
             if evaluation_id:
                 event_channel.emit_sync(
@@ -148,25 +214,32 @@ class BaseSommelierNode(ABC):
                 f"{self.name}_result": result.dict(),
                 **observability,
             }
-        except Exception as e:
-            observability["trace_metadata"][self.name]["completed_at"] = datetime.now(
-                timezone.utc
-            ).isoformat()
 
-            if evaluation_id:
-                event_channel.emit_sync(
-                    evaluation_id,
-                    create_sommelier_event(
-                        evaluation_id=evaluation_id,
-                        sommelier=self.name,
-                        event_type="sommelier_error",
-                        progress_percent=progress_config["start"],
-                        message=f"{self.name} analysis encountered an error",
-                    ),
-                )
+        error_category = invocation_result.error_category
+        error_msg = (
+            f"{self.name} evaluation failed after {invocation_result.attempts} attempts"
+        )
+        if error_category:
+            error_msg += f" ({error_category.value})"
+        if invocation_result.final_error:
+            error_msg += f": {invocation_result.final_error!s}"
 
-            return {
-                "errors": [f"{self.name} evaluation failed: {e!s}"],
-                f"{self.name}_result": None,
-                **observability,
-            }
+        logger.error(error_msg)
+
+        if evaluation_id:
+            event_channel.emit_sync(
+                evaluation_id,
+                create_sommelier_event(
+                    evaluation_id=evaluation_id,
+                    sommelier=self.name,
+                    event_type="sommelier_error",
+                    progress_percent=progress_config["start"],
+                    message=f"{self.name} analysis failed",
+                ),
+            )
+
+        return {
+            "errors": [error_msg],
+            f"{self.name}_result": None,
+            **observability,
+        }

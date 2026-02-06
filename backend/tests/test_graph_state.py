@@ -138,16 +138,20 @@ class TestEvaluationStateTypeHints:
 
     def test_list_annotations(self):
         """Test that list fields have correct annotation types"""
-        from typing import Annotated, get_origin
+        from typing import Annotated, get_origin, get_args, NotRequired
 
-        # Get the raw annotations from the class
         annotations = getattr(EvaluationState, "__annotations__", {})
         completed_sommeliers_annotation = annotations.get("completed_sommeliers")
         errors_annotation = annotations.get("errors")
 
-        # Verify they are Annotated types
-        assert get_origin(completed_sommeliers_annotation) is Annotated
-        assert get_origin(errors_annotation) is Annotated
+        assert get_origin(completed_sommeliers_annotation) is NotRequired
+        assert get_origin(errors_annotation) is NotRequired
+
+        completed_inner = get_args(completed_sommeliers_annotation)[0]
+        errors_inner = get_args(errors_annotation)[0]
+
+        assert get_origin(completed_inner) is Annotated
+        assert get_origin(errors_inner) is Annotated
 
     def test_rag_context_field_exists(self):
         """Test that rag_context field is defined in EvaluationState"""

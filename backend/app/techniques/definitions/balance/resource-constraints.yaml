@@ -1,0 +1,71 @@
+id: resource-constraints
+name: Resource Constraints Analysis
+nameKo: 자원 제약
+category: balance
+applicableHats:
+- white
+- black
+evaluationDimensions:
+- B1
+- B3
+- B4
+description: '시간, 예산, 인력, 기술 등 가용 자원을 분석하고
+
+  제약 조건 내에서의 실현 가능성을 평가하는 기법.
+
+  현실적인 계획 수립의 기초가 됩니다.
+
+  '
+promptTemplate: '## Resource Constraints Analysis 분석
+
+
+  프로젝트가 자원 제약을 현실적으로 고려했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **시간 자원**: 개발 기간을 현실적으로 산정했는가?
+
+  2. **인적 자원**: 팀 역량과 규모를 고려했는가?
+
+  3. **기술 자원**: 기술적 역량과 도구를 파악했는가?
+
+  4. **예산 자원**: 비용을 현실적으로 고려했는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 모든 자원 제약을 상세히 분석하고 현실적 계획 수립
+
+  - 4점: 주요 자원 제약을 파악하고 대응
+
+  - 3점: 일부 제약 인식
+
+  - 2점: 자원 제약 과소평가
+
+  - 1점: 자원 제약 무시
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 모든 자원 제약 분석, 현실적 계획
+    4: 주요 제약 파악 및 대응
+    3: 일부 제약 인식
+    2: 제약 과소평가
+    1: 제약 무시
+outputSchema:
+  score: number
+  timeConstraints: string
+  humanResources: string
+  technicalResources: string
+  budgetConsiderations: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 600
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Project Management
+requiredSources: readme_only

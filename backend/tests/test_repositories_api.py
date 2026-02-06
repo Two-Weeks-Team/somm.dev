@@ -33,11 +33,11 @@ def create_test_token(user_id: str = "test_user_id", github_id: str = "12345") -
 
 
 class TestGetRepositories:
-    """Test suite for GET /api/v1/repositories endpoint."""
+    """Test suite for GET /repositories endpoint."""
 
     def test_get_repositories_requires_auth(self):
         """Test that endpoint requires authentication."""
-        response = client.get("/api/v1/repositories")
+        response = client.get("/repositories")
 
         assert response.status_code == 401
         assert "Not authenticated" in response.json()["detail"]
@@ -76,7 +76,7 @@ class TestGetRepositories:
                 MockGitHub.return_value = mock_github_instance
 
                 response = client.get(
-                    "/api/v1/repositories",
+                    "/repositories",
                     headers={"Authorization": f"Bearer {token}"},
                 )
 
@@ -116,7 +116,7 @@ class TestGetRepositories:
             MockCache.return_value = mock_cache_instance
 
             response = client.get(
-                "/api/v1/repositories",
+                "/repositories",
                 headers={"Authorization": f"Bearer {token}"},
             )
 
@@ -127,11 +127,11 @@ class TestGetRepositories:
 
 
 class TestRefreshRepositories:
-    """Test suite for POST /api/v1/repositories/refresh endpoint."""
+    """Test suite for POST /repositories/refresh endpoint."""
 
     def test_refresh_repositories_requires_auth(self):
         """Test that refresh endpoint requires authentication."""
-        response = client.post("/api/v1/repositories/refresh")
+        response = client.post("/repositories/refresh")
 
         assert response.status_code == 401
 
@@ -168,7 +168,7 @@ class TestRefreshRepositories:
                 MockGitHub.return_value = mock_github_instance
 
                 response = client.post(
-                    "/api/v1/repositories/refresh",
+                    "/repositories/refresh",
                     headers={"Authorization": f"Bearer {token}"},
                 )
 

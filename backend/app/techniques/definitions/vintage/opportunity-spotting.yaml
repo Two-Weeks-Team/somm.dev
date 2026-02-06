@@ -1,0 +1,71 @@
+id: opportunity-spotting
+name: Opportunity Spotting
+nameKo: 기회 발견
+category: vintage
+applicableHats:
+- yellow
+evaluationDimensions:
+- A4
+- B1
+- B3
+description: '프로젝트가 포착한 시장 기회와 성장 잠재력을 분석하는 기법.
+
+  현재 상태뿐 아니라 미래 확장 가능성과 새로운 기회를 식별.
+
+  '
+promptTemplate: '## Opportunity Spotting (기회 발견 분석)
+
+
+  이 프로젝트가 어떤 기회를 포착했고, 어떤 잠재력이 있는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **시장 기회**: 어떤 시장 기회를 포착했는가?
+
+  2. **타이밍**: 지금이 이 솔루션을 위한 적절한 시기인가?
+
+  3. **확장 가능성**: 초기 시장을 넘어 확장할 수 있는가?
+
+  4. **네트워크 효과**: 사용자가 늘수록 가치가 증가하는가?
+
+  5. **진입 장벽**: 경쟁자 대비 방어 가능한 위치인가?
+
+
+  ### 점수 기준:
+
+  - 5점: 명확한 시장 기회 + 높은 확장성 + 강한 방어력
+
+  - 4점: 좋은 시장 기회 + 확장 가능성 있음
+
+  - 3점: 시장 기회는 있으나 제한적
+
+  - 2점: 기회가 불명확하거나 시장이 작음
+
+  - 1점: 시장 기회 분석 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 명확한 기회 + 높은 확장성 + 방어력
+    4: 좋은 기회 + 확장 가능성
+    3: 기회 있으나 제한적
+    2: 불명확한 기회
+    1: 기회 분석 없음
+outputSchema:
+  score: number
+  marketOpportunity: string
+  timing: string
+  scalability: string
+  networkEffects: string
+  defensibility: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 600
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Yellow Hat Thinking / Opportunity Analysis
+requiredSources: either

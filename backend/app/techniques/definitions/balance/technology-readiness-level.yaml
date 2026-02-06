@@ -1,0 +1,83 @@
+id: technology-readiness-level
+name: Technology Readiness Level
+nameKo: 기술성숙도 (TRL)
+category: balance
+applicableHats:
+- white
+- black
+evaluationDimensions:
+- B1
+- B2
+- C1
+description: 'NASA(1974)가 개발하고 ISO 16290:2013으로 국제 표준화된 기술 성숙도 평가 체계.
+
+  TRL 1(기초 연구)부터 TRL 9(실제 운용)까지 9단계로
+
+  기술의 개발 단계와 준비 상태를 객관적으로 평가.
+
+  '
+promptTemplate: '## Technology Readiness Level 분석
+
+
+  이 프로젝트의 핵심 기술이 어느 TRL 단계에 있는지 평가하세요.
+
+
+  ### TRL 9단계:
+
+  - **TRL 1**: 기초 원리 관찰 및 보고
+
+  - **TRL 2**: 기술 개념 및 응용 공식화
+
+  - **TRL 3**: 핵심 기능의 분석적/실험적 개념 증명
+
+  - **TRL 4**: 실험실 환경에서 컴포넌트 검증
+
+  - **TRL 5**: 관련 환경에서 컴포넌트 검증
+
+  - **TRL 6**: 관련 환경에서 시스템/서브시스템 모델 시연
+
+  - **TRL 7**: 운영 환경에서 시스템 프로토타입 시연
+
+  - **TRL 8**: 실제 시스템 완성 및 인증
+
+  - **TRL 9**: 운영 환경에서 실제 시스템 검증
+
+
+  ### 점수 기준:
+
+  - 5점: TRL 7-9, 프로토타입~실제 운용 단계
+
+  - 4점: TRL 5-6, 관련 환경에서 검증
+
+  - 3점: TRL 3-4, 실험실 수준 검증
+
+  - 2점: TRL 2, 개념 수준
+
+  - 1점: TRL 1 또는 평가 불가
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: TRL 7-9, 프로토타입~운용
+    4: TRL 5-6, 관련 환경 검증
+    3: TRL 3-4, 실험실 검증
+    2: TRL 2, 개념 수준
+    1: TRL 1 또는 평가 불가
+outputSchema:
+  score: number
+  currentTRL: number
+  trlEvidence: string
+  keyTechnologies: string[]
+  technicalRisks: string[]
+  developmentPlan: string
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 700
+  requiresWebSearch: false
+  requiresRAG: false
+  source: NASA (1974)
+  academicReference: ISO 16290:2013 국제 표준, EU Horizon 2020 필수 평가
+requiredSources: readme_only
