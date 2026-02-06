@@ -40,6 +40,22 @@ class EvaluateRequest(BaseModel):
         default=None,
         description="Custom criteria for custom mode",
     )
+    provider: str | None = Field(
+        default=None,
+        description="LLM provider (gemini, openai, anthropic)",
+    )
+    model: str | None = Field(
+        default=None,
+        description="LLM model name override",
+    )
+    temperature: float | None = Field(
+        default=None,
+        description="LLM temperature override",
+    )
+    api_key: str | None = Field(
+        default=None,
+        description="BYOK API key for selected provider",
+    )
 
 
 class EvaluateResponse(BaseModel):
@@ -115,6 +131,10 @@ async def create_evaluation(
             repo_url=request.repo_url,
             criteria=request.criteria,
             user_id=user.id,
+            provider=request.provider,
+            model=request.model,
+            temperature=request.temperature,
+            api_key=request.api_key,
         )
 
         return EvaluateResponse(
