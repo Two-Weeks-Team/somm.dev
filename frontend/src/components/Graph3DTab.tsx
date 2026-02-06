@@ -5,6 +5,8 @@ import dynamic from 'next/dynamic';
 import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Graph3DPayload } from '@/types/graph';
+import { TimelinePlayer } from './graph/TimelinePlayer';
+import { useTimelinePlayer } from '@/hooks/useTimelinePlayer';
 
 interface Graph3DTabProps {
   evaluationId: string;
@@ -24,6 +26,16 @@ export function Graph3DTab({ evaluationId }: Graph3DTabProps) {
   const [data, setData] = useState<Graph3DPayload | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [maxStep, setMaxStep] = useState(0);
+
+  const {
+    currentStep,
+    setCurrentStep,
+    isPlaying,
+    togglePlay,
+    playbackSpeed,
+    setPlaybackSpeed,
+  } = useTimelinePlayer(maxStep);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -31,13 +43,17 @@ export function Graph3DTab({ evaluationId }: Graph3DTabProps) {
     try {
       const graphData = await api.getGraph3D(evaluationId);
       setData(graphData);
+      if (graphData.metadata?.max_step_number) {
+        setMaxStep(graphData.metadata.max_step_number);
+        setCurrentStep(graphData.metadata.max_step_number);
+      }
     } catch (err) {
       console.error('Failed to fetch 3D graph data:', err);
       setError('Failed to load 3D graph data. Please try again.');
     } finally {
       setLoading(false);
     }
-  }, [evaluationId]);
+  }, [evaluationId, setCurrentStep]);
 
   useEffect(() => {
     fetchData();
@@ -73,8 +89,20 @@ export function Graph3DTab({ evaluationId }: Graph3DTabProps) {
   }
 
   return (
-    <div className="h-[800px] bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
-      <GraphView3D data={data} />
+    <div className="flex flex-col gap-4">
+      <div className="h-[600px] bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 overflow-hidden">
+        <GraphView3D data={data} currentStep={currentStep} />
+      </div>
+
+      <TimelinePlayer
+        currentStep={currentStep}
+        maxStep={maxStep}
+        isPlaying={isPlaying}
+        onStepChange={setCurrentStep}
+        onPlayPause={togglePlay}
+        playbackSpeed={playbackSpeed}
+        onSpeedChange={setPlaybackSpeed}
+      />
     </div>
   );
 }
