@@ -1,0 +1,158 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`GraphSkeleton matches snapshot 1`] = `
+<div
+  class="w-full h-full flex flex-col items-center justify-center bg-neutral-50/50 relative overflow-hidden rounded-lg border border-neutral-200"
+>
+  <div
+    class="absolute inset-0 opacity-10"
+    style="background-size: 20px 20px;"
+  />
+  <div
+    class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent animate-shimmer"
+    style="transform: skewX(-20deg);"
+  />
+  <div
+    class="relative z-10 w-3/4 h-3/4 flex items-center justify-center"
+  >
+    <div
+      class="grid grid-cols-3 gap-12 opacity-30"
+    >
+      <div
+        class="flex flex-col items-center gap-2 animate-pulse"
+        style="animation-delay: 0ms;"
+      >
+        <div
+          class="w-12 h-12 rounded-full bg-[#722F37]/20 border-2 border-[#722F37]/40"
+        />
+        <div
+          class="w-16 h-2 rounded bg-[#722F37]/10"
+        />
+      </div>
+      <div
+        class="flex flex-col items-center gap-2 animate-pulse"
+        style="animation-delay: 100ms;"
+      >
+        <div
+          class="w-12 h-12 rounded-full bg-[#722F37]/20 border-2 border-[#722F37]/40"
+        />
+        <div
+          class="w-16 h-2 rounded bg-[#722F37]/10"
+        />
+      </div>
+      <div
+        class="flex flex-col items-center gap-2 animate-pulse"
+        style="animation-delay: 200ms;"
+      >
+        <div
+          class="w-12 h-12 rounded-full bg-[#722F37]/20 border-2 border-[#722F37]/40"
+        />
+        <div
+          class="w-16 h-2 rounded bg-[#722F37]/10"
+        />
+      </div>
+      <div
+        class="flex flex-col items-center gap-2 animate-pulse"
+        style="animation-delay: 300ms;"
+      >
+        <div
+          class="w-12 h-12 rounded-full bg-[#722F37]/20 border-2 border-[#722F37]/40"
+        />
+        <div
+          class="w-16 h-2 rounded bg-[#722F37]/10"
+        />
+      </div>
+      <div
+        class="flex flex-col items-center gap-2 animate-pulse"
+        style="animation-delay: 400ms;"
+      >
+        <div
+          class="w-12 h-12 rounded-full bg-[#722F37]/20 border-2 border-[#722F37]/40"
+        />
+        <div
+          class="w-16 h-2 rounded bg-[#722F37]/10"
+        />
+      </div>
+      <div
+        class="flex flex-col items-center gap-2 animate-pulse"
+        style="animation-delay: 500ms;"
+      >
+        <div
+          class="w-12 h-12 rounded-full bg-[#722F37]/20 border-2 border-[#722F37]/40"
+        />
+        <div
+          class="w-16 h-2 rounded bg-[#722F37]/10"
+        />
+      </div>
+      <div
+        class="flex flex-col items-center gap-2 animate-pulse"
+        style="animation-delay: 600ms;"
+      >
+        <div
+          class="w-12 h-12 rounded-full bg-[#722F37]/20 border-2 border-[#722F37]/40"
+        />
+        <div
+          class="w-16 h-2 rounded bg-[#722F37]/10"
+        />
+      </div>
+      <div
+        class="flex flex-col items-center gap-2 animate-pulse"
+        style="animation-delay: 700ms;"
+      >
+        <div
+          class="w-12 h-12 rounded-full bg-[#722F37]/20 border-2 border-[#722F37]/40"
+        />
+        <div
+          class="w-16 h-2 rounded bg-[#722F37]/10"
+        />
+      </div>
+      <div
+        class="flex flex-col items-center gap-2 animate-pulse"
+        style="animation-delay: 800ms;"
+      >
+        <div
+          class="w-12 h-12 rounded-full bg-[#722F37]/20 border-2 border-[#722F37]/40"
+        />
+        <div
+          class="w-16 h-2 rounded bg-[#722F37]/10"
+        />
+      </div>
+    </div>
+    <svg
+      class="absolute inset-0 w-full h-full pointer-events-none opacity-20"
+    >
+      <path
+        d="M100,100 L200,200 M300,100 L200,200 M100,300 L200,200 M300,300 L200,200"
+        fill="none"
+        stroke="#722F37"
+        stroke-width="2"
+      />
+    </svg>
+  </div>
+  <div
+    class="absolute bottom-8 flex flex-col items-center gap-2"
+  >
+    <div
+      class="text-[#722F37] font-medium text-lg animate-pulse"
+    >
+      Decanting your graph...
+    </div>
+    <div
+      class="flex gap-1"
+    >
+      <div
+        class="w-2 h-2 rounded-full bg-[#722F37] animate-bounce"
+        style="animation-delay: 0ms;"
+      />
+      <div
+        class="w-2 h-2 rounded-full bg-[#722F37] animate-bounce"
+        style="animation-delay: 150ms;"
+      />
+      <div
+        class="w-2 h-2 rounded-full bg-[#722F37] animate-bounce"
+        style="animation-delay: 300ms;"
+      />
+    </div>
+  </div>
+</div>
+`;

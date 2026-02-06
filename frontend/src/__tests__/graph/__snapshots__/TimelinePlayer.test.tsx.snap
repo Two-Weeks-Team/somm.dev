@@ -1,0 +1,256 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`TimelinePlayer matches snapshot when paused 1`] = `
+<div
+  class="flex flex-col gap-2 p-4 bg-white border border-[#F7E7CE] rounded-lg shadow-sm w-full max-w-3xl mx-auto"
+>
+  <div
+    class="flex items-center justify-between gap-4"
+  >
+    <div
+      class="flex items-center gap-2"
+    >
+      <button
+        aria-label="Previous step"
+        class="p-2 text-[#722F37] hover:bg-[#F7E7CE]/20 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-left"
+          fill="none"
+          height="20"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m15 18-6-6 6-6"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Play"
+        class="p-3 bg-[#722F37] text-white rounded-full hover:bg-[#5a252c] transition-colors shadow-md"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-play ml-0.5"
+          fill="currentColor"
+          height="20"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Next step"
+        class="p-2 text-[#722F37] hover:bg-[#F7E7CE]/20 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-right"
+          fill="none"
+          height="20"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m9 18 6-6-6-6"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="font-mono text-sm font-medium text-[#722F37] min-w-[80px] text-center"
+    >
+      Step 
+      5
+      /
+      10
+    </div>
+    <div
+      class="flex-1 px-2"
+    >
+      <input
+        class="w-full h-2 bg-[#F7E7CE] rounded-lg appearance-none cursor-pointer accent-[#722F37]"
+        max="10"
+        min="0"
+        type="range"
+        value="5"
+      />
+    </div>
+    <div
+      class="flex items-center bg-[#F7E7CE]/30 rounded-lg p-1"
+    >
+      <button
+        class="px-2 py-1 text-xs font-medium rounded transition-colors text-[#722F37] hover:bg-[#F7E7CE]/50"
+      >
+        0.5
+        x
+      </button>
+      <button
+        class="px-2 py-1 text-xs font-medium rounded transition-colors bg-[#722F37] text-white shadow-sm"
+      >
+        1
+        x
+      </button>
+      <button
+        class="px-2 py-1 text-xs font-medium rounded transition-colors text-[#722F37] hover:bg-[#F7E7CE]/50"
+      >
+        2
+        x
+      </button>
+    </div>
+  </div>
+</div>
+`;
+
+exports[`TimelinePlayer matches snapshot when playing 1`] = `
+<div
+  class="flex flex-col gap-2 p-4 bg-white border border-[#F7E7CE] rounded-lg shadow-sm w-full max-w-3xl mx-auto"
+>
+  <div
+    class="flex items-center justify-between gap-4"
+  >
+    <div
+      class="flex items-center gap-2"
+    >
+      <button
+        aria-label="Previous step"
+        class="p-2 text-[#722F37] hover:bg-[#F7E7CE]/20 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-left"
+          fill="none"
+          height="20"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m15 18-6-6 6-6"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Pause"
+        class="p-3 bg-[#722F37] text-white rounded-full hover:bg-[#5a252c] transition-colors shadow-md"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-pause"
+          fill="currentColor"
+          height="20"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <rect
+            height="18"
+            rx="1"
+            width="5"
+            x="14"
+            y="3"
+          />
+          <rect
+            height="18"
+            rx="1"
+            width="5"
+            x="5"
+            y="3"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Next step"
+        class="p-2 text-[#722F37] hover:bg-[#F7E7CE]/20 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-right"
+          fill="none"
+          height="20"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="20"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="m9 18 6-6-6-6"
+          />
+        </svg>
+      </button>
+    </div>
+    <div
+      class="font-mono text-sm font-medium text-[#722F37] min-w-[80px] text-center"
+    >
+      Step 
+      5
+      /
+      10
+    </div>
+    <div
+      class="flex-1 px-2"
+    >
+      <input
+        class="w-full h-2 bg-[#F7E7CE] rounded-lg appearance-none cursor-pointer accent-[#722F37]"
+        max="10"
+        min="0"
+        type="range"
+        value="5"
+      />
+    </div>
+    <div
+      class="flex items-center bg-[#F7E7CE]/30 rounded-lg p-1"
+    >
+      <button
+        class="px-2 py-1 text-xs font-medium rounded transition-colors text-[#722F37] hover:bg-[#F7E7CE]/50"
+      >
+        0.5
+        x
+      </button>
+      <button
+        class="px-2 py-1 text-xs font-medium rounded transition-colors text-[#722F37] hover:bg-[#F7E7CE]/50"
+      >
+        1
+        x
+      </button>
+      <button
+        class="px-2 py-1 text-xs font-medium rounded transition-colors bg-[#722F37] text-white shadow-sm"
+      >
+        2
+        x
+      </button>
+    </div>
+  </div>
+</div>
+`;
