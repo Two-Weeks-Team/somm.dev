@@ -9,16 +9,22 @@ services:
     ports:
       - "2621:8000"
     env_file:
-      - ./backend/.env
+      - .env
     environment:
-      - ENVIRONMENT=production
-      - DEBUG=false
-      - PORT=8000
-      - FRONTEND_URL=https://www.somm.dev
-      - BACKEND_URL=https://api.somm.dev
-      - MONGO_DB=somm_dev
-      - MONGODB_URI=mongodb://somm_dev_user:***REMOVED***@49.247.2.211:27017/somm_dev?authSource=somm_dev
-      - JWT_SECRET_KEY=***REMOVED***
+      - ENVIRONMENT=${ENVIRONMENT:-production}
+      - DEBUG=${DEBUG:-false}
+      - PORT=${PORT:-8000}
+      - FRONTEND_URL=${FRONTEND_URL}
+      - BACKEND_URL=${BACKEND_URL}
+      - MONGO_DB=${MONGO_DB}
+      - MONGODB_URI=${MONGODB_URI}
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
+      - GEMINI_API_KEY=${GEMINI_API_KEY:-}
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - ANTHROPIC_API_KEY=${ANTHROPIC_API_KEY:-}
+      - GITHUB_TOKEN=${GITHUB_TOKEN:-}
     restart: always
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
