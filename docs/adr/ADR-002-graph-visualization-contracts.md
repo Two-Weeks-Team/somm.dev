@@ -1,7 +1,7 @@
 # ADR-002: Graph Visualization Contracts
 
 ## Status
-Proposed
+Accepted
 
 ## Context
 We need to align somm.dev with Fairthon's graph visualization capabilities. Fairthon provides:
@@ -127,10 +127,30 @@ cache_key = f"{evaluation_id}:{mode}:{layout_hash}:{techniques_version}"
 ```
 
 ### 6. Schema Versioning
-- `graph_schema_version` field in all payloads
-- Current version: 2 (matching Fairthon)
+
+**GRAPH_SCHEMA_VERSION Constant:**
+```python
+GRAPH_SCHEMA_VERSION = 2  # Current version matching Fairthon
+```
+
+**Versioning Rules:**
+- `graph_schema_version` field required in all payloads (ReactFlowGraph, Graph3DPayload, Graph3DMetadata)
+- Current version: **2** (matching Fairthon)
 - Breaking changes increment major version
 - Cached graphs invalidated on version mismatch
+
+**Cache Invalidation Behavior:**
+- Cache key format: `{evaluation_id}:{mode}:{layout_hash}:{graph_schema_version}`
+- Example: `"eval_abc123:six_hats:a1b2c3d4:2"`
+- When graph_schema_version changes, old cache entries are ignored
+- Graphs are automatically regenerated with new schema version
+- Backend validates version match between payload and metadata
+
+**Documentation in Models:**
+All Pydantic models include docstrings documenting:
+- Graph schema version requirements
+- Cache invalidation behavior
+- Version field descriptions
 
 ## Consequences
 

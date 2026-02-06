@@ -1,0 +1,41 @@
+{
+  "graph_schema_version": 2,
+  "mode": "six_hats",
+  "nodes": [
+    {
+      "id": "start-1",
+      "type": "start",
+      "position": {"x": 0, "y": 0},
+      "data": {"label": "Start", "status": "complete"}
+    },
+    {
+      "id": "agent-1",
+      "type": "agent",
+      "position": {"x": 100, "y": 100},
+      "data": {"label": "Marcel", "status": "running", "progress": 0.5}
+    },
+    {
+      "id": "end-1",
+      "type": "end",
+      "position": {"x": 200, "y": 0},
+      "data": {"label": "End", "status": "pending"}
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge-1",
+      "source": "start-1",
+      "target": "agent-1",
+      "animated": true,
+      "style": {"stroke": "#722F37"}
+    },
+    {
+      "id": "edge-2",
+      "source": "agent-1",
+      "target": "end-1",
+      "animated": false
+    }
+  ],
+  "description": "Test ReactFlow graph for six_hats mode",
+  "meta": {"test": true, "version": "1.0"}
+}

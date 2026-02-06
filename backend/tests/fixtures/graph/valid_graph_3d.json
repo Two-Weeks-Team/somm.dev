@@ -1,0 +1,101 @@
+{
+  "graph_schema_version": 2,
+  "evaluation_id": "eval_test_123",
+  "mode": "full_techniques",
+  "nodes": [
+    {
+      "node_id": "node-1",
+      "node_type": "start",
+      "label": "Start Node",
+      "position": {"x": 0.0, "y": 0.0, "z": 0.0},
+      "color": "#722F37",
+      "step_number": 0,
+      "hat_type": null,
+      "technique_id": null,
+      "category": "initialization",
+      "item_count": null
+    },
+    {
+      "node_id": "node-2",
+      "node_type": "technique",
+      "label": "Code Review",
+      "position": {"x": 10.0, "y": 5.0, "z": 2.0},
+      "color": "#C41E3A",
+      "step_number": 1,
+      "hat_type": null,
+      "technique_id": "tech_001",
+      "category": "quality",
+      "item_count": 5
+    },
+    {
+      "node_id": "node-3",
+      "node_type": "agent",
+      "label": "Marcel",
+      "position": {"x": 20.0, "y": 10.0, "z": 4.0},
+      "color": "#8B7355",
+      "step_number": 2,
+      "hat_type": null,
+      "technique_id": null,
+      "category": "sommelier",
+      "item_count": null
+    }
+  ],
+  "edges": [
+    {
+      "edge_id": "edge-1",
+      "source": "node-1",
+      "target": "node-2",
+      "edge_type": "flow",
+      "color": "#2E4A3F",
+      "width": 2.0,
+      "step_number": 1,
+      "bundle_id": null,
+      "bundled_path": null,
+      "dasharray": null
+    },
+    {
+      "edge_id": "edge-2",
+      "source": "node-2",
+      "target": "node-3",
+      "edge_type": "parallel",
+      "color": "#2E4A3F",
+      "width": 1.5,
+      "step_number": 2,
+      "bundle_id": "bundle-1",
+      "bundled_path": [
+        {"x": 10.0, "y": 5.0, "z": 2.0},
+        {"x": 15.0, "y": 7.5, "z": 3.0},
+        {"x": 20.0, "y": 10.0, "z": 4.0}
+      ],
+      "dasharray": "5,5"
+    }
+  ],
+  "edges_raw": [
+    {
+      "edge_id": "edge-raw-1",
+      "source": "node-1",
+      "target": "node-2",
+      "edge_type": "flow",
+      "color": "#2E4A3F",
+      "width": 2.0,
+      "step_number": 1,
+      "bundle_id": null,
+      "bundled_path": null,
+      "dasharray": null
+    }
+  ],
+  "excluded_techniques": [
+    {"technique_id": "tech_excluded", "reason": "not_applicable"}
+  ],
+  "metadata": {
+    "x_range": [0.0, 100.0],
+    "y_range": [0.0, 50.0],
+    "z_range": [0.0, 20.0],
+    "total_nodes": 3,
+    "total_edges": 2,
+    "total_steps": 5,
+    "max_step_number": 4,
+    "graph_schema_version": 2,
+    "generated_at": "2026-02-06T10:00:00Z"
+  }
+}
