@@ -15,18 +15,18 @@ class CorkedError(HTTPException):
     """Exception for bad request errors.
 
     Raised when the client sends invalid data or makes an invalid request.
-    Corresponds to HTTP 400 Bad Request.
+    Corresponds to HTTP 400 Bad Request by default, but can be overridden.
 
     The term "corked" refers to wine that has been spoiled by a faulty cork,
     analogous to a spoiled or invalid request.
     """
 
-    status_code = status.HTTP_400_BAD_REQUEST
+    default_status_code = status.HTTP_400_BAD_REQUEST
     default_detail = "Invalid request data - the request is corked"
 
-    def __init__(self, detail: str = None):
+    def __init__(self, detail: str = None, status_code: int = None):
         super().__init__(
-            status_code=self.status_code,
+            status_code=status_code or self.default_status_code,
             detail=detail or self.default_detail,
         )
 
