@@ -18,7 +18,7 @@ import '@xyflow/react/dist/style.css';
 import { api } from '@/lib/api';
 import { nodeTypes } from './graph/nodes';
 import { getLayoutedElements } from '@/lib/graphLayout';
-import { Loader2, AlertCircle, RefreshCw } from 'lucide-react';
+import { AlertCircle, RefreshCw } from 'lucide-react';
 import { ModeIndicatorBadge } from './ModeIndicatorBadge';
 import { GraphLegend } from './graph/GraphLegend';
 import { getAgentColor, getCategoryColor } from '@/lib/graphColors';
@@ -26,6 +26,8 @@ import { GraphEvaluationMode } from '@/types/graph';
 
 import { TimelinePlayer } from './graph/TimelinePlayer';
 import { useTimelinePlayer } from '@/hooks/useTimelinePlayer';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { GraphSkeleton } from './graph/GraphSkeleton';
 
 interface Graph2DTabProps {
   evaluationId: string;
@@ -38,6 +40,7 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
   const [error, setError] = useState<string | null>(null);
   const [maxStep, setMaxStep] = useState(0);
   const [mode, setMode] = useState<GraphEvaluationMode | string>('six_hats');
+  const isMobile = useMediaQuery('(max-width: 768px)');
 
   const {
     currentStep,
@@ -138,16 +141,15 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center h-[600px] bg-white rounded-2xl shadow-sm border border-gray-100">
-        <Loader2 className="w-10 h-10 text-[#722F37] animate-spin mb-4" />
-        <p className="text-gray-500 font-medium">Loading graph visualization...</p>
+      <div className="md:h-[600px] h-[400px]">
+        <GraphSkeleton />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center h-[600px] bg-white rounded-2xl shadow-sm border border-gray-100">
+      <div className="flex flex-col items-center justify-center md:h-[600px] h-[400px] bg-white rounded-2xl shadow-sm border border-gray-100">
         <AlertCircle className="w-10 h-10 text-red-500 mb-4" />
         <p className="text-gray-800 font-medium mb-2">{error}</p>
         <button 
@@ -167,7 +169,7 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
         <ModeIndicatorBadge mode={mode} />
       </div>
 
-      <div className="h-[600px] bg-[#FAFAFA] rounded-2xl shadow-sm border border-gray-200 overflow-hidden relative">
+      <div className="md:h-[600px] h-[400px] bg-[#FAFAFA] rounded-2xl shadow-sm border border-gray-200 overflow-hidden relative">
         <GraphLegend mode={mode} />
         <ReactFlow
           nodes={nodes}
@@ -182,27 +184,29 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
           maxZoom={1.5}
         >
           <Controls className="!bg-white !border-gray-200 !shadow-sm" />
-          <MiniMap 
-            className="!bg-white !border-gray-200 !shadow-sm"
-            nodeColor={(node) => {
-              if (node.data.color && typeof node.data.color === 'string') {
-                return node.data.color;
-              }
-              switch (node.type) {
-                case 'start':
-                case 'end':
-                  return '#722F37';
-                case 'agent':
-                  return '#2E4A3F';
-                case 'technique':
-                  return '#F7E7CE';
-                case 'synthesis':
-                  return '#DAA520';
-                default:
-                  return '#eee';
-              }
-            }}
-          />
+          {!isMobile && (
+            <MiniMap 
+              className="!bg-white !border-gray-200 !shadow-sm"
+              nodeColor={(node) => {
+                if (node.data.color && typeof node.data.color === 'string') {
+                  return node.data.color;
+                }
+                switch (node.type) {
+                  case 'start':
+                  case 'end':
+                    return '#722F37';
+                  case 'agent':
+                    return '#2E4A3F';
+                  case 'technique':
+                    return '#F7E7CE';
+                  case 'synthesis':
+                    return '#DAA520';
+                  default:
+                    return '#eee';
+                }
+              }}
+            />
+          )}
           <Background variant={BackgroundVariant.Dots} gap={12} size={1} color="#E5E7EB" />
         </ReactFlow>
       </div>

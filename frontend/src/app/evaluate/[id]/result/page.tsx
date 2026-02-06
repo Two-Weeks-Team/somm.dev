@@ -7,14 +7,15 @@ import { EvaluationResult } from '../../../../types';
 import { ArrowLeft, Share2, Download } from 'lucide-react';
 import { ResultTabs, useResultTab, ResultTabId } from '../../../../components/ResultTabs';
 import { TastingNotesTab } from '../../../../components/TastingNotesTab';
+import { GraphSkeleton } from '../../../../components/graph/GraphSkeleton';
 
 const Graph2DTab = lazy(() => import('../../../../components/Graph2DTab').then(m => ({ default: m.Graph2DTab })));
 const Graph3DTab = lazy(() => import('../../../../components/Graph3DTab').then(m => ({ default: m.Graph3DTab })));
 
 function TabLoadingFallback() {
   return (
-    <div className="flex items-center justify-center py-12">
-      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#722F37]"></div>
+    <div className="md:h-[600px] h-[400px]">
+      <GraphSkeleton />
     </div>
   );
 }
