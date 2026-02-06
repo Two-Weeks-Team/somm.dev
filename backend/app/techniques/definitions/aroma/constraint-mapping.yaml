@@ -1,0 +1,70 @@
+id: constraint-mapping
+name: Constraint Mapping
+nameKo: 제약 조건 매핑
+category: aroma
+applicableHats:
+- white
+- black
+evaluationDimensions:
+- B3
+- B4
+description: '프로젝트가 직면한 모든 제약 조건을
+
+  체계적으로 식별하고 분류하는 기법.
+
+  제약은 종종 혁신의 원천이 됩니다.
+
+  '
+promptTemplate: '## Constraint Mapping 분석
+
+
+  이 프로젝트가 제약 조건을 명확히 파악했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **기술적 제약**: 기술적 한계를 인식하고 있는가?
+
+  2. **비즈니스 제약**: 시간, 비용, 자원 제약을 고려했는가?
+
+  3. **사용자 제약**: 사용자 환경의 제약을 파악했는가?
+
+  4. **규제 제약**: 법적, 규제적 제약을 고려했는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 기술/비즈니스/사용자/규제 제약 모두 체계적으로 식별
+
+  - 4점: 3개 영역의 제약 식별
+
+  - 3점: 2개 영역의 제약 식별
+
+  - 2점: 1개 영역의 제약만 인식
+
+  - 1점: 제약 분석 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 4개 영역 제약 모두 체계적 식별
+    4: 3개 영역 제약 식별
+    3: 2개 영역 제약 식별
+    2: 1개 영역 제약만 인식
+    1: 제약 분석 없음
+outputSchema:
+  score: number
+  technicalConstraints: string[]
+  businessConstraints: string[]
+  userConstraints: string[]
+  regulatoryConstraints: string[]
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 650
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Systems Thinking
+requiredSources: readme_only

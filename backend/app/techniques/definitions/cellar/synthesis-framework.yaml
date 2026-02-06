@@ -1,0 +1,71 @@
+id: synthesis-framework
+name: Synthesis Framework
+nameKo: 종합 프레임워크
+category: cellar
+applicableHats:
+- blue
+evaluationDimensions:
+- A1
+- B2
+- D1
+- D3
+description: '테제-안티테제-신테제의 변증법적 사고나
+
+  다양한 입력을 하나의 결론으로 통합하는 기법.
+
+  상반된 요소들을 조화시킵니다.
+
+  '
+promptTemplate: '## Synthesis Framework 분석
+
+
+  프로젝트가 다양한 요소를 효과적으로 종합했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **요소 수집**: 다양한 입력/의견을 수집했는가?
+
+  2. **통합 프레임워크**: 통합을 위한 구조가 있는가?
+
+  3. **균형점 발견**: 상충 요소의 균형점을 찾았는가?
+
+  4. **종합 결론**: 통합된 결론/방향이 있는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 체계적 종합 프레임워크, 명확한 통합 결론
+
+  - 4점: 효과적인 요소 통합
+
+  - 3점: 일부 요소 종합
+
+  - 2점: 요소 나열만
+
+  - 1점: 종합 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 체계적 프레임워크, 통합 결론
+    4: 효과적 요소 통합
+    3: 일부 요소 종합
+    2: 요소 나열만
+    1: 종합 없음
+outputSchema:
+  score: number
+  inputElements: string[]
+  integrationFramework: string
+  balancePoint: string
+  synthesizedConclusion: string
+  reasoning: string
+metadata:
+  complexity: high
+  estimatedTokens: 600
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Hegelian Dialectics / Systems Thinking
+requiredSources: either

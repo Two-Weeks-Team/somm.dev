@@ -1,0 +1,77 @@
+id: design-thinking
+name: Design Thinking
+nameKo: 디자인 씽킹
+category: palate
+applicableHats:
+- green
+- red
+- yellow
+evaluationDimensions:
+- A2
+- A3
+- B1
+description: 'Stanford d.school과 IDEO에서 체계화한 인간 중심 혁신 방법론.
+
+  공감(Empathize), 정의(Define), 아이디어(Ideate), 프로토타입(Prototype),
+
+  테스트(Test) 5단계로 문제를 해결하는 창의적 접근법.
+
+  '
+promptTemplate: '## Design Thinking 분석
+
+
+  이 프로젝트가 디자인 씽킹 5단계를 얼마나 잘 적용했는지 분석하세요.
+
+
+  ### Design Thinking 5단계:
+
+  1. **Empathize (공감)**: 사용자의 니즈와 고통점을 깊이 이해했는가?
+
+  2. **Define (정의)**: 문제를 명확하고 실행 가능한 형태로 정의했는가?
+
+  3. **Ideate (아이디어)**: 다양한 해결책을 창의적으로 발상했는가?
+
+  4. **Prototype (프로토타입)**: 빠른 실험을 위한 시제품을 만들었는가?
+
+  5. **Test (테스트)**: 실제 사용자로부터 피드백을 받았는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 5단계 모두 명확히 수행, 반복적 개선 사이클 적용
+
+  - 4점: 4단계 이상 수행, 사용자 피드백 반영
+
+  - 3점: 3단계 수행, 기본적인 사용자 이해
+
+  - 2점: 1-2단계만 부분적 수행
+
+  - 1점: 디자인 씽킹 적용 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 5단계 완전 수행, 반복 개선
+    4: 4단계+ 수행, 피드백 반영
+    3: 3단계 수행, 기본 이해
+    2: 1-2단계 부분 수행
+    1: 디자인 씽킹 미적용
+outputSchema:
+  score: number
+  empathizeEvidence: string
+  defineEvidence: string
+  ideateEvidence: string
+  prototypeEvidence: string
+  testEvidence: string
+  iterationCount: number
+  reasoning: string
+metadata:
+  complexity: high
+  estimatedTokens: 800
+  requiresWebSearch: false
+  requiresRAG: false
+  source: David Kelley, Stanford d.school (2005) / IDEO
+  academicReference: Stanford 정규 커리큘럼, IDEO Human-Centered Design
+requiredSources: both

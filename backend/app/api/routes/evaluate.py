@@ -52,6 +52,11 @@ class EvaluateRequest(BaseModel):
         description="Evaluation criteria mode",
         examples=["basic", "hackathon", "academic", "custom"],
     )
+    evaluation_mode: str = Field(
+        default="six_sommeliers",
+        description="Evaluation mode: six_sommeliers (default) or grand_tasting",
+        examples=["six_sommeliers", "grand_tasting"],
+    )
     custom_criteria: list[str] | None = Field(
         default=None,
         description="Custom criteria for custom mode",
@@ -79,6 +84,10 @@ class EvaluateResponse(BaseModel):
 
     evaluation_id: str
     status: str
+    evaluation_mode: str = Field(
+        default="six_sommeliers",
+        description="Evaluation mode used",
+    )
     estimated_time: int = Field(
         default=30,
         description="Estimated time in seconds",
@@ -106,7 +115,7 @@ async def create_evaluation(
     """
     logger.info(
         f"[Evaluate] Request received: repo_url={request.repo_url}, "
-        f"criteria={request.criteria}, user={user.id}"
+        f"criteria={request.criteria}, evaluation_mode={request.evaluation_mode}, user={user.id}"
     )
 
     try:
@@ -114,6 +123,8 @@ async def create_evaluation(
             repo_url=request.repo_url,
             criteria=request.criteria,
             user_id=user.id,
+            custom_criteria=request.custom_criteria,
+            evaluation_mode=request.evaluation_mode,
         )
 
         event_channel = get_event_channel()
@@ -126,6 +137,7 @@ async def create_evaluation(
                     repo_url=request.repo_url,
                     criteria=request.criteria,
                     user_id=user.id,
+                    evaluation_mode=request.evaluation_mode,
                     provider=request.provider,
                     model=request.model,
                     temperature=request.temperature,
@@ -166,10 +178,12 @@ async def create_evaluation(
 
         logger.info(f"[Evaluate] Background task started: {eval_id}")
 
+        estimated = 30 if request.evaluation_mode == "six_sommeliers" else 60
         return EvaluateResponse(
             evaluation_id=eval_id,
             status="pending",
-            estimated_time=30,
+            evaluation_mode=request.evaluation_mode,
+            estimated_time=estimated,
         )
     except CorkedError as e:
         logger.error(f"[Evaluate] CorkedError: {e.detail}")
@@ -238,8 +252,6 @@ async def stream_evaluation(
                     break
         except asyncio.CancelledError:
             logger.info(f"SSE stream cancelled for {evaluation_id}")
-        finally:
-            await event_channel.close_channel(evaluation_id)
 
     return StreamingResponse(
         generate(),

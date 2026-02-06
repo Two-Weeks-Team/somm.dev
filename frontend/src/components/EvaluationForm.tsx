@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { CriteriaType } from '../types';
+import { CriteriaType, EvaluationMode } from '../types';
 import { CriteriaSelector } from './CriteriaSelector';
+import { EvaluationModeSelector } from './EvaluationModeSelector';
 import { RepositoryPicker } from './RepositoryPicker';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRepoValidation } from '@/hooks/useRepoValidation';
@@ -10,7 +11,7 @@ import { Search, Loader2, AlertCircle, Github, CheckCircle, Lock, XCircle } from
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.somm.dev";
 
 interface EvaluationFormProps {
-  onSubmit: (repoUrl: string, criteria: CriteriaType) => Promise<void>;
+  onSubmit: (repoUrl: string, criteria: CriteriaType, evaluationMode: EvaluationMode) => Promise<void>;
   isLoading?: boolean;
   error?: string | null;
 }
@@ -21,6 +22,7 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
   const [activeTab, setActiveTab] = useState<TabType>('repos');
   const [repoUrl, setRepoUrl] = useState('');
   const [criteria, setCriteria] = useState<CriteriaType>('basic');
+  const [evaluationMode, setEvaluationMode] = useState<EvaluationMode>('six_sommeliers');
   const [validationError, setValidationError] = useState<string | null>(null);
   const [selectedRepoId, setSelectedRepoId] = useState<number | undefined>();
 
@@ -98,7 +100,7 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
       return;
     }
 
-    await onSubmit(repoUrl, criteria);
+    await onSubmit(repoUrl, criteria, evaluationMode);
   };
 
   const handleOAuthLogin = () => {
@@ -252,6 +254,8 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
       )}
 
       <CriteriaSelector value={criteria} onChange={setCriteria} />
+
+      <EvaluationModeSelector value={evaluationMode} onChange={setEvaluationMode} />
 
       <button
         type="submit"

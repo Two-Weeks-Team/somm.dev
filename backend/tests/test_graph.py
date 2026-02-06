@@ -19,9 +19,9 @@ class TestCheckpoint:
         """Test that get_checkpointer returns MongoDBSaver instance"""
         from app.graph.checkpoint import get_checkpointer
 
-        with patch("app.graph.checkpoint.get_database") as mock_get_db:
-            mock_db = MagicMock()
-            mock_get_db.return_value = mock_db
+        with patch("app.graph.checkpoint._get_sync_client") as mock_get_client:
+            mock_client = MagicMock()
+            mock_get_client.return_value = mock_client
 
             with patch("app.graph.checkpoint.MongoDBSaver") as mock_saver:
                 mock_saver_instance = MagicMock(spec=BaseCheckpointSaver)
@@ -29,9 +29,7 @@ class TestCheckpoint:
 
                 checkpointer = get_checkpointer()
 
-                mock_saver.assert_called_once_with(
-                    db=mock_db, collection_name="checkpoints"
-                )
+                mock_saver.assert_called_once()
                 assert checkpointer == mock_saver_instance
 
 

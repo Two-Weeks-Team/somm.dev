@@ -1,0 +1,70 @@
+id: zombie-apocalypse
+name: Zombie Apocalypse Scenario
+nameKo: 좀비 아포칼립스 시나리오
+category: body
+applicableHats:
+- black
+- green
+evaluationDimensions:
+- B3
+- B4
+description: '극단적인 재난 시나리오를 상상하여
+
+  시스템의 생존력과 복원력을 테스트하는 기법.
+
+  극한 상황에서도 작동하는 설계를 추구합니다.
+
+  '
+promptTemplate: '## Zombie Apocalypse Scenario 분석
+
+
+  프로젝트가 극단적 시나리오에서의 생존을 고려했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **극단 시나리오**: 최악의 상황을 상상해 보았는가?
+
+  2. **핵심 기능**: 극한 상황에서도 유지해야 할 핵심은?
+
+  3. **생존 모드**: 최소한의 자원으로 작동하는 모드가 있는가?
+
+  4. **복원 계획**: 재난 후 복구 계획이 있는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 극단 시나리오 분석, 생존 모드, 복구 계획 존재
+
+  - 4점: 주요 극단 상황 대비
+
+  - 3점: 일부 극한 상황 고려
+
+  - 2점: 정상 상황만 고려
+
+  - 1점: 극단 시나리오 무시
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 극단 분석, 생존 모드, 복구 계획
+    4: 주요 극단 상황 대비
+    3: 일부 극한 고려
+    2: 정상 상황만
+    1: 극단 무시
+outputSchema:
+  score: number
+  extremeScenarios: string[]
+  coreFunctions: string[]
+  survivalMode: string
+  recoveryPlan: string
+  reasoning: string
+metadata:
+  complexity: high
+  estimatedTokens: 550
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Disaster Recovery / Resilience Engineering
+requiredSources: either

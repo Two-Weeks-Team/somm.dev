@@ -4,6 +4,25 @@ from pydantic import BaseModel, Field
 from typing import List
 
 
+class TechniqueResult(BaseModel):
+    technique_id: str
+    technique_name: str
+    score: int = Field(ge=1, le=5)
+    findings: str
+    reasoning: str
+
+
+class TastingNoteOutput(BaseModel):
+    category: str = Field(description="Tasting note category (aroma, palate, etc.)")
+    axis: str = Field(
+        description="Evaluation axis (problem-analysis, innovation, etc.)"
+    )
+    techniques_applied: List[TechniqueResult]
+    aggregate_score: float = Field(ge=0.0, le=5.0)
+    summary: str = Field(description="Consolidated insight from all techniques")
+    confidence: float = Field(ge=0.0, le=1.0)
+
+
 class SommelierOutput(BaseModel):
     """Output schema for individual sommelier evaluations."""
 

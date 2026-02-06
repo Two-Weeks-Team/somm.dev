@@ -1,0 +1,70 @@
+id: inner-child-conference
+name: Inner Child Conference
+nameKo: 내면 아이 회의
+category: finish
+applicableHats:
+- red
+- green
+evaluationDimensions:
+- A3
+- C2
+- D3
+description: '어린이의 순수한 호기심과 상상력으로 문제를 바라보는 기법.
+
+  "왜?"라는 질문을 끊임없이 던지며
+
+  창의적이고 자유로운 발상을 합니다.
+
+  '
+promptTemplate: '## Inner Child Conference 분석
+
+
+  프로젝트가 순수한 호기심과 상상력을 발휘했는지 분석하세요.
+
+
+  ### 분석 관점:
+
+  1. **순수한 호기심**: "왜?"라는 근본적 질문을 던졌는가?
+
+  2. **상상력**: 제약 없는 상상을 했는가?
+
+  3. **유희성**: 재미있고 놀이 같은 접근이 있었는가?
+
+  4. **직관적 단순함**: 복잡함을 단순하게 풀었는가?
+
+
+  ### 점수 기준:
+
+  - 5점: 순수한 호기심으로 혁신적 발상, 유희적 접근
+
+  - 4점: 자유로운 상상력 발휘
+
+  - 3점: 일부 창의적 시도
+
+  - 2점: 대부분 관습적 사고
+
+  - 1점: 순수한 호기심/상상력 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 순수 호기심, 혁신 발상, 유희적
+    4: 자유로운 상상력
+    3: 일부 창의적 시도
+    2: 관습적 사고
+    1: 호기심/상상력 없음
+outputSchema:
+  score: number
+  curiousQuestions: string[]
+  imaginativeIdeas: string[]
+  playfulElements: string
+  reasoning: string
+metadata:
+  complexity: low
+  estimatedTokens: 500
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Inner Child Work / Creative Play
+requiredSources: pdf_only

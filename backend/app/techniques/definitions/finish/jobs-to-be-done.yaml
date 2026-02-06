@@ -1,0 +1,76 @@
+id: jobs-to-be-done
+name: Jobs to Be Done
+nameKo: 고객 과업 이론
+category: finish
+applicableHats:
+- red
+- white
+- yellow
+evaluationDimensions:
+- A2
+- A3
+- A4
+description: 'Clayton Christensen(Harvard Business School)이 정립한 혁신 이론.
+
+  고객이 제품을 "고용"하여 수행하려는 근본적인 과업(Job)을 이해하고,
+
+  그 과업을 더 잘 수행할 수 있도록 돕는 솔루션을 설계하는 프레임워크.
+
+  '
+promptTemplate: '## Jobs to Be Done 분석
+
+
+  이 프로젝트가 고객의 진정한 ''과업(Job)''을 이해하고 해결하는지 분석하세요.
+
+
+  ### JTBD 핵심 질문:
+
+  1. **기능적 과업**: 고객이 달성하려는 실질적 목표는 무엇인가?
+
+  2. **감정적 과업**: 고객이 느끼고 싶은 감정은 무엇인가?
+
+  3. **사회적 과업**: 고객이 타인에게 보이고 싶은 모습은?
+
+  4. **고용 상황**: 어떤 상황에서 이 솔루션을 "고용"하는가?
+
+  5. **경쟁 대안**: 현재 이 과업을 해결하는 대안은 무엇인가?
+
+
+  ### 점수 기준:
+
+  - 5점: 3가지 과업 모두 명확히 정의, 고용 상황 구체화
+
+  - 4점: 기능+감정 과업 이해, 경쟁 대안 분석
+
+  - 3점: 기능적 과업 명확히 정의
+
+  - 2점: 암묵적 과업 이해
+
+  - 1점: 고객 과업 분석 없음
+
+  '
+scoring:
+  min: 1
+  max: 5
+  criteria:
+    5: 3가지 과업 정의, 고용 상황 구체화
+    4: 기능+감정 이해, 경쟁 분석
+    3: 기능적 과업 명확 정의
+    2: 암묵적 과업 이해
+    1: 고객 과업 분석 없음
+outputSchema:
+  score: number
+  functionalJob: string
+  emotionalJob: string
+  socialJob: string
+  hiringContext: string
+  competingAlternatives: string[]
+  reasoning: string
+metadata:
+  complexity: medium
+  estimatedTokens: 700
+  requiresWebSearch: false
+  requiresRAG: false
+  source: Clayton Christensen, Harvard Business School
+  academicReference: 86% 신제품 성공률 문서화, 'Competing Against Luck' (2016)
+requiredSources: both

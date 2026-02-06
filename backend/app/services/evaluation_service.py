@@ -146,6 +146,7 @@ async def start_evaluation(
     criteria: str,
     user_id: str,
     custom_criteria: Optional[list[str]] = None,
+    evaluation_mode: str = "six_sommeliers",
 ) -> str:
     """Start a new evaluation for a repository.
 
@@ -154,6 +155,7 @@ async def start_evaluation(
         criteria: The evaluation criteria mode (basic, hackathon, academic, custom).
         user_id: The ID of the user requesting the evaluation.
         custom_criteria: Optional list of custom criteria for custom mode.
+        evaluation_mode: Evaluation mode (six_sommeliers or grand_tasting).
 
     Returns:
         The evaluation ID.
@@ -172,6 +174,14 @@ async def start_evaluation(
             f"Invalid criteria: {criteria}. Must be one of {valid_criteria}"
         )
 
+    from app.graph.graph_factory import is_valid_mode
+
+    if not is_valid_mode(evaluation_mode):
+        raise CorkedError(
+            f"Invalid evaluation mode: {evaluation_mode}. "
+            "Must be 'six_sommeliers' or 'grand_tasting'"
+        )
+
     repo = EvaluationRepository()
     eval_id = await repo.create_evaluation(
         eval_data={
@@ -181,6 +191,7 @@ async def start_evaluation(
             "criteria": criteria,
             "user_id": user_id,
             "custom_criteria": custom_criteria,
+            "evaluation_mode": evaluation_mode,
         }
     )
 
@@ -217,46 +228,83 @@ async def run_evaluation_pipeline(
 async def save_evaluation_results(
     evaluation_id: str,
     evaluation_data: Dict[str, Any],
+    evaluation_mode: str = "six_sommeliers",
 ) -> str:
     """Save evaluation results to the database.
 
     Args:
         evaluation_id: The evaluation ID.
         evaluation_data: The evaluation results data.
+        evaluation_mode: The evaluation mode used.
 
     Returns:
         The result ID.
     """
     repo = ResultRepository()
 
-    from app.models.results import get_rating_tier, SommelierOutput
+    from app.models.results import get_rating_tier, SommelierOutput, FinalEvaluation
 
-    jeanpierre_result = evaluation_data.get("jeanpierre_result") or {}
-    overall_score = jeanpierre_result.get("total_score", 0)
-    rating_tier = get_rating_tier(overall_score)
-    summary = jeanpierre_result.get("verdict", "")
+    cellar_result = evaluation_data.get("cellar_result")
+    jeanpierre_result = evaluation_data.get("jeanpierre_result")
 
-    sommelier_names = {
-        "marcel": ("Marcel", "Cellar Master"),
-        "isabella": ("Isabella", "Wine Critic"),
-        "heinrich": ("Heinrich", "Quality Inspector"),
-        "sofia": ("Sofia", "Vineyard Scout"),
-        "laurent": ("Laurent", "Winemaker"),
-    }
-    sommelier_outputs = []
-    for key, (name, role) in sommelier_names.items():
-        result = evaluation_data.get(f"{key}_result")
-        if result:
-            sommelier_outputs.append(
-                SommelierOutput(
-                    sommelier_name=name,
-                    score=result.get("score", 0),
-                    summary=result.get("notes", ""),
-                    recommendations=result.get("techniques_used", []),
+    is_grand_tasting = evaluation_mode == "grand_tasting"
+
+    if is_grand_tasting:
+        cellar_result = cellar_result or {}
+        aggregate_score = cellar_result.get("aggregate_score", 0)
+        overall_score = int(aggregate_score * 20)
+        rating_tier = get_rating_tier(overall_score)
+        summary = cellar_result.get("summary", "")
+
+        tasting_note_names = {
+            "aroma": ("Aroma Notes", "Problem Analysis"),
+            "palate": ("Palate Notes", "Innovation"),
+            "body": ("Body Notes", "Risk Analysis"),
+            "finish": ("Finish Notes", "User-Centricity"),
+            "balance": ("Balance Notes", "Feasibility"),
+            "vintage": ("Vintage Notes", "Opportunity"),
+            "terroir": ("Terroir Notes", "Presentation"),
+        }
+        sommelier_outputs = []
+        for key, (name, role) in tasting_note_names.items():
+            result = evaluation_data.get(f"{key}_result")
+            if result:
+                agg_score = result.get("aggregate_score", 0)
+                techniques = result.get("techniques_applied", [])
+                technique_names = [t.get("technique_name", "") for t in techniques]
+                sommelier_outputs.append(
+                    SommelierOutput(
+                        sommelier_name=name,
+                        score=int(agg_score * 20),
+                        summary=result.get("summary", ""),
+                        recommendations=technique_names,
+                    )
                 )
-            )
+    else:
+        jeanpierre_result = jeanpierre_result or {}
+        overall_score = jeanpierre_result.get("total_score", 0)
+        rating_tier = get_rating_tier(overall_score)
+        summary = jeanpierre_result.get("verdict", "")
 
-    from app.models.results import FinalEvaluation
+        sommelier_names = {
+            "marcel": ("Marcel", "Cellar Master"),
+            "isabella": ("Isabella", "Wine Critic"),
+            "heinrich": ("Heinrich", "Quality Inspector"),
+            "sofia": ("Sofia", "Vineyard Scout"),
+            "laurent": ("Laurent", "Winemaker"),
+        }
+        sommelier_outputs = []
+        for key, (name, role) in sommelier_names.items():
+            result = evaluation_data.get(f"{key}_result")
+            if result:
+                sommelier_outputs.append(
+                    SommelierOutput(
+                        sommelier_name=name,
+                        score=result.get("score", 0),
+                        summary=result.get("notes", ""),
+                        recommendations=result.get("techniques_used", []),
+                    )
+                )
 
     final_evaluation = FinalEvaluation(
         overall_score=overall_score,
@@ -311,8 +359,9 @@ async def get_evaluation_progress(
     status = evaluation.get("status", "pending")
     completed = evaluation.get("completed_sommeliers", [])
     user_id = evaluation.get("user_id")
+    evaluation_mode = evaluation.get("evaluation_mode", "six_sommeliers")
 
-    total_steps = 6
+    total_steps = 8 if evaluation_mode == "grand_tasting" else 6
 
     if status == "pending":
         return {
@@ -404,6 +453,7 @@ async def run_evaluation_pipeline_with_events(
     repo_url: str,
     criteria: str,
     user_id: str,
+    evaluation_mode: str = "six_sommeliers",
     provider: Optional[str] = None,
     model: Optional[str] = None,
     temperature: Optional[float] = None,
@@ -432,9 +482,9 @@ async def run_evaluation_pipeline_with_events(
         )
         config = _create_graph_config(resolved_key, provider, model, temperature)
 
-        from app.graph.graph import get_evaluation_graph
+        from app.graph.graph_factory import get_evaluation_graph
 
-        graph = get_evaluation_graph()
+        graph = get_evaluation_graph(evaluation_mode)
         result = await graph.ainvoke(state, config=config)
 
         if result.get("errors"):
@@ -442,7 +492,7 @@ async def run_evaluation_pipeline_with_events(
                 f"Evaluation {evaluation_id} node errors: {result['errors']}"
             )
 
-        await save_evaluation_results(evaluation_id, result)
+        await save_evaluation_results(evaluation_id, result, evaluation_mode)
         await eval_repo.update_status(evaluation_id, "completed")
 
         jeanpierre = result.get("jeanpierre_result") or {}

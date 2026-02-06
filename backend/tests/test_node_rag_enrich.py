@@ -42,10 +42,13 @@ class TestRagEnrichNode:
             "user_id": "user1",
         }
 
-        result = await rag_enrich(state)
+        with patch("app.graph.nodes.rag_enrich.settings") as mock_settings:
+            mock_settings.SYNTHETIC_API_KEY = "test_key"
 
-        assert result["rag_context"]["chunks"] == []
-        assert result["rag_context"]["error"] is None
+            result = await rag_enrich(state)
+
+            assert result["rag_context"]["chunks"] == []
+            assert result["rag_context"]["error"] is None
 
     @pytest.mark.asyncio
     async def test_rag_enrich_failure_does_not_break_evaluation(self):
@@ -59,14 +62,17 @@ class TestRagEnrichNode:
             "user_id": "user1",
         }
 
-        with patch("app.graph.nodes.rag_enrich._get_embeddings") as mock_embed:
-            mock_embed.side_effect = Exception("API connection failed")
+        with patch("app.graph.nodes.rag_enrich.settings") as mock_settings:
+            mock_settings.SYNTHETIC_API_KEY = "test_key"
 
-            result = await rag_enrich(state)
+            with patch("app.graph.nodes.rag_enrich._get_embeddings") as mock_embed:
+                mock_embed.side_effect = Exception("API connection failed")
 
-            assert result["rag_context"]["chunks"] == []
-            assert "API connection failed" in result["rag_context"]["error"]
-            assert "rag_enrich failed" in result["errors"][0]
+                result = await rag_enrich(state)
+
+                assert result["rag_context"]["chunks"] == []
+                assert "API connection failed" in result["rag_context"]["error"]
+                assert "rag_enrich failed" in result["errors"][0]
 
     @pytest.mark.asyncio
     async def test_rag_enrich_success_with_mocked_embeddings(self):
@@ -89,14 +95,18 @@ class TestRagEnrichNode:
             [0.15] * 768,
         ]
 
-        with patch("app.graph.nodes.rag_enrich._get_embeddings") as mock_embed:
-            mock_embed.return_value = mock_embeddings
+        with patch("app.graph.nodes.rag_enrich.settings") as mock_settings:
+            mock_settings.SYNTHETIC_API_KEY = "test_key"
+            mock_settings.RAG_TOP_K = 3
 
-            result = await rag_enrich(state)
+            with patch("app.graph.nodes.rag_enrich._get_embeddings") as mock_embed:
+                mock_embed.return_value = mock_embeddings
 
-            assert result["rag_context"]["error"] is None
-            assert len(result["rag_context"]["chunks"]) > 0
-            assert "trace_metadata" in result
+                result = await rag_enrich(state)
+
+                assert result["rag_context"]["error"] is None
+                assert len(result["rag_context"]["chunks"]) > 0
+                assert "trace_metadata" in result
 
 
 class TestRagEnrichHelpers:
