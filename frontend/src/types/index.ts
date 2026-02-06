@@ -36,9 +36,26 @@ export interface EvaluationHistoryItem {
   totalScore?: number;
 }
 
+export type SSEEventType =
+  | 'sommelier_start'
+  | 'sommelier_complete'
+  | 'sommelier_error'
+  | 'evaluation_complete'
+  | 'heartbeat'
+  | 'status'
+  | 'sommelier'
+  | 'error'
+  | 'complete';
+
 export interface SSEEvent {
-  type: 'status' | 'sommelier' | 'error' | 'complete';
-  data: unknown;
+  event_type: SSEEventType;
+  evaluation_id: string;
+  sommelier?: string;
+  message?: string;
+  progress_percent?: number;
+  tokens_used?: number;
+  cost_usd?: number;
+  timestamp?: string;
 }
 
 export interface SommelierProgress {

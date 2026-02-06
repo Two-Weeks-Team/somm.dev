@@ -269,15 +269,10 @@ async def run_full_evaluation(
     temperature: Optional[float] = None,
     api_key: Optional[str] = None,
 ) -> Dict[str, Any]:
-    """Run a complete evaluation from start to finish.
+    """Run a complete evaluation from start to finish (blocking).
 
-    Args:
-        repo_url: The GitHub repository URL.
-        criteria: The evaluation criteria mode.
-        user_id: The user ID.
-
-    Returns:
-        A dictionary containing the evaluation results.
+    Note: This is the legacy blocking version. For non-blocking evaluation
+    with real-time SSE streaming, use run_evaluation_pipeline_with_events().
     """
     eval_id = await start_evaluation(repo_url, criteria, user_id)
 
@@ -308,6 +303,104 @@ async def run_full_evaluation(
     except Exception as e:
         error_msg = str(e)
         await handle_evaluation_error(eval_id, error_msg)
+        raise
+
+
+async def run_evaluation_pipeline_with_events(
+    evaluation_id: str,
+    repo_url: str,
+    criteria: str,
+    user_id: str,
+    provider: Optional[str] = None,
+    model: Optional[str] = None,
+    temperature: Optional[float] = None,
+    api_key: Optional[str] = None,
+) -> Dict[str, Any]:
+    """Run evaluation pipeline with event emission for real-time SSE streaming.
+
+    This function is designed to be called from a background task. It includes
+    the evaluation_id in the graph state, enabling sommelier nodes to emit
+    progress events via the EventChannel.
+    """
+    eval_repo = EvaluationRepository()
+    await eval_repo.update_status(evaluation_id, "running")
+
+    try:
+        owner, repo_name = parse_github_url(repo_url)
+
+        github = GitHubService()
+        repo_context = await github.get_full_repo_context(owner, repo_name)
+
+        techniques, technique_errors = load_techniques()
+        if technique_errors:
+            logger.warning(
+                "Technique load errors",
+                extra={"errors": technique_errors},
+            )
+        available_inputs = determine_available_inputs(repo_context)
+        filtered = filter_techniques(techniques, available_inputs)
+        repo_context["techniques"] = [tech.model_dump() for tech in filtered]
+
+        resolved_key, byok_error = resolve_byok(api_key)
+        if byok_error:
+            repo_context["byok_error"] = byok_error
+
+        state: EvaluationState = {
+            "evaluation_id": evaluation_id,
+            "repo_url": repo_url,
+            "repo_context": repo_context,
+            "evaluation_criteria": criteria,
+            "user_id": user_id,
+            "marcel_result": None,
+            "isabella_result": None,
+            "heinrich_result": None,
+            "sofia_result": None,
+            "laurent_result": None,
+            "jeanpierre_result": None,
+            "completed_sommeliers": [],
+            "errors": [],
+            "token_usage": {},
+            "cost_usage": {},
+            "trace_metadata": {},
+            "started_at": "",
+            "completed_at": None,
+            "progress_percent": 0,
+            "current_stage": "",
+        }
+
+        from app.graph.graph import get_evaluation_graph
+
+        graph = get_evaluation_graph()
+        config = {
+            "configurable": {
+                "thread_id": str(uuid.uuid4()),
+                "provider": provider or "gemini",
+                "api_key": resolved_key,
+                "model": model,
+                "temperature": temperature,
+                "max_output_tokens": 2048,
+            }
+        }
+        result = await graph.ainvoke(state, config=config)
+
+        if result.get("errors"):
+            logger.warning(
+                f"Evaluation {evaluation_id} node errors: {result['errors']}"
+            )
+
+        await save_evaluation_results(evaluation_id, result)
+        await eval_repo.update_status(evaluation_id, "completed")
+
+        jeanpierre = result.get("jeanpierre_result") or {}
+        return {
+            "evaluation_id": evaluation_id,
+            "status": "completed",
+            "score": jeanpierre.get("overall_score", 0),
+            "rating_tier": jeanpierre.get("rating_tier", ""),
+        }
+    except Exception as e:
+        error_msg = str(e)
+        await handle_evaluation_error(evaluation_id, error_msg)
         raise
 
 
