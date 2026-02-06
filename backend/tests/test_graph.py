@@ -114,29 +114,50 @@ class TestEvaluationGraph:
 class TestGraphStructure:
     """Test cases for graph structure - fan-out and fan-in patterns"""
 
-    def test_graph_has_fan_out_from_start(self):
-        """Test that 5 sommelier nodes are connected from __start__"""
+    def test_graph_has_fan_out_from_start_rag_disabled(self):
+        """Test that 5 sommelier nodes are connected from __start__ when RAG disabled"""
         from app.graph.graph import create_evaluation_graph
 
         with patch("app.graph.graph.get_checkpointer") as mock_checkpointer:
             mock_checkpointer.return_value = create_mock_checkpointer()
 
-            graph = create_evaluation_graph()
+            with patch("app.graph.graph.settings") as mock_settings:
+                mock_settings.RAG_ENABLED = False
 
-            # Get the graph's builder state to check edges
-            # The compiled graph has a 'builder' attribute with graph structure
-            builder = getattr(graph, "builder", None)
-            assert builder is not None
+                graph = create_evaluation_graph()
 
-            # Check that __start__ connects to the 5 evaluation nodes
-            # In LangGraph, edges from __start__ should fan out to nodes
-            all_edges = builder.edges
+                builder = getattr(graph, "builder", None)
+                assert builder is not None
 
-            # Edges are tuples of (source, target)
-            start_edges = [e for e in all_edges if e[0] == "__start__"]
+                all_edges = builder.edges
+                start_edges = [e for e in all_edges if e[0] == "__start__"]
 
-            # Should have 5 edges from __start__ (marcel, isabella, heinrich, sofia, laurent)
-            assert len(start_edges) == 5
+                assert len(start_edges) == 5
+
+    def test_graph_has_rag_enrich_when_enabled(self):
+        """Test that rag_enrich node exists and connects from __start__ when RAG enabled"""
+        from app.graph.graph import create_evaluation_graph
+
+        with patch("app.graph.graph.get_checkpointer") as mock_checkpointer:
+            mock_checkpointer.return_value = create_mock_checkpointer()
+
+            with patch("app.graph.graph.settings") as mock_settings:
+                mock_settings.RAG_ENABLED = True
+
+                graph = create_evaluation_graph()
+
+                nodes = graph.nodes
+                assert "rag_enrich" in nodes
+
+                builder = getattr(graph, "builder", None)
+                all_edges = builder.edges
+
+                start_edges = [e for e in all_edges if e[0] == "__start__"]
+                assert len(start_edges) == 1
+                assert start_edges[0][1] == "rag_enrich"
+
+                rag_edges = [e for e in all_edges if e[0] == "rag_enrich"]
+                assert len(rag_edges) == 5
 
     def test_graph_has_fan_in_to_jeanpierre(self):
         """Test that all 5 sommelier nodes connect to jeanpierre"""

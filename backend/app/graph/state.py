@@ -46,6 +46,9 @@ class EvaluationState(TypedDict):
         Annotated[Dict[str, Dict[str, Optional[str]]], merge_dicts]
     ]
 
+    # RAG enrichment
+    rag_context: NotRequired[Optional[dict]]
+
     # Metadata
     started_at: NotRequired[str]
     completed_at: NotRequired[Optional[str]]
