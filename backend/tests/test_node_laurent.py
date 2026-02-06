@@ -25,8 +25,8 @@ class TestLaurentNode:
         node = LaurentNode()
         assert node.role == "Winemaker"
 
-    def test_laurent_node_has_llm(self):
-        """Test that LaurentNode uses build_llm in evaluate."""
+    def test_laurent_node_basic_instantiation(self):
+        """Test that LaurentNode can be instantiated without errors."""
         node = LaurentNode()
         assert node is not None
 
