@@ -35,15 +35,30 @@ const criteriaOptions: { value: CriteriaType; label: string; description: string
 ];
 
 export const CriteriaSelector: React.FC<CriteriaSelectorProps> = ({ value, onChange }) => {
+  const handleKeyDown = (e: React.KeyboardEvent, optionValue: CriteriaType) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      onChange(optionValue);
+    }
+  };
+
   return (
     <div className="space-y-4">
-      <h3 className="text-lg font-semibold text-[#722F37]">Select Your Blend</h3>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <h3 id="criteria-label" className="text-lg font-semibold text-[#722F37]">Select Your Blend</h3>
+      <div 
+        role="radiogroup" 
+        aria-labelledby="criteria-label"
+        className="grid grid-cols-1 md:grid-cols-2 gap-4"
+      >
         {criteriaOptions.map((option) => (
           <div
             key={option.value}
+            role="radio"
+            aria-checked={value === option.value}
+            tabIndex={0}
             onClick={() => onChange(option.value)}
-            className={`cursor-pointer border-2 rounded-lg p-4 transition-all duration-200 flex items-start space-x-3 ${
+            onKeyDown={(e) => handleKeyDown(e, option.value)}
+            className={`cursor-pointer border-2 rounded-lg p-4 transition-all duration-200 flex items-start space-x-3 focus:outline-none focus:ring-2 focus:ring-[#722F37] focus:ring-offset-2 ${
               value === option.value
                 ? 'border-[#722F37] bg-[#F7E7CE] bg-opacity-30'
                 : 'border-gray-200 hover:border-[#722F37] hover:bg-gray-50'
