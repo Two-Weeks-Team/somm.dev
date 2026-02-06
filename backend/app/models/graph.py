@@ -21,7 +21,7 @@ Graph Schema Versioning:
 from enum import Enum
 from typing import Any, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 # GRAPH_SCHEMA_VERSION: Current graph schema version (matching Fairthon)
 # Increment on breaking changes. Cached graphs are invalidated on version mismatch.
@@ -115,7 +115,7 @@ class ReactFlowGraph(BaseModel):
         default=GRAPH_SCHEMA_VERSION,
         description="Schema version for backward compatibility and cache invalidation",
     )
-    mode: str = Field(
+    mode: EvaluationMode = Field(
         ..., description='Evaluation mode: "six_hats" | "full_techniques"'
     )
     nodes: list[ReactFlowNode] = Field(..., description="List of graph nodes")
@@ -294,7 +294,7 @@ class Graph3DPayload(BaseModel):
         description="Schema version for backward compatibility and cache invalidation",
     )
     evaluation_id: str = Field(..., description="Reference to the evaluation")
-    mode: str = Field(
+    mode: EvaluationMode = Field(
         ..., description='Evaluation mode: "six_hats" | "full_techniques"'
     )
     nodes: list[Graph3DNode] = Field(..., description="List of graph nodes")
@@ -306,3 +306,14 @@ class Graph3DPayload(BaseModel):
         default=None, description="Optional list of excluded technique info"
     )
     metadata: Graph3DMetadata = Field(..., description="Graph bounds and statistics")
+
+    @model_validator(mode="after")
+    def check_version_consistency(self) -> "Graph3DPayload":
+        """Validate that graph_schema_version matches metadata.graph_schema_version."""
+        if self.graph_schema_version != self.metadata.graph_schema_version:
+            raise ValueError(
+                f"Payload graph_schema_version ({self.graph_schema_version}) "
+                f"does not match metadata.graph_schema_version "
+                f"({self.metadata.graph_schema_version})"
+            )
+        return self

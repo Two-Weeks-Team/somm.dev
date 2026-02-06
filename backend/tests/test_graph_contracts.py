@@ -125,7 +125,7 @@ class TestReactFlowGraph:
     def test_reactflow_graph_from_fixture(self):
         """Test loading valid ReactFlowGraph from golden fixture."""
         fixture_path = FIXTURES_DIR / "valid_reactflow_graph.json"
-        with open(fixture_path) as f:
+        with open(fixture_path, encoding="utf-8") as f:
             data = json.load(f)
 
         graph = ReactFlowGraph(**data)
@@ -318,7 +318,7 @@ class TestGraph3DPayload:
     def test_payload_from_fixture(self):
         """Test loading valid Graph3DPayload from golden fixture."""
         fixture_path = FIXTURES_DIR / "valid_graph_3d.json"
-        with open(fixture_path) as f:
+        with open(fixture_path, encoding="utf-8") as f:
             data = json.load(f)
 
         payload = Graph3DPayload(**data)
@@ -471,3 +471,83 @@ class TestGraphSchemaVersion:
             edges=[],
         )
         assert graph.graph_schema_version == 3
+
+    def test_version_mismatch_payload_vs_metadata(self):
+        """Test that mismatched versions between payload and metadata raise error."""
+        node = Graph3DNode(
+            node_id="node-1",
+            node_type="start",
+            label="Start",
+            position=Position3D(x=0.0, y=0.0, z=0.0),
+            step_number=0,
+        )
+        metadata = Graph3DMetadata(
+            x_range=(0.0, 100.0),
+            y_range=(0.0, 50.0),
+            z_range=(0.0, 20.0),
+            total_nodes=1,
+            total_edges=0,
+            total_steps=1,
+            max_step_number=0,
+            graph_schema_version=2,
+            generated_at="2026-02-06T10:00:00Z",
+        )
+        with pytest.raises(ValidationError) as exc_info:
+            Graph3DPayload(
+                graph_schema_version=3,
+                evaluation_id="eval_123",
+                mode="six_hats",
+                nodes=[node],
+                edges=[],
+                metadata=metadata,
+            )
+        assert "graph_schema_version" in str(exc_info.value)
+
+
+class TestInvalidModeValidation:
+    """Tests for invalid mode string rejection."""
+
+    def test_reactflow_graph_invalid_mode(self):
+        """Test ReactFlowGraph fails with invalid mode."""
+        node = ReactFlowNode(
+            id="node-1",
+            type="start",
+            position={"x": 0.0, "y": 0.0},
+            data={},
+        )
+        with pytest.raises(ValidationError) as exc_info:
+            ReactFlowGraph(
+                mode="invalid_mode",
+                nodes=[node],
+                edges=[],
+            )
+        assert "mode" in str(exc_info.value).lower()
+
+    def test_graph_3d_payload_invalid_mode(self):
+        """Test Graph3DPayload fails with invalid mode."""
+        node = Graph3DNode(
+            node_id="node-1",
+            node_type="start",
+            label="Start",
+            position=Position3D(x=0.0, y=0.0, z=0.0),
+            step_number=0,
+        )
+        metadata = Graph3DMetadata(
+            x_range=(0.0, 100.0),
+            y_range=(0.0, 50.0),
+            z_range=(0.0, 20.0),
+            total_nodes=1,
+            total_edges=0,
+            total_steps=1,
+            max_step_number=0,
+            generated_at="2026-02-06T10:00:00Z",
+        )
+        with pytest.raises(ValidationError) as exc_info:
+            Graph3DPayload(
+                evaluation_id="eval_123",
+                mode="unknown_mode",
+                nodes=[node],
+                edges=[],
+                metadata=metadata,
+            )
+        assert "mode" in str(exc_info.value).lower()

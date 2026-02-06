@@ -41,6 +41,7 @@ class ReactFlowEdge(BaseModel):
     style: dict[str, Any] | None = None
 
 class ReactFlowGraph(BaseModel):
+    graph_schema_version: int = 2  # Required for cache invalidation
     mode: str  # "six_hats" | "full_techniques"
     nodes: list[ReactFlowNode]
     edges: list[ReactFlowEdge]
@@ -120,10 +121,10 @@ Query params:
 
 ### 5. Cache Key Structure
 ```python
-cache_key = f"{evaluation_id}:{mode}:{layout_hash}:{techniques_version}"
+cache_key = f"{evaluation_id}:{mode}:{layout_hash}:{graph_schema_version}"
 
 # Example:
-# "eval_abc123:six_hats:a1b2c3d4:v2.1.0"
+# "eval_abc123:six_hats:a1b2c3d4:2"
 ```
 
 ### 6. Schema Versioning
