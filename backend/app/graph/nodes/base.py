@@ -9,6 +9,16 @@ from langchain_core.prompts import ChatPromptTemplate
 from app.graph.state import EvaluationState
 from app.graph.schemas import SommelierOutput
 from app.providers.llm import build_llm
+from app.services.event_channel import create_sommelier_event, get_event_channel
+
+SOMMELIER_PROGRESS = {
+    "marcel": {"start": 10, "complete": 25},
+    "isabella": {"start": 25, "complete": 40},
+    "heinrich": {"start": 40, "complete": 55},
+    "sofia": {"start": 55, "complete": 70},
+    "laurent": {"start": 70, "complete": 85},
+    "jeanpierre": {"start": 85, "complete": 100},
+}
 
 
 class BaseSommelierNode(ABC):
@@ -50,6 +60,24 @@ class BaseSommelierNode(ABC):
         Returns:
             Dictionary containing the sommelier result and completion status.
         """
+        evaluation_id = state.get("evaluation_id", "")
+        progress_config = SOMMELIER_PROGRESS.get(
+            self.name, {"start": 0, "complete": 100}
+        )
+        event_channel = get_event_channel()
+
+        if evaluation_id:
+            event_channel.emit_sync(
+                evaluation_id,
+                create_sommelier_event(
+                    evaluation_id=evaluation_id,
+                    sommelier=self.name,
+                    event_type="sommelier_start",
+                    progress_percent=progress_config["start"],
+                    message=f"{self.name} analysis starting...",
+                ),
+            )
+
         started_at = datetime.now(timezone.utc).isoformat()
         configurable = (config or {}).get("configurable", {})
         provider = configurable.get("provider", "gemini")
@@ -102,6 +130,20 @@ class BaseSommelierNode(ABC):
                 timezone.utc
             ).isoformat()
             result = self.parser.parse(response.content)
+
+            if evaluation_id:
+                event_channel.emit_sync(
+                    evaluation_id,
+                    create_sommelier_event(
+                        evaluation_id=evaluation_id,
+                        sommelier=self.name,
+                        event_type="sommelier_complete",
+                        progress_percent=progress_config["complete"],
+                        message=f"{self.name} analysis complete",
+                        tokens_used=usage.get("total_tokens", 0),
+                    ),
+                )
+
             return {
                 f"{self.name}_result": result.dict(),
                 **observability,
@@ -110,6 +152,19 @@ class BaseSommelierNode(ABC):
             observability["trace_metadata"][self.name]["completed_at"] = datetime.now(
                 timezone.utc
             ).isoformat()
+
+            if evaluation_id:
+                event_channel.emit_sync(
+                    evaluation_id,
+                    create_sommelier_event(
+                        evaluation_id=evaluation_id,
+                        sommelier=self.name,
+                        event_type="sommelier_error",
+                        progress_percent=progress_config["start"],
+                        message=f"{self.name} analysis encountered an error",
+                    ),
+                )
+
             return {
                 "errors": [f"{self.name} evaluation failed: {e!s}"],
                 f"{self.name}_result": None,

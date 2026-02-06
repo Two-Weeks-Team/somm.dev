@@ -1,0 +1,109 @@
+"""Background task registry for managing evaluation tasks.
+
+Provides registration, cancellation, and status tracking for background
+evaluation tasks. Each evaluation runs as an asyncio task that can be
+monitored and cancelled if needed.
+"""
+
+from __future__ import annotations
+
+import asyncio
+import logging
+import threading
+from typing import Dict, Optional
+
+logger = logging.getLogger(__name__)
+
+_running_tasks: Dict[str, asyncio.Task] = {}
+_cleanup_tasks: set[asyncio.Task] = set()
+_tasks_lock = asyncio.Lock()
+_fallback_lock = threading.Lock()
+
+
+async def register_task(evaluation_id: str, task: asyncio.Task) -> None:
+    """Register an evaluation task for tracking.
+
+    Args:
+        evaluation_id: The evaluation ID.
+        task: The asyncio Task running the evaluation.
+    """
+    async with _tasks_lock:
+        if evaluation_id in _running_tasks:
+            old_task = _running_tasks[evaluation_id]
+            if not old_task.done():
+                logger.warning(f"Cancelling existing task for {evaluation_id}")
+                old_task.cancel()
+                try:
+                    await asyncio.wait_for(asyncio.shield(old_task), timeout=1.0)
+                except (asyncio.CancelledError, asyncio.TimeoutError):
+                    pass
+
+        _running_tasks[evaluation_id] = task
+
+        def cleanup_callback(completed_task: asyncio.Task) -> None:
+            try:
+                loop = asyncio.get_running_loop()
+                cleanup_task = loop.create_task(
+                    _safe_cleanup(evaluation_id, completed_task)
+                )
+                _cleanup_tasks.add(cleanup_task)
+                cleanup_task.add_done_callback(_cleanup_tasks.discard)
+            except RuntimeError:
+                with _fallback_lock:
+                    if _running_tasks.get(evaluation_id) is completed_task:
+                        _running_tasks.pop(evaluation_id, None)
+                        logger.info(f"Task cleanup (no loop) for {evaluation_id}")
+
+        task.add_done_callback(cleanup_callback)
+        logger.info(f"Registered task for {evaluation_id}")
+
+
+async def _safe_cleanup(evaluation_id: str, completed_task: asyncio.Task) -> None:
+    """Safely clean up a completed task with proper locking."""
+    async with _tasks_lock:
+        current_task = _running_tasks.get(evaluation_id)
+        if current_task is completed_task:
+            _running_tasks.pop(evaluation_id, None)
+            logger.info(f"Task cleanup for {evaluation_id}")
+
+
+async def cancel_task(evaluation_id: str) -> bool:
+    """Cancel a running evaluation task.
+
+    Args:
+        evaluation_id: The evaluation ID to cancel.
+
+    Returns:
+        True if task was cancelled, False if no task found or already done.
+    """
+    async with _tasks_lock:
+        task = _running_tasks.get(evaluation_id)
+        if task and not task.done():
+            task.cancel()
+            logger.info(f"Cancelled task for {evaluation_id}")
+            return True
+        return False
+
+
+async def get_task_status(evaluation_id: str) -> Optional[str]:
+    """Get the status of an evaluation task.
+
+    Args:
+        evaluation_id: The evaluation ID.
+
+    Returns:
+        'running', 'completed', 'cancelled', or None if not found.
+    """
+    async with _tasks_lock:
+        task = _running_tasks.get(evaluation_id)
+        if task is None:
+            return None
+        if task.done():
+            return "cancelled" if task.cancelled() else "completed"
+        return "running"
+
+
+async def get_running_task_count() -> int:
+    """Get the number of currently running tasks."""
+    async with _tasks_lock:
+        return sum(1 for t in _running_tasks.values() if not t.done())
