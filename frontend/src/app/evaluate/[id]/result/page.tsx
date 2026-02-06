@@ -4,11 +4,12 @@ import React, { useEffect, useState, lazy, Suspense, useCallback } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { api } from '../../../../lib/api';
 import { EvaluationResult } from '../../../../types';
-import { ArrowLeft, Share2, Download, CheckCircle, XCircle } from 'lucide-react';
+import { ArrowLeft, Share2, Download, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { ResultTabs, useResultTab, ResultTabId } from '../../../../components/ResultTabs';
 import { TastingNotesTab } from '../../../../components/TastingNotesTab';
 import { GraphSkeleton } from '../../../../components/graph/GraphSkeleton';
 import { cn } from '../../../../lib/utils';
+import { exportResultToPdf } from '../../../../lib/exportPdf';
 
 const Graph2DTab = lazy(() => import('../../../../components/Graph2DTab').then(m => ({ default: m.Graph2DTab })));
 const Graph3DTab = lazy(() => import('../../../../components/Graph3DTab').then(m => ({ default: m.Graph3DTab })));
@@ -45,6 +46,7 @@ export default function ResultPage() {
   const [activeTab, setActiveTab] = useResultTab('tasting');
   const [showStickyHeader, setShowStickyHeader] = useState(false);
   const [toast, setToast] = useState<ToastState>({ message: '', type: 'success', visible: false });
+  const [isExporting, setIsExporting] = useState(false);
 
   const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     setToast({ message, type, visible: true });
@@ -59,6 +61,20 @@ export default function ResultPage() {
       showToast('Link copied to clipboard!', 'success');
     } catch {
       showToast('Failed to copy link', 'error');
+    }
+  };
+
+  const handleExportPdf = async () => {
+    if (!result || isExporting) return;
+    
+    setIsExporting(true);
+    try {
+      await exportResultToPdf(result);
+      showToast('PDF exported successfully!', 'success');
+    } catch {
+      showToast('Failed to export PDF', 'error');
+    } finally {
+      setIsExporting(false);
     }
   };
 
@@ -206,9 +222,17 @@ export default function ResultPage() {
               <Share2 size={16} className="mr-2" />
               Share
             </button>
-            <button className="flex items-center px-4 py-2 text-sm font-medium text-white bg-[#722F37] rounded-lg hover:bg-[#5a252c] transition-colors">
-              <Download size={16} className="mr-2" />
-              Export PDF
+            <button
+              onClick={handleExportPdf}
+              disabled={isExporting}
+              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-[#722F37] rounded-lg hover:bg-[#5a252c] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              {isExporting ? (
+                <Loader2 size={16} className="mr-2 animate-spin" />
+              ) : (
+                <Download size={16} className="mr-2" />
+              )}
+              {isExporting ? 'Exporting...' : 'Export PDF'}
             </button>
           </div>
         </div>
