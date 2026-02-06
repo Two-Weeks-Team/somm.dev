@@ -25,8 +25,8 @@ class TestIsabellaNode:
         node = IsabellaNode()
         assert node.role == "Wine Critic"
 
-    def test_isabella_node_has_llm(self):
-        """Test that IsabellaNode uses build_llm in evaluate."""
+    def test_isabella_node_basic_instantiation(self):
+        """Test that IsabellaNode can be instantiated without errors."""
         node = IsabellaNode()
         assert node is not None
 
