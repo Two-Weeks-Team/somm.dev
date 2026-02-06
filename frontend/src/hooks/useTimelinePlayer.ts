@@ -41,8 +41,10 @@ function timelineReducer(state: TimelineState, action: TimelineAction): Timeline
       return { ...state, playbackSpeed: action.speed };
     case 'SET_PLAYING':
       return { ...state, isPlaying: action.isPlaying };
-    default:
-      return state;
+    default: {
+      const _exhaustiveCheck: never = action;
+      return _exhaustiveCheck;
+    }
   }
 }
 
