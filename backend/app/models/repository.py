@@ -12,24 +12,42 @@ from typing import List, Optional
 from pydantic import BaseModel, Field
 
 
-class RepositoryBase(BaseModel):
-    """Base repository model with common fields.
+class RepositoryOwner(BaseModel):
+    """Repository owner information."""
 
-    This model represents a GitHub repository with essential metadata.
-    """
+    login: str = Field(..., description="Owner username/organization name")
+    type: str = Field(..., description="Owner type: 'User' or 'Organization'")
+    avatar_url: Optional[str] = Field(default=None, description="Owner avatar URL")
+
+
+class RepositoryBase(BaseModel):
+    """Base repository model with common fields."""
 
     id: int = Field(..., description="GitHub repository ID")
     name: str = Field(..., description="Repository name")
     full_name: str = Field(..., description="Full repository name (owner/repo)")
-    description: Optional[str] = Field(default=None, description="Repository description")
+    description: Optional[str] = Field(
+        default=None, description="Repository description"
+    )
     private: bool = Field(..., description="Whether the repository is private")
     html_url: str = Field(..., description="Repository URL on GitHub")
-    default_branch: Optional[str] = Field(default="main", description="Default branch name")
+    default_branch: Optional[str] = Field(
+        default="main", description="Default branch name"
+    )
     stars: int = Field(default=0, description="Number of stars")
     forks: int = Field(default=0, description="Number of forks")
-    language: Optional[str] = Field(default=None, description="Primary programming language")
-    updated_at: Optional[datetime] = Field(default=None, description="Last updated timestamp")
-    pushed_at: Optional[datetime] = Field(default=None, description="Last pushed timestamp")
+    language: Optional[str] = Field(
+        default=None, description="Primary programming language"
+    )
+    updated_at: Optional[datetime] = Field(
+        default=None, description="Last updated timestamp"
+    )
+    pushed_at: Optional[datetime] = Field(
+        default=None, description="Last pushed timestamp"
+    )
+    owner: Optional[RepositoryOwner] = Field(
+        default=None, description="Repository owner info"
+    )
 
 
 class RepositoryCache(RepositoryBase):
@@ -41,13 +59,11 @@ class RepositoryCache(RepositoryBase):
     user_id: str = Field(..., description="MongoDB user ID who owns this cache entry")
     cached_at: datetime = Field(
         default_factory=datetime.utcnow,
-        description="Timestamp when this cache entry was created"
+        description="Timestamp when this cache entry was created",
     )
 
     class Config:
-        json_encoders = {
-            datetime: lambda v: v.isoformat()
-        }
+        json_encoders = {datetime: lambda v: v.isoformat()}
 
 
 class RepositoryListResponse(BaseModel):
@@ -60,5 +76,5 @@ class RepositoryListResponse(BaseModel):
     total: int = Field(..., description="Total number of repositories")
     cached_at: Optional[datetime] = Field(
         default=None,
-        description="Timestamp when data was cached (null if fresh from GitHub)"
+        description="Timestamp when data was cached (null if fresh from GitHub)",
     )

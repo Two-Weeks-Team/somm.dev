@@ -1,5 +1,5 @@
 import React from 'react';
-import { Star, GitFork, Lock, Globe } from 'lucide-react';
+import { Star, GitFork, Lock, Globe, Building2, User } from 'lucide-react';
 import { Repository } from '@/lib/api';
 
 interface RepositoryCardProps {
@@ -38,11 +38,30 @@ export const RepositoryCard: React.FC<RepositoryCardProps> = ({
         }
       `}
     >
-      {/* Header: Name and Visibility */}
+      {/* Header: Owner badge, Name and Visibility */}
       <div className="flex items-start justify-between gap-2">
-        <h3 className="font-semibold text-gray-900 truncate" title={repository.name}>
-          {repository.name}
-        </h3>
+        <div className="flex items-center gap-2 min-w-0">
+          {repository.owner && (
+            <span
+              className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full flex-shrink-0 ${
+                repository.owner.type === 'Organization'
+                  ? 'bg-purple-100 text-purple-700'
+                  : 'bg-blue-100 text-blue-700'
+              }`}
+              title={repository.owner.type === 'Organization' ? 'Organization' : 'Personal'}
+            >
+              {repository.owner.type === 'Organization' ? (
+                <Building2 className="w-3 h-3" />
+              ) : (
+                <User className="w-3 h-3" />
+              )}
+              {repository.owner.login}
+            </span>
+          )}
+          <h3 className="font-semibold text-gray-900 truncate" title={repository.name}>
+            {repository.name}
+          </h3>
+        </div>
         <span className="flex-shrink-0">
           {repository.private ? (
             <Lock className="w-4 h-4 text-gray-500" />
