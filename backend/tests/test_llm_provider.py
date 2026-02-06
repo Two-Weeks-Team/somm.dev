@@ -77,11 +77,15 @@ class TestPerNodeModelConfig:
 
 
 class TestBYOKFallback:
-    def test_invalid_byok_uses_server_key(self):
+    @patch("app.providers.llm.ChatGoogleGenerativeAI")
+    def test_invalid_byok_uses_server_key(self, mock_chat_google):
         with patch("app.providers.llm.settings") as mock_settings:
             mock_settings.GEMINI_API_KEY = "server-side-key"
-            llm = build_llm("gemini", "   ", None, 0.3, 128)
-            assert isinstance(llm, ChatGoogleGenerativeAI)
+            build_llm("gemini", "   ", None, 0.3, 128)
+            mock_chat_google.assert_called_once()
+            assert (
+                mock_chat_google.call_args.kwargs["google_api_key"] == "server-side-key"
+            )
 
     def test_model_fallback_enabled(self):
         llm = build_llm(
