@@ -293,7 +293,7 @@ class GitHubService:
         return repos
 
     async def get_full_repo_context(
-        self, owner: str, repo: str, branch: str = "main"
+        self, owner: str, repo: str, branch: str | None = None
     ) -> Dict[str, Any]:
         """Get a comprehensive context of a repository.
 
@@ -302,15 +302,16 @@ class GitHubService:
         Args:
             owner: Repository owner username.
             repo: Repository name.
-            branch: Branch name to fetch from.
+            branch: Branch name to fetch from. If None, uses default branch.
 
         Returns:
             A dictionary containing all repository context information.
         """
         metadata = await self.get_repo_metadata(owner, repo)
+        actual_branch = branch or metadata.get("default_branch", "main")
         languages = await self.analyze_languages(owner, repo)
-        file_tree = await self.get_file_tree(owner, repo, branch, recursive=True)
-        readme = await self.get_readme(owner, repo, branch)
+        file_tree = await self.get_file_tree(owner, repo, actual_branch, recursive=True)
+        readme = await self.get_readme(owner, repo, actual_branch)
 
         return {
             "metadata": {
