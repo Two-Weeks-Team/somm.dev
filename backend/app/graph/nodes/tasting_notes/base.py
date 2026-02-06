@@ -10,6 +10,7 @@ from langchain_core.messages import SystemMessage
 from app.graph.state import EvaluationState
 from app.graph.schemas import TastingNoteOutput, TechniqueResult
 from app.providers.llm import build_llm
+from app.services.llm_context import render_repo_context, get_context_budget
 from app.techniques.mappings import (
     TastingNote,
     get_techniques_for_category,
@@ -115,6 +116,11 @@ Provide structured output with technique results and an aggregate summary."""
         if not techniques:
             techniques = self.get_techniques()[:3]
 
+        context_budget = get_context_budget(provider, model)
+        rendered_context, context_meta = render_repo_context(
+            state["repo_context"], max_tokens=context_budget
+        )
+
         observability = {
             "completed_sommeliers": [self.category.value],
             "token_usage": {self.category.value: {}},
@@ -126,12 +132,14 @@ Provide structured output with technique results and an aggregate summary."""
                     "model": model or "default",
                     "provider": provider,
                     "techniques_count": len(techniques),
+                    "estimated_input_tokens": context_meta["estimated_tokens"],
+                    "context_truncated": context_meta["truncated"],
                 }
             },
         }
 
         prompt = self.build_evaluation_prompt(techniques)
-        messages = prompt.format_messages(repo_context=state["repo_context"])
+        messages = prompt.format_messages(repo_context=rendered_context)
 
         last_error: Optional[Exception] = None
         for attempt in range(MAX_RETRIES):
