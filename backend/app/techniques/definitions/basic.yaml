@@ -1,0 +1,10 @@
+id: basic-structure
+category: structure
+input_source: github
+scoring:
+  weight: 1.0
+output_schema:
+  score: integer
+  notes: string
+prompt_template: |
+  Evaluate repository structure using the provided context.
