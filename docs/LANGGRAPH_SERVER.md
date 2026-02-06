@@ -92,7 +92,9 @@ curl -X POST http://localhost:8123/api/runs \
     "graph_id": "evaluation",
     "input": {
       "repo_url": "https://github.com/user/repo",
-      "evaluation_criteria": "basic"
+      "evaluation_criteria": "basic",
+      "repo_context": {},
+      "user_id": "test-user"
     }
   }'
 ```
@@ -125,6 +127,12 @@ If `LANGSMITH_API_KEY` is not set but `LANGSMITH_TRACING=true`:
 ## Deployment Modes
 
 ### Self-Hosted (Recommended)
+
+> [!CAUTION]
+> **Security Warning**: LangGraph Server does not have built-in authentication. Do not expose port 8123 to the public internet without a reverse proxy (e.g., Nginx, Apache) that handles authentication. Unauthenticated access allows:
+> - Unauthorized LLM usage (consuming API credits)
+> - User impersonation via `user_id` in request JSON
+> - Access to sensitive evaluation data
 
 Deploy using Docker:
 
