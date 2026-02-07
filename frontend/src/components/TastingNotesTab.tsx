@@ -104,26 +104,20 @@ function HeroSection({ result, tier }: { result: EvaluationResult; tier: ReturnT
 
   return (
     <div className="bg-gradient-to-br from-[#722F37] via-[#8B3D47] to-[#5A252C] rounded-2xl shadow-xl overflow-hidden">
-      <div className="relative min-h-[200px]">
-        {/* Jean-Pierre on the right - matching SommelierCard style */}
-        <div className="absolute right-0 top-0 bottom-0 w-48 md:w-64">
+      <div className="relative">
+        {/* Jean-Pierre on the right */}
+        <div className="absolute right-0 top-0 bottom-0 w-64 md:w-80">
           <Image
             src="/sommeliers/jeanpierre.png"
             alt="Jean-Pierre"
             fill
             className="object-cover object-top"
-            sizes="256px"
+            sizes="320px"
           />
-          {/* Soft edge blend - same technique as SommelierCard */}
-          <div 
-            className="absolute inset-y-0 left-0 w-24 md:w-32"
-            style={{ 
-              background: 'linear-gradient(to right, #722F37, transparent)' 
-            }}
-          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#722F37] via-[#722F37]/60 to-transparent" />
         </div>
         
-        <div className="relative z-10 p-6 md:p-8 pr-24 md:pr-40">
+        <div className="relative z-10 p-6 md:p-8 pr-32 md:pr-48">
           {/* Score + Badge inline, compact */}
           <div className="flex items-center gap-4 mb-5">
             <div className="flex items-baseline gap-1 text-white">
