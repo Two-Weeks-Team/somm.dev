@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Image from 'next/image';
 import { Wine, Sparkles, TrendingUp, TrendingDown, Minus } from 'lucide-react';
 import { EvaluationResult } from '../types';
 import { ScoreGauge } from './ScoreGauge';
@@ -31,8 +32,16 @@ function ScoreBreakdownChart({ results }: { results: EvaluationResult['results']
           
           return (
             <div key={somm.id} className="flex items-center gap-3">
-              <div className="w-8 text-center text-lg">{theme.emoji}</div>
-              <div className="w-20 text-sm font-medium text-gray-600 truncate">
+              <div className="w-10 h-10 rounded-full overflow-hidden relative flex-shrink-0 border-2" style={{ borderColor: theme.color }}>
+                <Image
+                  src={theme.image}
+                  alt={theme.name}
+                  fill
+                  className="object-cover object-top"
+                  sizes="40px"
+                />
+              </div>
+              <div className="w-20 text-sm font-medium text-gray-700 truncate">
                 {theme.name}
               </div>
               <div className="flex-1 h-6 bg-gray-100 rounded-full overflow-hidden relative">

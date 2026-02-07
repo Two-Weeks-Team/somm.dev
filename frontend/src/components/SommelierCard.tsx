@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Image from 'next/image';
 import { ChevronDown, ChevronUp, Lightbulb } from 'lucide-react';
 import { getSommelierTheme } from '../lib/sommeliers';
 import { ScoreGauge } from './ScoreGauge';
@@ -30,46 +31,53 @@ export function SommelierCard({
 
   return (
     <div
-      className={`
-        bg-white rounded-xl shadow-sm border-2 overflow-hidden
-        hover:shadow-lg transition-all duration-300 ease-out
-        animate-fadeIn
-      `}
-      style={{
-        borderColor: theme.color,
-        animationDelay: `${delay}ms`,
-      }}
+      className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 animate-fadeIn"
+      style={{ animationDelay: `${delay}ms` }}
     >
-      {/* Header with sommelier identity */}
+      {/* Character Header with Image */}
       <div
-        className="px-5 py-4 flex items-center gap-4"
-        style={{ backgroundColor: `${theme.color}10` }}
+        className="relative h-32 overflow-hidden"
+        style={{ backgroundColor: theme.color }}
       >
-        <div
-          className="w-12 h-12 rounded-full flex items-center justify-center text-2xl shadow-md"
-          style={{ backgroundColor: theme.color }}
-        >
-          {theme.emoji}
+        {/* Gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent z-10" />
+        
+        {/* Character Image */}
+        <div className="absolute right-0 top-0 h-full w-32">
+          <Image
+            src={theme.image}
+            alt={theme.name}
+            fill
+            className="object-cover object-top"
+            sizes="128px"
+          />
         </div>
-        <div className="flex-1">
-          <h3 className="font-bold text-lg" style={{ color: theme.color }}>
-            {theme.name}
-          </h3>
-          <p className="text-sm text-gray-600">{theme.description}</p>
+        
+        {/* Name and Score */}
+        <div className="absolute inset-0 z-20 p-4 flex justify-between items-start">
+          <div>
+            <h3 className="text-xl font-bold text-white drop-shadow-md">
+              {theme.name}
+            </h3>
+            <p className="text-sm text-white/80">{theme.description}</p>
+          </div>
+          <div className="bg-white/20 backdrop-blur-sm rounded-xl px-3 py-1">
+            <span className="text-2xl font-bold text-white">{score}</span>
+            <span className="text-sm text-white/70">/100</span>
+          </div>
         </div>
-        <ScoreGauge score={score} size="sm" showLabel={false} />
       </div>
 
       {/* Feedback content */}
-      <div className="px-5 py-4">
-        <p className={`text-gray-700 leading-relaxed ${isExpanded ? '' : 'line-clamp-3'}`}>
+      <div className="p-5">
+        <p className={`text-gray-700 leading-relaxed ${isExpanded ? '' : 'line-clamp-4'}`}>
           {feedback}
         </p>
         
-        {feedback.length > 200 && (
+        {feedback.length > 250 && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="mt-2 text-sm font-medium flex items-center gap-1 hover:opacity-80 transition-opacity"
+            className="mt-3 text-sm font-medium flex items-center gap-1 hover:opacity-80 transition-opacity"
             style={{ color: theme.color }}
           >
             {isExpanded ? (
@@ -89,7 +97,7 @@ export function SommelierCard({
 
       {/* Recommendations */}
       {recommendations && recommendations.length > 0 && (
-        <div className="px-5 py-3 border-t border-gray-100" style={{ backgroundColor: `${theme.color}05` }}>
+        <div className="px-5 py-3 border-t border-gray-100" style={{ backgroundColor: `${theme.color}08` }}>
           <div className="flex items-center gap-2 mb-2">
             <Lightbulb size={14} style={{ color: theme.color }} />
             <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
