@@ -29,7 +29,7 @@ const AgentNode = ({ data }: NodeProps<Node<ReactFlowNodeData>>) => {
     <div 
       className={cn(
         'w-64 bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden transition-all duration-300',
-        isActive && 'animate-pulse-glow-blue border-blue-400',
+        isActive && !isFuture && 'animate-pulse-glow-blue border-blue-400',
         isFuture && 'opacity-40 grayscale'
       )}
     >

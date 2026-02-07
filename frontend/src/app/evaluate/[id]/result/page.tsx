@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, lazy, Suspense, useCallback } from 'react';
+import React, { useEffect, useState, lazy, Suspense, useCallback, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { api } from '../../../../lib/api';
 import { EvaluationResult } from '../../../../types';
@@ -47,12 +47,24 @@ export default function ResultPage() {
   const [showStickyHeader, setShowStickyHeader] = useState(false);
   const [toast, setToast] = useState<ToastState>({ message: '', type: 'success', visible: false });
   const [isExporting, setIsExporting] = useState(false);
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout>>();
 
   const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
+    if (toastTimerRef.current) {
+      clearTimeout(toastTimerRef.current);
+    }
     setToast({ message, type, visible: true });
-    setTimeout(() => {
+    toastTimerRef.current = setTimeout(() => {
       setToast(prev => ({ ...prev, visible: false }));
     }, 3000);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) {
+        clearTimeout(toastTimerRef.current);
+      }
+    };
   }, []);
 
   const handleShare = async () => {
@@ -242,23 +254,26 @@ export default function ResultPage() {
         {renderTabContent(activeTab)}
       </div>
 
-      {toast.visible && (
-        <div
-          className={cn(
-            'fixed bottom-4 right-4 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 z-50',
-            toast.type === 'success'
-              ? 'bg-green-50 text-green-700 border border-green-200'
-              : 'bg-red-50 text-red-700 border border-red-200'
-          )}
-        >
-          {toast.type === 'success' ? (
-            <CheckCircle className="h-4 w-4" />
-          ) : (
-            <XCircle className="h-4 w-4" />
-          )}
-          <span className="text-sm font-medium">{toast.message}</span>
-        </div>
-      )}
+      <div
+        role="status"
+        aria-hidden={!toast.visible}
+        className={cn(
+          'fixed bottom-4 right-4 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 z-50',
+          toast.visible
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-2 pointer-events-none',
+          toast.type === 'success'
+            ? 'bg-green-50 text-green-700 border border-green-200'
+            : 'bg-red-50 text-red-700 border border-red-200'
+        )}
+      >
+        {toast.type === 'success' ? (
+          <CheckCircle className="h-4 w-4" />
+        ) : (
+          <XCircle className="h-4 w-4" />
+        )}
+        <span className="text-sm font-medium">{toast.message}</span>
+      </div>
     </div>
   );
 }

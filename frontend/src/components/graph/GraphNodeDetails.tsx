@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { X, Clock, Zap, User, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { X, Clock, Zap, User, CheckCircle, XCircle, Loader2, DollarSign } from 'lucide-react';
 import { ReactFlowNodeData, NodeStatus } from '@/types/graph';
 import { cn } from '@/lib/utils';
 
@@ -141,7 +141,7 @@ export function GraphNodeDetails({ nodeId, nodeType, data, onClose }: GraphNodeD
             {data.costUsd !== undefined && data.costUsd > 0 && (
               <div>
                 <span className="text-xs text-gray-500 flex items-center gap-1">
-                  <Clock size={12} />
+                  <DollarSign size={12} />
                   Cost
                 </span>
                 <p className="text-sm font-medium text-gray-700">{formatCost(data.costUsd)}</p>

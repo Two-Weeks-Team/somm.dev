@@ -170,26 +170,28 @@ export function TimelinePlayer({
         )}
       </div>
 
-      <div className="relative px-2">
-        <div className="absolute top-1/2 left-2 right-2 h-0.5 bg-[#F7E7CE] -translate-y-1/2" />
+      <div className="relative px-2 h-8">
+        <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-[#F7E7CE] -translate-y-1/2" />
         <div 
-          className="absolute top-1/2 left-2 h-0.5 bg-[#722F37] -translate-y-1/2 transition-all duration-300"
+          className="absolute top-1/2 left-0 h-0.5 bg-[#722F37] -translate-y-1/2 transition-all duration-300"
           style={{ width: `${maxStep > 0 ? (currentStep / maxStep) * 100 : 0}%` }}
         />
         
-        <div className="relative flex justify-between items-center">
+        <div className="relative h-full">
           {displayedSteps.map((step, index) => {
             const isCompleted = step < currentStep;
             const isActive = step === currentStep;
             const isPending = step > currentStep;
             const label = stepLabels?.[step];
+            const leftPercent = maxStep > 0 ? (step / maxStep) * 100 : 0;
             
             return (
               <button
                 key={step}
                 onClick={() => handleStepClick(step)}
                 title={label || `Step ${step}`}
-                className="group relative flex flex-col items-center"
+                className="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+                style={{ left: `${leftPercent}%` }}
                 aria-label={label || `Go to step ${step}`}
               >
                 <div
@@ -202,7 +204,7 @@ export function TimelinePlayer({
                 />
                 {(index === 0 || index === displayedSteps.length - 1 || isActive) && (
                   <span className={cn(
-                    'absolute -bottom-5 text-[10px] md:text-xs font-mono transition-colors',
+                    'absolute -bottom-5 text-[10px] md:text-xs font-mono transition-colors whitespace-nowrap',
                     isActive ? 'text-[#722F37] font-medium' : 'text-gray-400'
                   )}>
                     {step}
@@ -216,6 +218,14 @@ export function TimelinePlayer({
               </button>
             );
           })}
+          {!displayedSteps.includes(currentStep) && currentStep > 0 && currentStep < maxStep && (
+            <div
+              className="absolute top-1/2 -translate-y-1/2 -translate-x-1/2"
+              style={{ left: `${(currentStep / maxStep) * 100}%` }}
+            >
+              <div className="w-3 h-3 md:w-4 md:h-4 rounded-full bg-[#722F37] border-2 border-[#722F37] ring-4 ring-[#722F37]/20 animate-pulse" />
+            </div>
+          )}
         </div>
       </div>
     </div>
