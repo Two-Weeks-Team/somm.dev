@@ -268,6 +268,9 @@ class Graph3DEdge(BaseModel):
     bundled_path: Optional[list[Position3D]] = Field(
         default=None, description="Optional path points for bundled edges"
     )
+    control_points: Optional[list[Position3D]] = Field(
+        default=None, description="Alias for bundled_path, used by frontend renderers"
+    )
     dasharray: Optional[str] = Field(default=None, description="Optional dash pattern")
 
 
@@ -305,6 +308,9 @@ class Graph3DMetadata(BaseModel):
         description="Schema version for backward compatibility",
     )
     generated_at: str = Field(..., description="ISO timestamp when graph was generated")
+    bundle_groups: Optional[dict[str, Any]] = Field(
+        default=None, description="Optional bundle group metadata for edge bundling"
+    )
 
 
 class Graph3DPayload(BaseModel):
@@ -348,7 +354,7 @@ class Graph3DPayload(BaseModel):
     edges_raw: Optional[list[Graph3DEdge]] = Field(
         default=None, description="Optional list of edges before bundling"
     )
-    excluded_techniques: Optional[list[dict]] = Field(
+    excluded_techniques: Optional[list["ExcludedTechnique"]] = Field(
         default=None, description="Optional list of excluded technique info"
     )
     metadata: Graph3DMetadata = Field(..., description="Graph bounds and statistics")
@@ -361,7 +367,7 @@ class Graph3DPayload(BaseModel):
         nodes: list["Graph3DNode"],
         edges: list["Graph3DEdge"],
         edges_raw: Optional[list["Graph3DEdge"]] = None,
-        excluded_techniques: Optional[list[dict]] = None,
+        excluded_techniques: Optional[list["ExcludedTechnique"]] = None,
     ) -> "Graph3DPayload":
         """Create Graph3DPayload with computed metadata."""
         all_steps = {n.step_number for n in nodes} | {e.step_number for e in edges}

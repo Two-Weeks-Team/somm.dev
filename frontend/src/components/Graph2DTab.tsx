@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useCallback, useState } from 'react';
+import React, { useEffect, useCallback, useState, useRef } from 'react';
 import { 
   ReactFlow, 
   Controls, 
@@ -11,7 +11,8 @@ import {
   Edge,
   Connection,
   addEdge,
-  BackgroundVariant
+  BackgroundVariant,
+  NodeMouseHandler
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
 import { api } from '@/lib/api';
@@ -20,12 +21,20 @@ import { getLayoutedElements } from '@/lib/graphLayout';
 import { AlertCircle, RefreshCw } from 'lucide-react';
 import { ModeIndicatorBadge } from './ModeIndicatorBadge';
 import { GraphLegend } from './graph/GraphLegend';
+import { GraphNodeDetails } from './graph/GraphNodeDetails';
 import { getAgentColor, getCategoryColor } from '@/lib/graphColors';
-import { GraphEvaluationMode } from '@/types/graph';
+import { GraphEvaluationMode, ReactFlowNodeData } from '@/types/graph';
 
 import { TimelinePlayer } from './graph/TimelinePlayer';
 import { useTimelinePlayer } from '@/hooks/useTimelinePlayer';
 import { GraphSkeleton } from './graph/GraphSkeleton';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
+
+interface SelectedNode {
+  id: string;
+  type: string;
+  data: ReactFlowNodeData;
+}
 
 interface Graph2DTabProps {
   evaluationId: string;
@@ -38,6 +47,9 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
   const [error, setError] = useState<string | null>(null);
   const [maxStep, setMaxStep] = useState(0);
   const [mode, setMode] = useState<GraphEvaluationMode | string>('six_hats');
+  const [selectedNode, setSelectedNode] = useState<SelectedNode | null>(null);
+  const isMobile = useMediaQuery('(max-width: 768px)');
+  const nodeContainerRef = useRef<HTMLDivElement>(null);
 
   const {
     currentStep,
@@ -140,6 +152,18 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
     [setEdges],
   );
 
+  const onNodeClick: NodeMouseHandler = useCallback((_event, node) => {
+    setSelectedNode({
+      id: node.id,
+      type: node.type || 'unknown',
+      data: node.data as ReactFlowNodeData,
+    });
+  }, []);
+
+  const handleCloseDetails = useCallback(() => {
+    setSelectedNode(null);
+  }, []);
+
   if (loading) {
     return (
       <div className="md:h-[600px] h-[400px]">
@@ -172,12 +196,22 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
 
       <div className="md:h-[600px] h-[400px] bg-[#FAFAFA] rounded-2xl shadow-sm border border-gray-200 overflow-hidden relative">
         <GraphLegend mode={mode} />
+        {selectedNode && (
+          <GraphNodeDetails
+            nodeId={selectedNode.id}
+            nodeType={selectedNode.type}
+            data={selectedNode.data}
+            onClose={handleCloseDetails}
+          />
+        )}
         <ReactFlow
           nodes={nodes}
           edges={edges}
           onNodesChange={onNodesChange}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
+          onNodeClick={onNodeClick}
+          onPaneClick={handleCloseDetails}
           nodeTypes={nodeTypes}
           fitView
           fitViewOptions={{ padding: 0.2, duration: 0 }}

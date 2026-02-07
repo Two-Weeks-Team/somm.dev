@@ -66,3 +66,58 @@ body {
 .react-flow__edge {
   opacity: 1 !important;
 }
+
+@keyframes pulse-glow {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(114, 47, 55, 0.4), 0 0 20px rgba(114, 47, 55, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(114, 47, 55, 0.6), 0 0 40px rgba(114, 47, 55, 0.3);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes pulse-glow-blue {
+  0%, 100% {
+    box-shadow: 0 0 10px rgba(59, 130, 246, 0.4), 0 0 20px rgba(59, 130, 246, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 20px rgba(59, 130, 246, 0.6), 0 0 40px rgba(59, 130, 246, 0.3);
+  }
+}
+
+.animate-pulse-glow-blue {
+  animation: pulse-glow-blue 1.5s ease-in-out infinite;
+}
+
+@keyframes slide-in-from-right {
+  from {
+    opacity: 0;
+    transform: translateX(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.animate-in {
+  animation-duration: 200ms;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+}
+
+.slide-in-from-right-4 {
+  animation-name: slide-in-from-right;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-pulse-glow,
+  .animate-pulse-glow-blue,
+  .animate-in {
+    animation: none;
+  }
+}

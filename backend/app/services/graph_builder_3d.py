@@ -16,6 +16,7 @@ from app.models.graph import (
     Graph3DEdge,
     Position3D,
     ExcludedVisualization,
+    ExcludedTechnique,
 )
 
 
@@ -27,6 +28,13 @@ LAYER_END = 400
 
 AGENT_SPACING = 120
 CENTER_X = 0
+
+EDGE_TYPE_STYLES = {
+    "flow": {"color": "#722F37", "width": 2.0, "dasharray": None},
+    "parallel": {"color": "#4169E1", "width": 1.5, "dasharray": None},
+    "data": {"color": "#DAA520", "width": 1.0, "dasharray": "4,4"},
+    "excluded": {"color": "#888888", "width": 1.0, "dasharray": "4,4"},
+}
 
 SOMMELIER_AGENTS = [
     ("marcel", "Marcel", "#8B7355"),
@@ -140,14 +148,35 @@ def _build_end_node(step_number: int = 8) -> Graph3DNode:
     )
 
 
-def _build_edges(nodes: list[Graph3DNode]) -> list[Graph3DEdge]:
-    """Build edges connecting nodes in the graph.
+def _create_styled_edge(
+    edge_id: str,
+    source: str,
+    target: str,
+    edge_type: str,
+    step_number: int,
+) -> Graph3DEdge:
+    """Create an edge with styling based on edge_type."""
+    style = EDGE_TYPE_STYLES.get(edge_type, EDGE_TYPE_STYLES["flow"])
+    return Graph3DEdge(
+        edge_id=edge_id,
+        source=source,
+        target=target,
+        edge_type=edge_type,
+        step_number=step_number,
+        color=style["color"],
+        width=style["width"],
+        dasharray=style["dasharray"],
+    )
 
-    Creates deterministic edges:
-    - Start -> RAG (if RAG exists)
-    - RAG -> Agents or Start -> Agents
-    - Agents -> Synthesis
-    - Synthesis -> End
+
+def _build_edges(nodes: list[Graph3DNode]) -> list[Graph3DEdge]:
+    """Build edges connecting nodes in the graph with styling.
+
+    Creates deterministic edges with edge-type-based styling:
+    - flow: burgundy, solid, 2.0 width
+    - parallel: blue, solid, 1.5 width
+    - data: gold, dashed, 1.0 width
+    - excluded: gray, dashed, 1.0 width
     """
     edges = []
     edge_id = 0
@@ -160,13 +189,7 @@ def _build_edges(nodes: list[Graph3DNode]) -> list[Graph3DEdge]:
 
     if has_rag:
         edges.append(
-            Graph3DEdge(
-                edge_id=f"edge_{edge_id}",
-                source="start",
-                target="rag_enrich",
-                edge_type="flow",
-                step_number=0,
-            )
+            _create_styled_edge(f"edge_{edge_id}", "start", "rag_enrich", "flow", 0)
         )
         edge_id += 1
 
@@ -175,12 +198,12 @@ def _build_edges(nodes: list[Graph3DNode]) -> list[Graph3DEdge]:
         source_layer = "rag_enrich" if has_rag else "start"
         for agent in agents:
             edges.append(
-                Graph3DEdge(
-                    edge_id=f"edge_{edge_id}",
-                    source=source_layer,
-                    target=agent.node_id,
-                    edge_type="parallel",
-                    step_number=agent.step_number,
+                _create_styled_edge(
+                    f"edge_{edge_id}",
+                    source_layer,
+                    agent.node_id,
+                    "parallel",
+                    agent.step_number,
                 )
             )
             edge_id += 1
@@ -188,12 +211,12 @@ def _build_edges(nodes: list[Graph3DNode]) -> list[Graph3DEdge]:
             techniques = [n for n in nodes if n.node_id.startswith(agent.node_id + "_")]
             for tech in techniques:
                 edges.append(
-                    Graph3DEdge(
-                        edge_id=f"edge_{edge_id}",
-                        source=agent.node_id,
-                        target=tech.node_id,
-                        edge_type="data",
-                        step_number=agent.step_number,
+                    _create_styled_edge(
+                        f"edge_{edge_id}",
+                        agent.node_id,
+                        tech.node_id,
+                        "data",
+                        agent.step_number,
                     )
                 )
                 edge_id += 1
@@ -201,25 +224,19 @@ def _build_edges(nodes: list[Graph3DNode]) -> list[Graph3DEdge]:
     if has_synthesis and agents:
         for agent in agents:
             edges.append(
-                Graph3DEdge(
-                    edge_id=f"edge_{edge_id}",
-                    source=agent.node_id,
-                    target="synthesis",
-                    edge_type="flow",
-                    step_number=agent.step_number + 1,
+                _create_styled_edge(
+                    f"edge_{edge_id}",
+                    agent.node_id,
+                    "synthesis",
+                    "flow",
+                    agent.step_number + 1,
                 )
             )
             edge_id += 1
 
     if has_end and has_synthesis:
         edges.append(
-            Graph3DEdge(
-                edge_id=f"edge_{edge_id}",
-                source="synthesis",
-                target="end",
-                edge_type="flow",
-                step_number=8,
-            )
+            _create_styled_edge(f"edge_{edge_id}", "synthesis", "end", "flow", 8)
         )
         edge_id += 1
 
@@ -383,6 +400,7 @@ def compute_fdeb_bundling(
         target = nodes.get(edge.target)
         if source and target:
             edge.bundled_path = [source.position, target.position]
+            edge.control_points = edge.bundled_path
 
     if not edges or len(edges) < 2:
         return edges
@@ -493,9 +511,11 @@ def compute_fdeb_bundling(
                     math.isfinite(p.x) and math.isfinite(p.y) and math.isfinite(p.z)
                 ):
                     edge.bundled_path = [source.position, target.position]
+                    edge.control_points = edge.bundled_path
                     break
             else:
                 edge.bundled_path = bundled_points
+                edge.control_points = bundled_points
 
     return edges
 
@@ -692,7 +712,7 @@ class Graph3DBuilder:
             nodes=nodes_list,
             edges=self.edges,
             excluded_techniques=[
-                {"technique_id": e.technique_id, "reason": e.reason}
+                ExcludedTechnique(technique_id=e.technique_id, reason=e.reason)
                 for e in self.excluded
             ]
             if self.excluded

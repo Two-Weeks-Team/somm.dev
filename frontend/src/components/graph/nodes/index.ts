@@ -4,6 +4,9 @@ import AgentNode from './AgentNode';
 import TechniqueNode from './TechniqueNode';
 import SynthesisNode from './SynthesisNode';
 import RagNode from './RagNode';
+import HatNode from './HatNode';
+import ItemNode from './ItemNode';
+import ProcessNode from './ProcessNode';
 
 export const nodeTypes = {
   start: StartNode,
@@ -12,5 +15,7 @@ export const nodeTypes = {
   technique: TechniqueNode,
   synthesis: SynthesisNode,
   rag: RagNode,
-  process: TechniqueNode, // Fallback for process nodes
+  hat: HatNode,
+  item: ItemNode,
+  process: ProcessNode,
 };

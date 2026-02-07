@@ -1,0 +1,170 @@
+import jsPDF from 'jspdf';
+import { EvaluationResult } from '@/types';
+
+function getScoreTier(score: number): string {
+  if (score >= 90) return 'Grand Cru';
+  if (score >= 80) return 'Premier Cru';
+  if (score >= 70) return 'Village';
+  return 'Table Wine';
+}
+
+function getTierColor(score: number): [number, number, number] {
+  if (score >= 90) return [114, 47, 55];
+  if (score >= 80) return [16, 185, 129];
+  if (score >= 70) return [59, 130, 246];
+  return [107, 114, 128];
+}
+
+export async function exportResultToPdf(result: EvaluationResult): Promise<void> {
+  const pdf = new jsPDF({
+    orientation: 'portrait',
+    unit: 'mm',
+    format: 'a4',
+  });
+
+  const pageWidth = pdf.internal.pageSize.getWidth();
+  const pageHeight = pdf.internal.pageSize.getHeight();
+  const margin = 20;
+  const contentWidth = pageWidth - 2 * margin;
+  let y = margin;
+
+  const burgundy: [number, number, number] = [114, 47, 55];
+  const champagne: [number, number, number] = [247, 231, 206];
+  const darkGray: [number, number, number] = [51, 51, 51];
+  const lightGray: [number, number, number] = [156, 163, 175];
+
+  pdf.setFillColor(...burgundy);
+  pdf.rect(0, 0, pageWidth, 50, 'F');
+
+  pdf.setTextColor(255, 255, 255);
+  pdf.setFontSize(24);
+  pdf.setFont('helvetica', 'bold');
+  pdf.text('Somm.dev', margin, 20);
+
+  pdf.setFontSize(12);
+  pdf.setFont('helvetica', 'normal');
+  pdf.text('AI Code Evaluation Report', margin, 30);
+
+  const dateStr = new Date().toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+  pdf.setFontSize(10);
+  pdf.text(dateStr, pageWidth - margin - pdf.getTextWidth(dateStr), 30);
+
+  y = 65;
+
+  pdf.setFillColor(...champagne);
+  pdf.roundedRect(margin, y, contentWidth, 35, 3, 3, 'F');
+
+  const score = result.totalScore || 0;
+  const tier = getScoreTier(score);
+  const tierColor = getTierColor(score);
+
+  pdf.setTextColor(...burgundy);
+  pdf.setFontSize(32);
+  pdf.setFont('helvetica', 'bold');
+  pdf.text(score.toString(), margin + 10, y + 22);
+
+  pdf.setFontSize(14);
+  pdf.setTextColor(...lightGray);
+  pdf.text('/100', margin + 10 + pdf.getTextWidth(score.toString()) + 2, y + 22);
+
+  pdf.setFillColor(...tierColor);
+  pdf.roundedRect(margin + 60, y + 10, 40, 15, 2, 2, 'F');
+  pdf.setTextColor(255, 255, 255);
+  pdf.setFontSize(10);
+  pdf.setFont('helvetica', 'bold');
+  const tierWidth = pdf.getTextWidth(tier);
+  pdf.text(tier, margin + 60 + (40 - tierWidth) / 2, y + 20);
+
+  pdf.setTextColor(...darkGray);
+  pdf.setFontSize(9);
+  pdf.setFont('helvetica', 'normal');
+  const repoText = result.repoUrl.length > 50 ? result.repoUrl.substring(0, 50) + '...' : result.repoUrl;
+  pdf.text(repoText, margin + 110, y + 20);
+
+  y += 50;
+
+  if (result.finalVerdict) {
+    pdf.setTextColor(...burgundy);
+    pdf.setFontSize(14);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text("Jean-Pierre's Verdict", margin, y);
+    y += 8;
+
+    pdf.setTextColor(...darkGray);
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'italic');
+    const verdictLines = pdf.splitTextToSize(`"${result.finalVerdict}"`, contentWidth);
+    pdf.text(verdictLines, margin, y);
+    y += verdictLines.length * 5 + 10;
+  }
+
+  pdf.setTextColor(...burgundy);
+  pdf.setFontSize(14);
+  pdf.setFont('helvetica', 'bold');
+  pdf.text('Sommelier Evaluations', margin, y);
+  y += 10;
+
+  for (const sommelier of result.results) {
+    if (y > pageHeight - 60) {
+      pdf.addPage();
+      y = margin;
+    }
+
+    pdf.setFillColor(250, 250, 250);
+    pdf.roundedRect(margin, y, contentWidth, 45, 2, 2, 'F');
+    pdf.setDrawColor(229, 231, 235);
+    pdf.roundedRect(margin, y, contentWidth, 45, 2, 2, 'S');
+
+    pdf.setTextColor(...darkGray);
+    pdf.setFontSize(12);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(sommelier.name, margin + 5, y + 10);
+
+    pdf.setTextColor(...burgundy);
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+    pdf.text(sommelier.role, margin + 5, y + 17);
+
+    pdf.setFillColor(...champagne);
+    pdf.roundedRect(contentWidth - 10, y + 5, 25, 12, 2, 2, 'F');
+    pdf.setTextColor(...burgundy);
+    pdf.setFontSize(11);
+    pdf.setFont('helvetica', 'bold');
+    const scoreText = sommelier.score.toString();
+    pdf.text(scoreText, contentWidth - 10 + (25 - pdf.getTextWidth(scoreText)) / 2, y + 13);
+
+    pdf.setTextColor(...darkGray);
+    pdf.setFontSize(9);
+    pdf.setFont('helvetica', 'normal');
+    const feedbackLines = pdf.splitTextToSize(sommelier.feedback, contentWidth - 15);
+    const displayLines = feedbackLines.slice(0, 3);
+    pdf.text(displayLines, margin + 5, y + 25);
+
+    y += 50;
+  }
+
+  y += 10;
+  if (y > pageHeight - 30) {
+    pdf.addPage();
+    y = margin;
+  }
+
+  pdf.setDrawColor(...champagne);
+  pdf.setLineWidth(0.5);
+  pdf.line(margin, y, pageWidth - margin, y);
+  y += 10;
+
+  pdf.setTextColor(...lightGray);
+  pdf.setFontSize(8);
+  pdf.setFont('helvetica', 'normal');
+  pdf.text('Generated by Somm.dev - AI Code Evaluation with Sommelier Sophistication', margin, y);
+  pdf.text(`Evaluation ID: ${result.id}`, margin, y + 5);
+
+  const repoName = result.repoUrl.split('/').pop() || 'evaluation';
+  const filename = `somm-${repoName}-${score}pts.pdf`;
+  pdf.save(filename);
+}
