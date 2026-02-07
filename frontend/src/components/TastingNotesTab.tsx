@@ -1,11 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useMemo } from 'react';
 import Image from 'next/image';
 import { Wine, Sparkles, Crown, Quote, Trophy, Medal, Award, Star } from 'lucide-react';
 import { EvaluationResult } from '../types';
 import { ScoreGauge } from './ScoreGauge';
 import { SommelierCard } from './SommelierCard';
+import { ScoreCircle } from './ScoreCircle';
+import { RadarChart } from './RadarChart';
 import { getScoreTier, getSommelierTheme } from '../lib/sommeliers';
 
 interface TastingNotesTabProps {
@@ -29,7 +31,7 @@ function ScoreBreakdownChart({ results }: { results: EvaluationResult['results']
           const barWidth = (somm.score / 100) * 100;
           const isMax = somm.score === maxScore;
           const isMin = somm.score === minScore;
-          
+
           return (
             <div key={somm.id} className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full overflow-hidden relative flex-shrink-0 border-2" style={{ borderColor: theme.color }}>
@@ -73,7 +75,7 @@ function ScoreBreakdownChart({ results }: { results: EvaluationResult['results']
           );
         })}
       </div>
-      
+
       {/* Stats */}
       <div className="mt-4 pt-4 border-t border-gray-100 grid grid-cols-3 gap-4 text-center">
         <div>
@@ -141,7 +143,7 @@ function HeroSection({ result, tier }: { result: EvaluationResult; tier: ReturnT
           />
           <div className="absolute inset-0 bg-gradient-to-r from-[#722F37] via-[#722F37]/60 to-transparent" />
         </div>
-        
+
         <div className="relative z-10 p-6 md:p-8 pr-32 md:pr-48">
           {/* Score + Badge inline */}
           <div className="flex items-center gap-4 mb-5">
@@ -154,7 +156,7 @@ function HeroSection({ result, tier }: { result: EvaluationResult; tier: ReturnT
               <span className={`font-bold ${tier.color}`}>{tier.name}</span>
             </div>
           </div>
-          
+
           {/* Verdict as a quote */}
           <div className="border-l-4 border-[#F7E7CE]/40 pl-5">
             <div className="flex items-center gap-2 mb-2">
@@ -175,6 +177,13 @@ function HeroSection({ result, tier }: { result: EvaluationResult; tier: ReturnT
 
 export function TastingNotesTab({ result }: TastingNotesTabProps) {
   const tier = getScoreTier(result.totalScore || 0);
+  const radarData = useMemo(() => {
+    return result.results.map((somm) => ({
+      label: somm.name.split(' ')[0],
+      value: somm.score,
+      maxValue: 100,
+    }));
+  }, [result.results]);
 
   return (
     <div className="animate-fadeIn space-y-8">
