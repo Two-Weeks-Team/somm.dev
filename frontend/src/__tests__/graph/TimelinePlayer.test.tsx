@@ -24,7 +24,7 @@ describe('TimelinePlayer', () => {
       />
     );
 
-    expect(screen.getByText('Step 5/10')).toBeInTheDocument();
+    expect(screen.getByText('5/10')).toBeInTheDocument();
     expect(screen.getByLabelText('Play')).toBeInTheDocument();
   });
 
@@ -39,7 +39,7 @@ describe('TimelinePlayer', () => {
       />
     );
 
-    expect(screen.getByText('Step 0/10')).toBeInTheDocument();
+    expect(screen.getByText('0/10')).toBeInTheDocument();
   });
 
   it('renders with initial values at max step', () => {
@@ -53,7 +53,7 @@ describe('TimelinePlayer', () => {
       />
     );
 
-    expect(screen.getByText('Step 10/10')).toBeInTheDocument();
+    expect(screen.getByText('10/10')).toBeInTheDocument();
   });
 
   it('shows pause button when playing', () => {
@@ -246,7 +246,7 @@ describe('TimelinePlayer', () => {
     expect(nextButton).not.toBeDisabled();
   });
 
-  it('updates currentStep when slider value changes', () => {
+  it('renders step indicators and allows clicking to navigate', () => {
     render(
       <TimelinePlayer
         currentStep={5}
@@ -257,16 +257,16 @@ describe('TimelinePlayer', () => {
       />
     );
 
-    const slider = screen.getByRole('slider');
-    fireEvent.change(slider, { target: { value: '7' } });
+    const step7Button = screen.getByLabelText('Go to step 7');
+    fireEvent.click(step7Button);
 
     expect(mockOnStepChange).toHaveBeenCalledWith(7);
   });
 
-  it('renders slider with correct min, max, and value attributes', () => {
+  it('renders first and last step buttons', () => {
     render(
       <TimelinePlayer
-        currentStep={3}
+        currentStep={5}
         maxStep={10}
         isPlaying={false}
         onStepChange={mockOnStepChange}
@@ -274,10 +274,8 @@ describe('TimelinePlayer', () => {
       />
     );
 
-    const slider = screen.getByRole('slider');
-    expect(slider).toHaveAttribute('min', '0');
-    expect(slider).toHaveAttribute('max', '10');
-    expect(slider).toHaveAttribute('value', '3');
+    expect(screen.getByLabelText('First step')).toBeInTheDocument();
+    expect(screen.getByLabelText('Last step')).toBeInTheDocument();
   });
 
   it('renders speed selector when onSpeedChange is provided', () => {
