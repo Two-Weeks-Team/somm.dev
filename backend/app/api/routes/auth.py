@@ -50,11 +50,13 @@ async def github_login():
     )
 
     response = RedirectResponse(url=github_oauth_url)
+    # Use secure=False for localhost development
+    is_local = settings.FRONTEND_URL.startswith("http://localhost")
     response.set_cookie(
         key="oauth_state",
         value=state,
         httponly=True,
-        secure=True,
+        secure=not is_local,
         samesite="lax",
         max_age=600,
     )
@@ -70,7 +72,7 @@ async def github_callback(
     oauth_state: Optional[str] = Cookie(None),
 ):
     if error:
-        response = RedirectResponse(url=f"{settings.FRONTEND_URL}/login?error={error}")
+        response = RedirectResponse(url=f"{settings.FRONTEND_URL}/evaluate?error={error}")
         response.delete_cookie("oauth_state")
         return response
 
@@ -79,7 +81,7 @@ async def github_callback(
 
     if not state or state != oauth_state:
         response = RedirectResponse(
-            url=f"{settings.FRONTEND_URL}/login?error=invalid_state"
+            url=f"{settings.FRONTEND_URL}/evaluate?error=invalid_state"
         )
         response.delete_cookie("oauth_state")
         return response
@@ -129,7 +131,7 @@ async def github_callback(
                 error_msg = token_data.get("error_description", "OAuth failed")
                 print(f"[OAUTH DEBUG] Error: {error_msg}", file=sys.stderr)
                 response = RedirectResponse(
-                    url=f"{settings.FRONTEND_URL}/login?error={error_msg}"
+                    url=f"{settings.FRONTEND_URL}/evaluate?error={error_msg}"
                 )
                 response.delete_cookie("oauth_state")
                 return response
@@ -211,7 +213,7 @@ async def github_callback(
     except httpx.HTTPError as e:
         print(f"[OAUTH DEBUG] HTTP Error: {e}", file=sys.stderr)
         response = RedirectResponse(
-            url=f"{settings.FRONTEND_URL}/login?error=github_api_error"
+            url=f"{settings.FRONTEND_URL}/evaluate?error=github_api_error"
         )
         response.delete_cookie("oauth_state")
         return response
@@ -221,7 +223,7 @@ async def github_callback(
 
         traceback.print_exc(file=sys.stderr)
         response = RedirectResponse(
-            url=f"{settings.FRONTEND_URL}/login?error=internal_error"
+            url=f"{settings.FRONTEND_URL}/evaluate?error=internal_error"
         )
         response.delete_cookie("oauth_state")
         return response
