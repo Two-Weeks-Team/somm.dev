@@ -93,10 +93,16 @@ export function TastingNotesTab({ result }: TastingNotesTabProps) {
       {/* Hero Score Section */}
       <div className="bg-gradient-to-br from-[#722F37] via-[#8B3D47] to-[#5A252C] rounded-2xl shadow-xl overflow-hidden">
         <div className="relative">
-          {/* Decorative pattern */}
-          <div className="absolute inset-0 opacity-10">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-white rounded-full -translate-y-1/2 translate-x-1/2" />
-            <div className="absolute bottom-0 left-0 w-48 h-48 bg-white rounded-full translate-y-1/2 -translate-x-1/2" />
+          {/* Jean-Pierre Character Image */}
+          <div className="absolute right-0 top-0 h-full w-48 md:w-64 opacity-30 md:opacity-50">
+            <Image
+              src="/sommeliers/jeanpierre.png"
+              alt="Jean-Pierre"
+              fill
+              className="object-cover object-top"
+              sizes="256px"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#722F37] via-[#722F37]/80 to-transparent" />
           </div>
           
           <div className="relative z-10 p-8 md:p-12">
@@ -116,9 +122,11 @@ export function TastingNotesTab({ result }: TastingNotesTabProps) {
               <div className="flex-1 text-white text-center md:text-left">
                 <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
                   <Wine size={24} className="text-[#F7E7CE]" />
-                  <h2 className="text-xl font-serif">Jean-Pierre&apos;s Verdict</h2>
+                  <h2 className="text-2xl font-serif-elegant">
+                    Jean-Pierre&apos;s Verdict
+                  </h2>
                 </div>
-                <blockquote className="text-lg md:text-xl leading-relaxed opacity-90 italic">
+                <blockquote className="text-lg md:text-xl leading-relaxed opacity-95 font-serif-elegant italic">
                   &ldquo;{result.finalVerdict}&rdquo;
                 </blockquote>
                 {result.repoUrl && (
