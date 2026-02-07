@@ -41,8 +41,13 @@ function ScoreBreakdownChart({ results }: { results: EvaluationResult['results']
                   sizes="40px"
                 />
               </div>
-              <div className="w-20 text-sm font-medium text-gray-700 truncate">
-                {theme.name}
+              <div className="w-28 flex-shrink-0">
+                <div className="text-sm font-medium text-gray-700 truncate">
+                  {theme.name}
+                </div>
+                <div className="text-xs text-gray-500 truncate">
+                  {theme.description}
+                </div>
               </div>
               <div className="flex-1 h-6 bg-gray-100 rounded-full overflow-hidden relative">
                 <div
@@ -53,7 +58,7 @@ function ScoreBreakdownChart({ results }: { results: EvaluationResult['results']
                   }}
                 />
               </div>
-              <div className="w-12 text-right font-bold" style={{ color: theme.color }}>
+              <div className="w-12 text-right font-bold text-gray-700">
                 {somm.score}
               </div>
               <div className="w-16 flex justify-end">
@@ -74,6 +79,16 @@ function ScoreBreakdownChart({ results }: { results: EvaluationResult['results']
         <div>
           <p className="text-xs text-gray-500 uppercase tracking-wider">Highest</p>
           <p className="text-lg font-bold text-green-600">{maxScore}</p>
+          <div className="mt-1 flex flex-wrap justify-center gap-1">
+            {results.filter(r => r.score === maxScore).map(r => {
+              const theme = getSommelierTheme(r.id);
+              return (
+                <span key={r.id} className="inline-block px-2 py-0.5 bg-green-100 text-green-700 text-xs rounded-full">
+                  {theme.description}
+                </span>
+              );
+            })}
+          </div>
         </div>
         <div>
           <p className="text-xs text-gray-500 uppercase tracking-wider">Average</p>
@@ -82,6 +97,16 @@ function ScoreBreakdownChart({ results }: { results: EvaluationResult['results']
         <div>
           <p className="text-xs text-gray-500 uppercase tracking-wider">Lowest</p>
           <p className="text-lg font-bold text-amber-600">{minScore}</p>
+          <div className="mt-1 flex flex-wrap justify-center gap-1">
+            {results.filter(r => r.score === minScore).map(r => {
+              const theme = getSommelierTheme(r.id);
+              return (
+                <span key={r.id} className="inline-block px-2 py-0.5 bg-amber-100 text-amber-700 text-xs rounded-full">
+                  {theme.description}
+                </span>
+              );
+            })}
+          </div>
         </div>
       </div>
     </div>
@@ -93,12 +118,12 @@ function HeroSection({ result, tier }: { result: EvaluationResult; tier: ReturnT
   // Map tier to lucide icon
   const getTierIcon = (name: string) => {
     switch (name) {
-      case 'Legendary': return <Trophy size={24} className="text-yellow-500" />;
-      case 'Grand Cru': return <Trophy size={24} className="text-amber-600" />;
-      case 'Premier Cru': return <Medal size={24} className="text-orange-500" />;
-      case 'Village': return <Award size={24} className="text-green-600" />;
-      case 'Table Wine': return <Star size={24} className="text-purple-500" />;
-      default: return <Wine size={24} className="text-gray-500" />;
+      case 'Legendary': return <Trophy size={20} className="text-yellow-500" />;
+      case 'Grand Cru': return <Trophy size={20} className="text-amber-600" />;
+      case 'Premier Cru': return <Medal size={20} className="text-orange-500" />;
+      case 'Village': return <Award size={20} className="text-[#722F37]" />;
+      case 'Table Wine': return <Star size={20} className="text-purple-500" />;
+      default: return <Wine size={20} className="text-gray-500" />;
     }
   };
 
@@ -118,15 +143,15 @@ function HeroSection({ result, tier }: { result: EvaluationResult; tier: ReturnT
         </div>
         
         <div className="relative z-10 p-6 md:p-8 pr-32 md:pr-48">
-          {/* Score + Badge inline, compact */}
+          {/* Score + Badge inline */}
           <div className="flex items-center gap-4 mb-5">
             <div className="flex items-baseline gap-1 text-white">
               <span className="text-5xl md:text-6xl font-bold leading-none">{result.totalScore}</span>
               <span className="text-white/50 text-lg">/100</span>
             </div>
-            <div className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full ${tier.bgColor} shadow-lg`}>
+            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${tier.bgColor} shadow-lg`}>
               {getTierIcon(tier.name)}
-              <span className={`font-bold text-lg ${tier.color}`}>{tier.name}</span>
+              <span className={`font-bold ${tier.color}`}>{tier.name}</span>
             </div>
           </div>
           
