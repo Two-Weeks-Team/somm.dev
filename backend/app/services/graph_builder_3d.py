@@ -16,6 +16,7 @@ from app.models.graph import (
     Graph3DEdge,
     Position3D,
     ExcludedVisualization,
+    ExcludedTechnique,
 )
 
 
@@ -692,7 +693,7 @@ class Graph3DBuilder:
             nodes=nodes_list,
             edges=self.edges,
             excluded_techniques=[
-                {"technique_id": e.technique_id, "reason": e.reason}
+                ExcludedTechnique(technique_id=e.technique_id, reason=e.reason)
                 for e in self.excluded
             ]
             if self.excluded
