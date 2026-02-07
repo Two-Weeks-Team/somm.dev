@@ -14,6 +14,7 @@ export interface SommelierTheme {
   textColor: string;
   lightBg: string;
   description: string;
+  image: string;
 }
 
 export const SOMMELIER_THEMES: Record<string, SommelierTheme> = {
@@ -28,6 +29,7 @@ export const SOMMELIER_THEMES: Record<string, SommelierTheme> = {
     textColor: 'text-amber-800',
     lightBg: 'bg-amber-50',
     description: 'Structure & Metrics',
+    image: '/sommeliers/marcel.png',
   },
   isabella: {
     id: 'isabella',
@@ -40,6 +42,7 @@ export const SOMMELIER_THEMES: Record<string, SommelierTheme> = {
     textColor: 'text-rose-700',
     lightBg: 'bg-rose-50',
     description: 'Code Quality',
+    image: '/sommeliers/isabella.png',
   },
   heinrich: {
     id: 'heinrich',
@@ -52,6 +55,7 @@ export const SOMMELIER_THEMES: Record<string, SommelierTheme> = {
     textColor: 'text-slate-700',
     lightBg: 'bg-slate-50',
     description: 'Security & Testing',
+    image: '/sommeliers/heinrich.png',
   },
   sofia: {
     id: 'sofia',
@@ -64,6 +68,7 @@ export const SOMMELIER_THEMES: Record<string, SommelierTheme> = {
     textColor: 'text-yellow-700',
     lightBg: 'bg-yellow-50',
     description: 'Innovation & Tech',
+    image: '/sommeliers/sofia.png',
   },
   laurent: {
     id: 'laurent',
@@ -76,6 +81,7 @@ export const SOMMELIER_THEMES: Record<string, SommelierTheme> = {
     textColor: 'text-emerald-700',
     lightBg: 'bg-emerald-50',
     description: 'Implementation',
+    image: '/sommeliers/laurent.png',
   },
   jeanpierre: {
     id: 'jeanpierre',
@@ -88,6 +94,7 @@ export const SOMMELIER_THEMES: Record<string, SommelierTheme> = {
     textColor: 'text-[#722F37]',
     lightBg: 'bg-[#F7E7CE]',
     description: 'Final Synthesis',
+    image: '/sommeliers/jeanpierre.png',
   },
 };
 
