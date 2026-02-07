@@ -1,4 +1,4 @@
-import { Wine } from "lucide-react";
+import { Wine, Trophy, Medal, Award, Star, AlertTriangle } from "lucide-react";
 import Link from "next/link";
 
 export default function Home() {
@@ -79,37 +79,37 @@ export default function Home() {
           </p>
           <div className="grid gap-4 text-center md:grid-cols-4">
             <div className="rounded-lg bg-gradient-to-br from-yellow-100 to-yellow-50 p-4">
-              <div className="mb-1 text-2xl">🏆</div>
+              <div className="mb-1 flex justify-center"><Trophy size={28} className="text-yellow-500" /></div>
               <div className="font-bold text-yellow-700">95-100</div>
               <div className="text-sm text-yellow-600">Legendary</div>
             </div>
-            <div className="rounded-lg bg-gradient-to-br from-gray-100 to-gray-50 p-4">
-              <div className="mb-1 text-2xl">🥇</div>
-              <div className="font-bold text-gray-700">90-94</div>
-              <div className="text-sm text-gray-600">Grand Cru</div>
+            <div className="rounded-lg bg-gradient-to-br from-amber-100 to-amber-50 p-4">
+              <div className="mb-1 flex justify-center"><Trophy size={28} className="text-amber-600" /></div>
+              <div className="font-bold text-amber-700">90-94</div>
+              <div className="text-sm text-amber-600">Grand Cru</div>
             </div>
             <div className="rounded-lg bg-gradient-to-br from-orange-100 to-orange-50 p-4">
-              <div className="mb-1 text-2xl">🥈</div>
+              <div className="mb-1 flex justify-center"><Medal size={28} className="text-orange-500" /></div>
               <div className="font-bold text-orange-700">85-89</div>
               <div className="text-sm text-orange-600">Premier Cru</div>
             </div>
             <div className="rounded-lg bg-gradient-to-br from-green-100 to-green-50 p-4">
-              <div className="mb-1 text-2xl">🥉</div>
+              <div className="mb-1 flex justify-center"><Award size={28} className="text-green-600" /></div>
               <div className="font-bold text-green-700">80-84</div>
               <div className="text-sm text-green-600">Village</div>
             </div>
             <div className="rounded-lg bg-gradient-to-br from-blue-100 to-blue-50 p-4">
-              <div className="mb-1 text-2xl">🏅</div>
+              <div className="mb-1 flex justify-center"><Star size={28} className="text-blue-500" /></div>
               <div className="font-bold text-blue-700">70-79</div>
-              <div className="text-sm text-blue-600">Table</div>
+              <div className="text-sm text-blue-600">Table Wine</div>
             </div>
             <div className="rounded-lg bg-gradient-to-br from-purple-100 to-purple-50 p-4">
-              <div className="mb-1 text-2xl">🍷</div>
+              <div className="mb-1 flex justify-center"><Wine size={28} className="text-purple-500" /></div>
               <div className="font-bold text-purple-700">60-69</div>
               <div className="text-sm text-purple-600">House Wine</div>
             </div>
             <div className="rounded-lg bg-gradient-to-br from-red-100 to-red-50 p-4 md:col-span-2">
-              <div className="mb-1 text-2xl">⚠️</div>
+              <div className="mb-1 flex justify-center"><AlertTriangle size={28} className="text-red-500" /></div>
               <div className="font-bold text-red-700">&lt;60</div>
               <div className="text-sm text-red-600">Corked</div>
             </div>

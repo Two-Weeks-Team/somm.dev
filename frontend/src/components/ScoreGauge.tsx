@@ -1,7 +1,22 @@
 'use client';
 
 import React from 'react';
+import { Trophy, Medal, Award, Star, Wine, AlertTriangle } from 'lucide-react';
 import { getScoreTier } from '../lib/sommeliers';
+
+const getTierIcon = (name: string, size: number = 16) => {
+  const iconProps = { size, className: 'flex-shrink-0' };
+  switch (name) {
+    case 'Legendary': return <Trophy {...iconProps} className="text-yellow-500" />;
+    case 'Grand Cru': return <Trophy {...iconProps} className="text-amber-600" />;
+    case 'Premier Cru': return <Medal {...iconProps} className="text-orange-500" />;
+    case 'Village': return <Award {...iconProps} className="text-green-600" />;
+    case 'Table Wine': return <Star {...iconProps} className="text-blue-500" />;
+    case 'House Wine': return <Wine {...iconProps} className="text-purple-500" />;
+    case 'Corked': return <AlertTriangle {...iconProps} className="text-red-500" />;
+    default: return <Wine {...iconProps} className="text-gray-500" />;
+  }
+};
 
 interface ScoreGaugeProps {
   score: number;
@@ -77,8 +92,8 @@ export function ScoreGauge({ score, size = 'md', showLabel = true, animate = tru
         </div>
       </div>
       {showLabel && (
-        <div className={`mt-2 flex items-center gap-1 px-3 py-1 rounded-full ${tier.bgColor}`}>
-          <span>{tier.emoji}</span>
+        <div className={`mt-2 flex items-center gap-1.5 px-3 py-1.5 rounded-full ${tier.bgColor}`}>
+          {getTierIcon(tier.name, 16)}
           <span className={`text-sm font-semibold ${tier.color}`}>{tier.name}</span>
         </div>
       )}
