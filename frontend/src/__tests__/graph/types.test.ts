@@ -7,6 +7,8 @@ import {
   ReactFlowGraph,
   Graph3DPayload,
   TraceEvent,
+  Graph3DEdge,
+  ExcludedTechnique,
 } from '@/types/graph';
 
 describe('Type Guards', () => {
@@ -404,6 +406,180 @@ describe('Type Guards', () => {
 
     it('returns false for an array', () => {
       expect(isTraceEvent([])).toBe(false);
+    });
+  });
+
+  describe('Graph3DEdge with control_points', () => {
+    it('accepts edge with control_points field', () => {
+      const edgeWithControlPoints: Graph3DEdge = {
+        edge_id: 'edge-1',
+        source: 'node-1',
+        target: 'node-2',
+        edge_type: 'flow',
+        width: 2,
+        step_number: 1,
+        control_points: [
+          { x: 0, y: 0, z: 0 },
+          { x: 5, y: 2, z: 1 },
+          { x: 10, y: 0, z: 0 },
+        ],
+      };
+
+      expect(edgeWithControlPoints.control_points).toHaveLength(3);
+      expect(edgeWithControlPoints.control_points![0]).toEqual({ x: 0, y: 0, z: 0 });
+    });
+
+    it('accepts edge without control_points field', () => {
+      const edgeWithoutControlPoints: Graph3DEdge = {
+        edge_id: 'edge-2',
+        source: 'node-1',
+        target: 'node-2',
+        edge_type: 'parallel',
+        width: 1,
+        step_number: 2,
+      };
+
+      expect(edgeWithoutControlPoints.control_points).toBeUndefined();
+    });
+
+    it('accepts edge with bundled_path field', () => {
+      const edgeWithBundledPath: Graph3DEdge = {
+        edge_id: 'edge-3',
+        source: 'node-1',
+        target: 'node-3',
+        edge_type: 'data',
+        width: 1.5,
+        step_number: 1,
+        bundle_id: 'bundle-1',
+        bundled_path: [
+          { x: 0, y: 0, z: 0 },
+          { x: 2, y: 3, z: 1 },
+          { x: 5, y: 5, z: 2 },
+        ],
+      };
+
+      expect(edgeWithBundledPath.bundled_path).toHaveLength(3);
+      expect(edgeWithBundledPath.bundle_id).toBe('bundle-1');
+    });
+  });
+
+  describe('ExcludedTechnique typing', () => {
+    it('accepts valid ExcludedTechnique object', () => {
+      const excluded: ExcludedTechnique = {
+        technique_id: 'tech-xyz',
+        reason: 'Not applicable to this evaluation',
+      };
+
+      expect(excluded.technique_id).toBe('tech-xyz');
+      expect(excluded.reason).toBe('Not applicable to this evaluation');
+    });
+
+    it('validates Graph3DPayload with excluded_techniques array', () => {
+      const payloadWithExcluded: Graph3DPayload = {
+        graph_schema_version: 2,
+        evaluation_id: 'eval-456',
+        mode: 'full_techniques',
+        nodes: [],
+        edges: [],
+        excluded_techniques: [
+          { technique_id: 'tech-1', reason: 'Reason A' },
+          { technique_id: 'tech-2', reason: 'Reason B' },
+        ],
+        metadata: {
+          x_range: [-10, 10],
+          y_range: [-10, 10],
+          z_range: [0, 5],
+          total_nodes: 0,
+          total_edges: 0,
+          total_steps: 0,
+          max_step_number: 0,
+          graph_schema_version: 2,
+          generated_at: '2024-01-01T00:00:00Z',
+        },
+      };
+
+      expect(isGraph3DPayload(payloadWithExcluded)).toBe(true);
+      expect(payloadWithExcluded.excluded_techniques).toHaveLength(2);
+      expect(payloadWithExcluded.excluded_techniques![0].technique_id).toBe('tech-1');
+    });
+
+    it('validates Graph3DPayload without excluded_techniques', () => {
+      const payloadWithoutExcluded: Graph3DPayload = {
+        graph_schema_version: 2,
+        evaluation_id: 'eval-789',
+        mode: 'six_hats',
+        nodes: [],
+        edges: [],
+        metadata: {
+          x_range: [-10, 10],
+          y_range: [-10, 10],
+          z_range: [0, 5],
+          total_nodes: 0,
+          total_edges: 0,
+          total_steps: 0,
+          max_step_number: 0,
+          graph_schema_version: 2,
+          generated_at: '2024-01-01T00:00:00Z',
+        },
+      };
+
+      expect(isGraph3DPayload(payloadWithoutExcluded)).toBe(true);
+      expect(payloadWithoutExcluded.excluded_techniques).toBeUndefined();
+    });
+  });
+
+  describe('Type guards remain permissive', () => {
+    it('isGraph3DPayload accepts payloads with extra fields', () => {
+      const payloadWithExtra = {
+        graph_schema_version: 2,
+        evaluation_id: 'eval-extra',
+        mode: 'six_hats',
+        nodes: [],
+        edges: [],
+        metadata: {
+          x_range: [-10, 10],
+          y_range: [-10, 10],
+          z_range: [0, 5],
+          total_nodes: 0,
+          total_edges: 0,
+          total_steps: 0,
+          max_step_number: 0,
+          graph_schema_version: 2,
+          generated_at: '2024-01-01T00:00:00Z',
+        },
+        some_future_field: 'extra data',
+        another_field: { nested: true },
+      };
+
+      expect(isGraph3DPayload(payloadWithExtra)).toBe(true);
+    });
+
+    it('isReactFlowGraph accepts graphs with extra fields', () => {
+      const graphWithExtra = {
+        graph_schema_version: 2,
+        mode: 'six_hats',
+        nodes: [],
+        edges: [],
+        description: 'Optional description',
+        meta: { custom: 'metadata' },
+        future_field: 'some value',
+      };
+
+      expect(isReactFlowGraph(graphWithExtra)).toBe(true);
+    });
+
+    it('isTraceEvent accepts events with extra fields', () => {
+      const eventWithExtra = {
+        step: 1,
+        timestamp: '2024-01-01T00:00:00Z',
+        agent: 'Marcel',
+        technique_id: 'tech-1',
+        action: 'started',
+        custom_field: 'extra',
+        metrics: { score: 85 },
+      };
+
+      expect(isTraceEvent(eventWithExtra)).toBe(true);
     });
   });
 });
