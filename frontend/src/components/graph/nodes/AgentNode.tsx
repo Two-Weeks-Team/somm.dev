@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { Handle, Position, NodeProps, Node } from '@xyflow/react';
 import { ReactFlowNodeData } from '@/types/graph';
 import { User, CheckCircle, XCircle, Clock, Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const AgentNode = ({ data }: NodeProps<Node<ReactFlowNodeData>>) => {
   const statusColor = {
@@ -21,9 +22,17 @@ const AgentNode = ({ data }: NodeProps<Node<ReactFlowNodeData>>) => {
   const status = data.status || 'pending';
   const Icon = StatusIcon[status];
   const themeColor = data.color || '#722F37';
+  const isActive = status === 'running';
+  const isFuture = data.isFuture;
 
   return (
-    <div className="w-64 bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+    <div 
+      className={cn(
+        'w-64 bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden transition-all duration-300',
+        isActive && !isFuture && 'animate-pulse-glow-blue border-blue-400',
+        isFuture && 'opacity-40 grayscale'
+      )}
+    >
       <Handle type="target" position={Position.Top} className="w-3 h-3 !bg-gray-400" />
       
       <div className="h-2 w-full" style={{ backgroundColor: themeColor }} />

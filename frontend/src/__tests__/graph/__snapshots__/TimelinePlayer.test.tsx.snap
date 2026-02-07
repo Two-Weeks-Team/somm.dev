@@ -2,29 +2,54 @@
 
 exports[`TimelinePlayer matches snapshot when paused 1`] = `
 <div
-  class="flex flex-col gap-2 p-4 bg-white border border-[#F7E7CE] rounded-lg shadow-sm w-full max-w-3xl mx-auto"
+  class="flex flex-col gap-3 p-4 bg-white border border-[#F7E7CE] rounded-lg shadow-sm w-full max-w-4xl mx-auto"
 >
   <div
-    class="flex items-center justify-between gap-4"
+    class="flex items-center justify-between gap-2 md:gap-4"
   >
     <div
-      class="flex items-center gap-2"
+      class="flex items-center gap-1 md:gap-2"
     >
       <button
-        aria-label="Previous step"
-        class="p-2 text-[#722F37] hover:bg-[#F7E7CE]/20 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        aria-label="First step"
+        class="p-1.5 md:p-2 text-[#722F37] hover:bg-[#F7E7CE]/20 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         <svg
           aria-hidden="true"
-          class="lucide lucide-chevron-left"
+          class="lucide lucide-skip-back md:w-5 md:h-5"
           fill="none"
-          height="20"
+          height="16"
           stroke="currentColor"
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width="2"
           viewBox="0 0 24 24"
-          width="20"
+          width="16"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M17.971 4.285A2 2 0 0 1 21 6v12a2 2 0 0 1-3.029 1.715l-9.997-5.998a2 2 0 0 1-.003-3.432z"
+          />
+          <path
+            d="M3 20V4"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Previous step"
+        class="p-1.5 md:p-2 text-[#722F37] hover:bg-[#F7E7CE]/20 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-left md:w-5 md:h-5"
+          fill="none"
+          height="18"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="18"
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
@@ -34,19 +59,19 @@ exports[`TimelinePlayer matches snapshot when paused 1`] = `
       </button>
       <button
         aria-label="Play"
-        class="p-3 bg-[#722F37] text-white rounded-full hover:bg-[#5a252c] transition-colors shadow-md"
+        class="p-2.5 md:p-3 bg-[#722F37] text-white rounded-full hover:bg-[#5a252c] transition-colors shadow-md"
       >
         <svg
           aria-hidden="true"
-          class="lucide lucide-play ml-0.5"
+          class="lucide lucide-play ml-0.5 md:w-5 md:h-5"
           fill="currentColor"
-          height="20"
+          height="18"
           stroke="currentColor"
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width="2"
           viewBox="0 0 24 24"
-          width="20"
+          width="18"
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
@@ -56,19 +81,19 @@ exports[`TimelinePlayer matches snapshot when paused 1`] = `
       </button>
       <button
         aria-label="Next step"
-        class="p-2 text-[#722F37] hover:bg-[#F7E7CE]/20 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        class="p-1.5 md:p-2 text-[#722F37] hover:bg-[#F7E7CE]/20 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         <svg
           aria-hidden="true"
-          class="lucide lucide-chevron-right"
+          class="lucide lucide-chevron-right md:w-5 md:h-5"
           fill="none"
-          height="20"
+          height="18"
           stroke="currentColor"
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width="2"
           viewBox="0 0 24 24"
-          width="20"
+          width="18"
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
@@ -76,46 +101,199 @@ exports[`TimelinePlayer matches snapshot when paused 1`] = `
           />
         </svg>
       </button>
+      <button
+        aria-label="Last step"
+        class="p-1.5 md:p-2 text-[#722F37] hover:bg-[#F7E7CE]/20 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-skip-forward md:w-5 md:h-5"
+          fill="none"
+          height="16"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="16"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M21 4v16"
+          />
+          <path
+            d="M6.029 4.285A2 2 0 0 0 3 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z"
+          />
+        </svg>
+      </button>
     </div>
     <div
-      class="font-mono text-sm font-medium text-[#722F37] min-w-[80px] text-center"
+      class="font-mono text-xs md:text-sm font-medium text-[#722F37] min-w-[60px] md:min-w-[80px] text-center"
     >
-      Step 
       5
       /
       10
     </div>
     <div
-      class="flex-1 px-2"
-    >
-      <input
-        class="w-full h-2 bg-[#F7E7CE] rounded-lg appearance-none cursor-pointer accent-[#722F37]"
-        max="10"
-        min="0"
-        type="range"
-        value="5"
-      />
-    </div>
-    <div
-      class="flex items-center bg-[#F7E7CE]/30 rounded-lg p-1"
+      class="flex items-center bg-[#F7E7CE]/30 rounded-lg p-0.5 md:p-1"
     >
       <button
-        class="px-2 py-1 text-xs font-medium rounded transition-colors text-[#722F37] hover:bg-[#F7E7CE]/50"
+        class="px-1.5 md:px-2 py-0.5 md:py-1 text-[10px] md:text-xs font-medium rounded transition-colors text-[#722F37] hover:bg-[#F7E7CE]/50"
       >
         0.5
         x
       </button>
       <button
-        class="px-2 py-1 text-xs font-medium rounded transition-colors bg-[#722F37] text-white shadow-sm"
+        class="px-1.5 md:px-2 py-0.5 md:py-1 text-[10px] md:text-xs font-medium rounded transition-colors bg-[#722F37] text-white shadow-sm"
       >
         1
         x
       </button>
       <button
-        class="px-2 py-1 text-xs font-medium rounded transition-colors text-[#722F37] hover:bg-[#F7E7CE]/50"
+        class="px-1.5 md:px-2 py-0.5 md:py-1 text-[10px] md:text-xs font-medium rounded transition-colors text-[#722F37] hover:bg-[#F7E7CE]/50"
       >
         2
         x
+      </button>
+    </div>
+  </div>
+  <div
+    class="relative px-2 h-8"
+  >
+    <div
+      class="absolute top-1/2 left-0 right-0 h-0.5 bg-[#F7E7CE] -translate-y-1/2"
+    />
+    <div
+      class="absolute top-1/2 left-0 h-0.5 bg-[#722F37] -translate-y-1/2 transition-all duration-300"
+      style="width: 50%;"
+    />
+    <div
+      class="relative h-full"
+    >
+      <button
+        aria-label="Go to step 0"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 0%;"
+        title="Step 0"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-[#722F37] border-[#722F37]"
+        />
+        <span
+          class="absolute -bottom-5 text-[10px] md:text-xs font-mono transition-colors whitespace-nowrap text-gray-400"
+        >
+          0
+        </span>
+      </button>
+      <button
+        aria-label="Go to step 1"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 10%;"
+        title="Step 1"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-[#722F37] border-[#722F37]"
+        />
+      </button>
+      <button
+        aria-label="Go to step 2"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 20%;"
+        title="Step 2"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-[#722F37] border-[#722F37]"
+        />
+      </button>
+      <button
+        aria-label="Go to step 3"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 30%;"
+        title="Step 3"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-[#722F37] border-[#722F37]"
+        />
+      </button>
+      <button
+        aria-label="Go to step 4"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 40%;"
+        title="Step 4"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-[#722F37] border-[#722F37]"
+        />
+      </button>
+      <button
+        aria-label="Go to step 5"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 50%;"
+        title="Step 5"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-[#722F37] border-[#722F37] ring-4 ring-[#722F37]/20 animate-pulse"
+        />
+        <span
+          class="absolute -bottom-5 text-[10px] md:text-xs font-mono transition-colors whitespace-nowrap text-[#722F37] font-medium"
+        >
+          5
+        </span>
+      </button>
+      <button
+        aria-label="Go to step 6"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 60%;"
+        title="Step 6"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-white border-[#F7E7CE] hover:border-[#722F37]/50"
+        />
+      </button>
+      <button
+        aria-label="Go to step 7"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 70%;"
+        title="Step 7"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-white border-[#F7E7CE] hover:border-[#722F37]/50"
+        />
+      </button>
+      <button
+        aria-label="Go to step 8"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 80%;"
+        title="Step 8"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-white border-[#F7E7CE] hover:border-[#722F37]/50"
+        />
+      </button>
+      <button
+        aria-label="Go to step 9"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 90%;"
+        title="Step 9"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-white border-[#F7E7CE] hover:border-[#722F37]/50"
+        />
+      </button>
+      <button
+        aria-label="Go to step 10"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 100%;"
+        title="Step 10"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-white border-[#F7E7CE] hover:border-[#722F37]/50"
+        />
+        <span
+          class="absolute -bottom-5 text-[10px] md:text-xs font-mono transition-colors whitespace-nowrap text-gray-400"
+        >
+          10
+        </span>
       </button>
     </div>
   </div>
@@ -124,29 +302,54 @@ exports[`TimelinePlayer matches snapshot when paused 1`] = `
 
 exports[`TimelinePlayer matches snapshot when playing 1`] = `
 <div
-  class="flex flex-col gap-2 p-4 bg-white border border-[#F7E7CE] rounded-lg shadow-sm w-full max-w-3xl mx-auto"
+  class="flex flex-col gap-3 p-4 bg-white border border-[#F7E7CE] rounded-lg shadow-sm w-full max-w-4xl mx-auto"
 >
   <div
-    class="flex items-center justify-between gap-4"
+    class="flex items-center justify-between gap-2 md:gap-4"
   >
     <div
-      class="flex items-center gap-2"
+      class="flex items-center gap-1 md:gap-2"
     >
       <button
-        aria-label="Previous step"
-        class="p-2 text-[#722F37] hover:bg-[#F7E7CE]/20 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        aria-label="First step"
+        class="p-1.5 md:p-2 text-[#722F37] hover:bg-[#F7E7CE]/20 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         <svg
           aria-hidden="true"
-          class="lucide lucide-chevron-left"
+          class="lucide lucide-skip-back md:w-5 md:h-5"
           fill="none"
-          height="20"
+          height="16"
           stroke="currentColor"
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width="2"
           viewBox="0 0 24 24"
-          width="20"
+          width="16"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M17.971 4.285A2 2 0 0 1 21 6v12a2 2 0 0 1-3.029 1.715l-9.997-5.998a2 2 0 0 1-.003-3.432z"
+          />
+          <path
+            d="M3 20V4"
+          />
+        </svg>
+      </button>
+      <button
+        aria-label="Previous step"
+        class="p-1.5 md:p-2 text-[#722F37] hover:bg-[#F7E7CE]/20 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-chevron-left md:w-5 md:h-5"
+          fill="none"
+          height="18"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="18"
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
@@ -156,19 +359,19 @@ exports[`TimelinePlayer matches snapshot when playing 1`] = `
       </button>
       <button
         aria-label="Pause"
-        class="p-3 bg-[#722F37] text-white rounded-full hover:bg-[#5a252c] transition-colors shadow-md"
+        class="p-2.5 md:p-3 bg-[#722F37] text-white rounded-full hover:bg-[#5a252c] transition-colors shadow-md"
       >
         <svg
           aria-hidden="true"
-          class="lucide lucide-pause"
+          class="lucide lucide-pause md:w-5 md:h-5"
           fill="currentColor"
-          height="20"
+          height="18"
           stroke="currentColor"
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width="2"
           viewBox="0 0 24 24"
-          width="20"
+          width="18"
           xmlns="http://www.w3.org/2000/svg"
         >
           <rect
@@ -189,19 +392,19 @@ exports[`TimelinePlayer matches snapshot when playing 1`] = `
       </button>
       <button
         aria-label="Next step"
-        class="p-2 text-[#722F37] hover:bg-[#F7E7CE]/20 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        class="p-1.5 md:p-2 text-[#722F37] hover:bg-[#F7E7CE]/20 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
       >
         <svg
           aria-hidden="true"
-          class="lucide lucide-chevron-right"
+          class="lucide lucide-chevron-right md:w-5 md:h-5"
           fill="none"
-          height="20"
+          height="18"
           stroke="currentColor"
           stroke-linecap="round"
           stroke-linejoin="round"
           stroke-width="2"
           viewBox="0 0 24 24"
-          width="20"
+          width="18"
           xmlns="http://www.w3.org/2000/svg"
         >
           <path
@@ -209,46 +412,199 @@ exports[`TimelinePlayer matches snapshot when playing 1`] = `
           />
         </svg>
       </button>
+      <button
+        aria-label="Last step"
+        class="p-1.5 md:p-2 text-[#722F37] hover:bg-[#F7E7CE]/20 rounded-full disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+      >
+        <svg
+          aria-hidden="true"
+          class="lucide lucide-skip-forward md:w-5 md:h-5"
+          fill="none"
+          height="16"
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+          width="16"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path
+            d="M21 4v16"
+          />
+          <path
+            d="M6.029 4.285A2 2 0 0 0 3 6v12a2 2 0 0 0 3.029 1.715l9.997-5.998a2 2 0 0 0 .003-3.432z"
+          />
+        </svg>
+      </button>
     </div>
     <div
-      class="font-mono text-sm font-medium text-[#722F37] min-w-[80px] text-center"
+      class="font-mono text-xs md:text-sm font-medium text-[#722F37] min-w-[60px] md:min-w-[80px] text-center"
     >
-      Step 
       5
       /
       10
     </div>
     <div
-      class="flex-1 px-2"
-    >
-      <input
-        class="w-full h-2 bg-[#F7E7CE] rounded-lg appearance-none cursor-pointer accent-[#722F37]"
-        max="10"
-        min="0"
-        type="range"
-        value="5"
-      />
-    </div>
-    <div
-      class="flex items-center bg-[#F7E7CE]/30 rounded-lg p-1"
+      class="flex items-center bg-[#F7E7CE]/30 rounded-lg p-0.5 md:p-1"
     >
       <button
-        class="px-2 py-1 text-xs font-medium rounded transition-colors text-[#722F37] hover:bg-[#F7E7CE]/50"
+        class="px-1.5 md:px-2 py-0.5 md:py-1 text-[10px] md:text-xs font-medium rounded transition-colors text-[#722F37] hover:bg-[#F7E7CE]/50"
       >
         0.5
         x
       </button>
       <button
-        class="px-2 py-1 text-xs font-medium rounded transition-colors text-[#722F37] hover:bg-[#F7E7CE]/50"
+        class="px-1.5 md:px-2 py-0.5 md:py-1 text-[10px] md:text-xs font-medium rounded transition-colors text-[#722F37] hover:bg-[#F7E7CE]/50"
       >
         1
         x
       </button>
       <button
-        class="px-2 py-1 text-xs font-medium rounded transition-colors bg-[#722F37] text-white shadow-sm"
+        class="px-1.5 md:px-2 py-0.5 md:py-1 text-[10px] md:text-xs font-medium rounded transition-colors bg-[#722F37] text-white shadow-sm"
       >
         2
         x
+      </button>
+    </div>
+  </div>
+  <div
+    class="relative px-2 h-8"
+  >
+    <div
+      class="absolute top-1/2 left-0 right-0 h-0.5 bg-[#F7E7CE] -translate-y-1/2"
+    />
+    <div
+      class="absolute top-1/2 left-0 h-0.5 bg-[#722F37] -translate-y-1/2 transition-all duration-300"
+      style="width: 50%;"
+    />
+    <div
+      class="relative h-full"
+    >
+      <button
+        aria-label="Go to step 0"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 0%;"
+        title="Step 0"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-[#722F37] border-[#722F37]"
+        />
+        <span
+          class="absolute -bottom-5 text-[10px] md:text-xs font-mono transition-colors whitespace-nowrap text-gray-400"
+        >
+          0
+        </span>
+      </button>
+      <button
+        aria-label="Go to step 1"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 10%;"
+        title="Step 1"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-[#722F37] border-[#722F37]"
+        />
+      </button>
+      <button
+        aria-label="Go to step 2"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 20%;"
+        title="Step 2"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-[#722F37] border-[#722F37]"
+        />
+      </button>
+      <button
+        aria-label="Go to step 3"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 30%;"
+        title="Step 3"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-[#722F37] border-[#722F37]"
+        />
+      </button>
+      <button
+        aria-label="Go to step 4"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 40%;"
+        title="Step 4"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-[#722F37] border-[#722F37]"
+        />
+      </button>
+      <button
+        aria-label="Go to step 5"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 50%;"
+        title="Step 5"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-[#722F37] border-[#722F37] ring-4 ring-[#722F37]/20 animate-pulse"
+        />
+        <span
+          class="absolute -bottom-5 text-[10px] md:text-xs font-mono transition-colors whitespace-nowrap text-[#722F37] font-medium"
+        >
+          5
+        </span>
+      </button>
+      <button
+        aria-label="Go to step 6"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 60%;"
+        title="Step 6"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-white border-[#F7E7CE] hover:border-[#722F37]/50"
+        />
+      </button>
+      <button
+        aria-label="Go to step 7"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 70%;"
+        title="Step 7"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-white border-[#F7E7CE] hover:border-[#722F37]/50"
+        />
+      </button>
+      <button
+        aria-label="Go to step 8"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 80%;"
+        title="Step 8"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-white border-[#F7E7CE] hover:border-[#722F37]/50"
+        />
+      </button>
+      <button
+        aria-label="Go to step 9"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 90%;"
+        title="Step 9"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-white border-[#F7E7CE] hover:border-[#722F37]/50"
+        />
+      </button>
+      <button
+        aria-label="Go to step 10"
+        class="group absolute top-1/2 -translate-y-1/2 -translate-x-1/2 flex flex-col items-center"
+        style="left: 100%;"
+        title="Step 10"
+      >
+        <div
+          class="w-3 h-3 md:w-4 md:h-4 rounded-full border-2 transition-all duration-200 cursor-pointer bg-white border-[#F7E7CE] hover:border-[#722F37]/50"
+        />
+        <span
+          class="absolute -bottom-5 text-[10px] md:text-xs font-mono transition-colors whitespace-nowrap text-gray-400"
+        >
+          10
+        </span>
       </button>
     </div>
   </div>

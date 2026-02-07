@@ -2,10 +2,18 @@ import React, { memo } from 'react';
 import { Handle, Position, NodeProps, Node } from '@xyflow/react';
 import { ReactFlowNodeData } from '@/types/graph';
 import { Star, Award } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const SynthesisNode = ({ data }: NodeProps<Node<ReactFlowNodeData>>) => {
+  const isActive = data.status === 'running';
+  const isFuture = data.isFuture;
+
   return (
-    <div className="w-72 bg-gradient-to-br from-[#722F37] to-[#5D262D] rounded-lg shadow-xl border border-[#F7E7CE] text-white overflow-hidden">
+    <div className={cn(
+      'w-72 bg-gradient-to-br from-[#722F37] to-[#5D262D] rounded-lg shadow-xl border border-[#F7E7CE] text-white overflow-hidden transition-all duration-300',
+      isActive && 'animate-pulse-glow',
+      isFuture && 'opacity-40 grayscale'
+    )}>
       <Handle type="target" position={Position.Top} className="w-3 h-3 !bg-[#F7E7CE]" />
       
       <div className="p-4">

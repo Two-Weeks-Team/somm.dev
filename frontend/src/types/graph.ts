@@ -22,6 +22,7 @@ export interface ReactFlowNodeData {
   category?: string;
   tokenUsage?: number;
   costUsd?: number;
+  isFuture?: boolean;
   [key: string]: unknown;
 }
 

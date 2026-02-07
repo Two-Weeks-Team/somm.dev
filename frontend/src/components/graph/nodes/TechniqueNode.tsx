@@ -2,10 +2,16 @@ import React, { memo } from 'react';
 import { Handle, Position, NodeProps, Node } from '@xyflow/react';
 import { ReactFlowNodeData } from '@/types/graph';
 import { FileText } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const TechniqueNode = ({ data }: NodeProps<Node<ReactFlowNodeData>>) => {
+  const isFuture = data.isFuture;
+  
   return (
-    <div className="w-56 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+    <div className={cn(
+      'w-56 bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-all duration-300',
+      isFuture && 'opacity-40 grayscale'
+    )}>
       <Handle type="target" position={Position.Top} className="w-3 h-3 !bg-gray-400" />
       
       <div className="p-3 border-l-4" style={{ borderLeftColor: data.color || '#F7E7CE' }}>
