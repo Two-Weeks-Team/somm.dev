@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Wine, Sparkles, TrendingUp, TrendingDown, Minus, Quote } from 'lucide-react';
+import { Wine, Sparkles, Crown, Quote, Trophy, Medal, Award, Star } from 'lucide-react';
 import { EvaluationResult } from '../types';
 import { ScoreGauge } from './ScoreGauge';
 import { SommelierCard } from './SommelierCard';
@@ -56,10 +56,13 @@ function ScoreBreakdownChart({ results }: { results: EvaluationResult['results']
               <div className="w-12 text-right font-bold" style={{ color: theme.color }}>
                 {somm.score}
               </div>
-              <div className="w-6">
-                {isMax && <TrendingUp size={16} className="text-green-500" />}
-                {isMin && results.length > 1 && <TrendingDown size={16} className="text-amber-500" />}
-                {!isMax && !isMin && <Minus size={16} className="text-gray-300" />}
+              <div className="w-16 flex justify-end">
+                {isMax && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 text-xs font-semibold">
+                    <Crown size={12} />
+                    TOP
+                  </span>
+                )}
               </div>
             </div>
           );
@@ -87,6 +90,18 @@ function ScoreBreakdownChart({ results }: { results: EvaluationResult['results']
 
 /* Hero Section: Jean-Pierre's Verdict */
 function HeroSection({ result, tier }: { result: EvaluationResult; tier: ReturnType<typeof getScoreTier> }) {
+  // Map tier to lucide icon
+  const getTierIcon = (name: string) => {
+    switch (name) {
+      case 'Legendary': return <Trophy size={24} className="text-yellow-500" />;
+      case 'Grand Cru': return <Trophy size={24} className="text-amber-600" />;
+      case 'Premier Cru': return <Medal size={24} className="text-orange-500" />;
+      case 'Village': return <Award size={24} className="text-green-600" />;
+      case 'Table Wine': return <Star size={24} className="text-purple-500" />;
+      default: return <Wine size={24} className="text-gray-500" />;
+    }
+  };
+
   return (
     <div className="bg-gradient-to-br from-[#722F37] via-[#8B3D47] to-[#5A252C] rounded-2xl shadow-xl overflow-hidden">
       <div className="relative">
@@ -109,9 +124,9 @@ function HeroSection({ result, tier }: { result: EvaluationResult; tier: ReturnT
               <span className="text-5xl md:text-6xl font-bold leading-none">{result.totalScore}</span>
               <span className="text-white/50 text-lg">/100</span>
             </div>
-            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${tier.bgColor}`}>
-              <span className="text-lg">{tier.emoji}</span>
-              <span className={`font-semibold ${tier.color}`}>{tier.name}</span>
+            <div className={`inline-flex items-center gap-2 px-5 py-2.5 rounded-full ${tier.bgColor} shadow-lg`}>
+              {getTierIcon(tier.name)}
+              <span className={`font-bold text-lg ${tier.color}`}>{tier.name}</span>
             </div>
           </div>
           
