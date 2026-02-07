@@ -5,7 +5,7 @@ import { FileText } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const TechniqueNode = ({ data }: NodeProps<Node<ReactFlowNodeData>>) => {
-  const isFuture = data.isFuture as boolean | undefined;
+  const isFuture = data.isFuture;
   
   return (
     <div className={cn(

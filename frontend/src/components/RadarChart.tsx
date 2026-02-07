@@ -42,7 +42,7 @@ export function RadarChart({
 
   const dataPoints = useMemo(() => {
     return data.map((item, i) => {
-      const maxVal = item.maxValue || 100;
+      const maxVal = item.maxValue ?? 100;
       const normalizedValue = Math.min(item.value / maxVal, 1);
       const angle = startAngle + i * angleStep;
       return {
@@ -127,7 +127,7 @@ export function RadarChart({
 
       {showLabels && axisPoints.map((point, i) => {
         const item = data[i];
-        const maxVal = item.maxValue || 100;
+        const maxVal = item.maxValue ?? 100;
         const textAnchor = point.angle > -Math.PI / 2 && point.angle < Math.PI / 2 ? 'start' : 'end';
         const isTop = point.angle < 0;
         const isCenter = Math.abs(point.angle + Math.PI / 2) < 0.1 || Math.abs(point.angle - Math.PI / 2) < 0.1;
