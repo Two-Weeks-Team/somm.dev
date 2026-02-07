@@ -225,11 +225,11 @@ async def get_graph_3d(
 
     _check_ownership(evaluation, user)
 
-    mode = evaluation.get("criteria", "basic")
+    mode = _determine_mode(evaluation)
     methodology_trace = evaluation.get("methodology_trace") or []
 
     return build_3d_graph(
         evaluation_id=evaluation_id,
-        mode=mode,
+        mode=mode.value,
         methodology_trace=methodology_trace,
     )
