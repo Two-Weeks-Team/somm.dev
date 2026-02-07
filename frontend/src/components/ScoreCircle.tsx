@@ -68,10 +68,11 @@ const tierConfig: Record<ScoreTier, {
 };
 
 export function ScoreCircle({ score, size = 'lg', showTier = true }: ScoreCircleProps) {
-  const tier = getScoreTier(score);
+  const clampedScore = Math.max(0, Math.min(100, score));
+  const tier = getScoreTier(clampedScore);
   const config = tierConfig[tier];
   const circumference = 2 * Math.PI * 45;
-  const strokeDashoffset = circumference - (score / 100) * circumference;
+  const strokeDashoffset = circumference - (clampedScore / 100) * circumference;
 
   return (
     <div className="flex flex-col items-center gap-3">
