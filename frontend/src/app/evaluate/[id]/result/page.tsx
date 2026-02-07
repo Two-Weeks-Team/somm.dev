@@ -47,7 +47,7 @@ export default function ResultPage() {
   const [showStickyHeader, setShowStickyHeader] = useState(false);
   const [toast, setToast] = useState<ToastState>({ message: '', type: 'success', visible: false });
   const [isExporting, setIsExporting] = useState(false);
-  const toastTimerRef = useRef<ReturnType<typeof setTimeout>>();
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
     if (toastTimerRef.current) {
