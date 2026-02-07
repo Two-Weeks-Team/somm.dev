@@ -16,6 +16,7 @@ export interface SommelierResult {
   role: string;
   score: number;
   feedback: string;
+  recommendations?: string[];
   pairingSuggestion?: string;
 }
 

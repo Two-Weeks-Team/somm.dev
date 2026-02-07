@@ -145,11 +145,12 @@ export const api = {
 
     const sommelierOutputs = response.final_evaluation?.sommelier_outputs || [];
     const results = sommelierOutputs.map((output: BackendSommelierOutput) => ({
-      id: output.sommelier_name?.toLowerCase() || '',
+      id: output.sommelier_name?.toLowerCase().replace(/[^a-z]/g, '') || '',
       name: output.sommelier_name || '',
       role: SOMMELIER_ROLES[output.sommelier_name || ''] || 'Sommelier',
       score: output.score || 0,
       feedback: output.summary || '',
+      recommendations: output.recommendations || [],
       pairingSuggestion: output.recommendations?.[0] || undefined,
     }));
 
