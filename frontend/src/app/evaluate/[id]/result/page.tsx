@@ -98,6 +98,23 @@ export default function ResultPage() {
     
     const baseUrl = window.location.origin;
     
+    // Format feedback into paragraphs (2 sentences each)
+    const formatFeedbackForPdf = (text: string): string => {
+      const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+      const paragraphs: string[] = [];
+      let currentParagraph = '';
+      
+      sentences.forEach((sentence, idx) => {
+        currentParagraph += sentence;
+        if ((idx + 1) % 2 === 0 || idx === sentences.length - 1) {
+          paragraphs.push(currentParagraph.trim());
+          currentParagraph = '';
+        }
+      });
+      
+      return paragraphs.map(p => `<p>${p}</p>`).join('');
+    };
+    
     printWindow.document.write(`
       <!DOCTYPE html>
       <html>
@@ -268,6 +285,12 @@ export default function ResultPage() {
             font-size: 14px; color: var(--text); line-height: 1.75;
             margin-bottom: 16px; text-align: justify;
           }
+          .sommelier-feedback p {
+            margin: 0 0 10px 0;
+          }
+          .sommelier-feedback p:last-child {
+            margin-bottom: 0;
+          }
           
           .techniques { margin-top: 16px; }
           .techniques-label { 
@@ -360,7 +383,7 @@ export default function ResultPage() {
                   <span class="sommelier-score-max">/ 100</span>
                 </div>
               </div>
-              <div class="sommelier-feedback">${s.feedback}</div>
+              <div class="sommelier-feedback">${formatFeedbackForPdf(s.feedback)}</div>
               ${s.recommendations && s.recommendations.length > 0 ? `
                 <div class="techniques">
                   <div class="techniques-label">Techniques Applied</div>

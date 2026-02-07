@@ -19,15 +19,18 @@ interface SommelierCardProps {
 
 // Format feedback: split into paragraphs
 function formatFeedback(text: string): React.ReactNode[] {
-  // Split into sentences
-  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+  // Split into sentences - but only at sentence boundaries
+  // A sentence ends with .!? followed by space and uppercase letter
+  // This avoids breaking "Next.js", "e.g.", "i.e.", etc.
+  const sentencePattern = /(?<=[.!?])\s+(?=[A-Z])/;
+  const sentences = text.split(sentencePattern).filter(s => s.trim());
   
   // Group into paragraphs (2-3 sentences each)
   const paragraphs: string[] = [];
   let currentParagraph = '';
   
   sentences.forEach((sentence, idx) => {
-    currentParagraph += sentence;
+    currentParagraph += (currentParagraph ? ' ' : '') + sentence.trim();
     // Create new paragraph every 2-3 sentences
     if ((idx + 1) % 2 === 0 || idx === sentences.length - 1) {
       paragraphs.push(currentParagraph.trim());
