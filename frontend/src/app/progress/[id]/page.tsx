@@ -96,9 +96,9 @@ export default function ProgressPage() {
                     key={s.id}
                     className={`relative w-10 h-10 rounded-full overflow-hidden border-2 transition-all duration-300 ${
                       isCompleted 
-                        ? 'border-green-500 scale-100' 
+                        ? 'border-[#722F37] scale-100' 
                         : isActive 
-                          ? 'border-[#722F37] scale-110 shadow-lg animate-pulse'
+                          ? 'border-[#DAA520] scale-110 shadow-lg'
                           : 'border-gray-300 opacity-50 grayscale'
                     }`}
                   >
@@ -109,8 +109,8 @@ export default function ProgressPage() {
                       className="object-cover object-top"
                     />
                     {isCompleted && (
-                      <div className="absolute inset-0 bg-green-500/20 flex items-center justify-center">
-                        <CheckCircle2 className="w-5 h-5 text-green-600" />
+                      <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-[#722F37] rounded-full flex items-center justify-center border-2 border-white">
+                        <CheckCircle2 className="w-3 h-3 text-white" />
                       </div>
                     )}
                   </div>
@@ -166,18 +166,18 @@ export default function ProgressPage() {
                   key={evaluator.id}
                   className={`flex items-center p-4 rounded-xl border-2 transition-all duration-300 ${
                     isCompleted 
-                      ? 'bg-green-50/50 border-green-200'
+                      ? 'bg-[#F7E7CE]/30 border-[#722F37]/20'
                       : isActive
-                        ? 'bg-white border-[#722F37]/30 shadow-md scale-[1.02]'
+                        ? 'bg-white border-[#DAA520]/50 shadow-md scale-[1.02]'
                         : 'bg-gray-50/50 border-transparent opacity-50'
                   }`}
                 >
                   {/* Avatar */}
                   <div className={`relative w-14 h-14 rounded-full overflow-hidden mr-4 border-2 transition-all ${
                     isCompleted 
-                      ? 'border-green-500'
+                      ? 'border-[#722F37]'
                       : isActive
-                        ? 'border-[#722F37] shadow-lg'
+                        ? 'border-[#DAA520] shadow-lg'
                         : 'border-gray-200 grayscale'
                   }`}>
                     {!isGrandTasting ? (
@@ -189,15 +189,20 @@ export default function ProgressPage() {
                       />
                     ) : (
                       <div className={`w-full h-full flex items-center justify-center ${
-                        isCompleted ? 'bg-amber-100' : isActive ? 'bg-amber-50' : 'bg-gray-100'
+                        isCompleted ? 'bg-[#F7E7CE]' : isActive ? 'bg-amber-50' : 'bg-gray-100'
                       }`}>
                         <Sparkles className={`w-6 h-6 ${
-                          isCompleted ? 'text-amber-600' : isActive ? 'text-amber-500' : 'text-gray-400'
+                          isCompleted ? 'text-[#722F37]' : isActive ? 'text-[#DAA520]' : 'text-gray-400'
                         }`} />
                       </div>
                     )}
                     {isActive && (
-                      <div className="absolute inset-0 bg-[#722F37]/10 animate-pulse" />
+                      <div className="absolute inset-0 bg-[#DAA520]/20 animate-pulse" />
+                    )}
+                    {isCompleted && (
+                      <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-[#722F37] rounded-full flex items-center justify-center border-2 border-white">
+                        <CheckCircle2 className="w-3 h-3 text-white" />
+                      </div>
                     )}
                   </div>
 
@@ -205,31 +210,36 @@ export default function ProgressPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2">
                       <h3 className={`font-semibold ${
-                        isCompleted ? 'text-green-700' : isActive ? 'text-[#722F37]' : 'text-gray-600'
+                        isCompleted ? 'text-[#722F37]' : isActive ? 'text-[#722F37]' : 'text-gray-600'
                       }`}>
                         {evaluator.name}
                       </h3>
                       {isActive && (
-                        <span className="px-2 py-0.5 bg-[#722F37]/10 text-[#722F37] text-xs font-medium rounded-full">
+                        <span className="px-2 py-0.5 bg-[#DAA520]/20 text-[#8B6914] text-xs font-medium rounded-full">
                           Analyzing...
+                        </span>
+                      )}
+                      {isCompleted && (
+                        <span className="px-2 py-0.5 bg-[#722F37]/10 text-[#722F37] text-xs font-medium rounded-full">
+                          Complete
                         </span>
                       )}
                     </div>
                     <p className="text-sm text-gray-500">{evaluator.role}</p>
                     {isCompleted && completedData?.feedback && (
-                      <p className="text-xs text-green-600 mt-1 truncate">{completedData.feedback}</p>
+                      <p className="text-xs text-[#722F37]/70 mt-1 truncate">{completedData.feedback}</p>
                     )}
                   </div>
 
                   {/* Status indicator */}
                   <div className="flex-shrink-0">
                     {isCompleted ? (
-                      <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-                        <CheckCircle2 className="w-6 h-6 text-green-600" />
+                      <div className="w-10 h-10 rounded-full bg-[#722F37]/10 flex items-center justify-center">
+                        <CheckCircle2 className="w-6 h-6 text-[#722F37]" />
                       </div>
                     ) : isActive ? (
-                      <div className="w-10 h-10 rounded-full bg-[#722F37]/10 flex items-center justify-center">
-                        <Loader2 className="w-6 h-6 text-[#722F37] animate-spin" />
+                      <div className="w-10 h-10 rounded-full bg-[#DAA520]/20 flex items-center justify-center">
+                        <Loader2 className="w-6 h-6 text-[#DAA520] animate-spin" />
                       </div>
                     ) : (
                       <div className="w-10 h-10 rounded-full border-2 border-gray-200 border-dashed" />
