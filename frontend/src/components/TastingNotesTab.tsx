@@ -32,7 +32,7 @@ function ScoreBreakdownChart({ results }: { results: EvaluationResult['results']
           
           return (
             <div key={somm.id} className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full overflow-hidden relative flex-shrink-0 border-2 border-[#722F37]/30">
+              <div className="w-10 h-10 rounded-full overflow-hidden relative flex-shrink-0 border-2" style={{ borderColor: theme.color }}>
                 <Image
                   src={theme.image}
                   alt={theme.name}
@@ -46,13 +46,14 @@ function ScoreBreakdownChart({ results }: { results: EvaluationResult['results']
               </div>
               <div className="flex-1 h-6 bg-gray-100 rounded-full overflow-hidden relative">
                 <div
-                  className="h-full rounded-full transition-all duration-1000 ease-out bg-gradient-to-r from-[#722F37] to-[#8B3D47]"
+                  className="h-full rounded-full transition-all duration-1000 ease-out"
                   style={{
                     width: `${barWidth}%`,
+                    backgroundColor: theme.color,
                   }}
                 />
               </div>
-              <div className="w-12 text-right font-bold text-[#722F37]">
+              <div className="w-12 text-right font-bold" style={{ color: theme.color }}>
                 {somm.score}
               </div>
               <div className="w-16 flex justify-end">
