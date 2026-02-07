@@ -103,7 +103,7 @@ function HeroSection({ result, tier }: { result: EvaluationResult; tier: ReturnT
   };
 
   return (
-    <div className="bg-gradient-to-r from-[#722F37] via-[#7D3840] to-[#8B4513]/80 rounded-2xl shadow-xl overflow-hidden">
+    <div className="bg-gradient-to-br from-[#722F37] via-[#8B3D47] to-[#5A252C] rounded-2xl shadow-xl overflow-hidden">
       <div className="relative min-h-[200px]">
         {/* Jean-Pierre on the right - matching SommelierCard style */}
         <div className="absolute right-0 top-0 bottom-0 w-48 md:w-64">
@@ -114,11 +114,11 @@ function HeroSection({ result, tier }: { result: EvaluationResult; tier: ReturnT
             className="object-cover object-top"
             sizes="256px"
           />
-          {/* Soft edge blend - wider gradient for smoother transition */}
+          {/* Soft edge blend - same technique as SommelierCard */}
           <div 
-            className="absolute inset-y-0 left-0 w-32 md:w-40"
+            className="absolute inset-y-0 left-0 w-24 md:w-32"
             style={{ 
-              background: 'linear-gradient(to right, #7D3840 0%, rgba(139, 69, 19, 0.3) 100%)' 
+              background: 'linear-gradient(to right, #722F37, transparent)' 
             }}
           />
         </div>
