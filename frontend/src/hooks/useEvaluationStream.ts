@@ -191,13 +191,25 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
         (error) => {
           const readyState = eventSource?.readyState;
           const readyStateLabel = readyState === 0 ? 'CONNECTING' : readyState === 1 ? 'OPEN' : 'CLOSED';
-          console.error('SSE connection error:', {
-            readyState: `${readyState} (${readyStateLabel})`,
-            retryCount,
-            maxRetries: MAX_RETRIES,
-            isOnline: typeof navigator !== 'undefined' ? navigator.onLine : 'unknown',
-            evaluationId,
-          });
+          const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;
+          
+          // Only log warning for expected disconnections, error for unexpected ones
+          if (readyState === 2 && isOnline) {
+            // Connection closed while online - might be server-side close
+            console.warn('SSE connection closed:', {
+              readyState: `${readyState} (${readyStateLabel})`,
+              retryCount: retryCount + 1,
+              maxRetries: MAX_RETRIES,
+            });
+          } else if (!isOnline) {
+            console.warn('SSE offline - waiting for network');
+          } else {
+            console.warn('SSE connection issue:', {
+              readyState: `${readyState} (${readyStateLabel})`,
+              retryCount: retryCount + 1,
+              isOnline,
+            });
+          }
           
           if (eventSource) eventSource.close();
 

@@ -46,8 +46,8 @@ export const RepositoryCard: React.FC<RepositoryCardProps> = ({
             <span
               className={`inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium rounded-full flex-shrink-0 ${
                 repository.owner.type === 'Organization'
-                  ? 'bg-purple-100 text-purple-700'
-                  : 'bg-blue-100 text-blue-700'
+                  ? 'bg-[#722F37]/10 text-[#722F37] border border-[#722F37]/20'
+                  : 'bg-gray-100 text-gray-600 border border-gray-200'
               }`}
               title={repository.owner.type === 'Organization' ? 'Organization' : 'Personal'}
             >
