@@ -56,3 +56,13 @@ body {
 .animate-shimmer {
   animation: shimmer 2s infinite;
 }
+
+/* ReactFlow edge fix - ensure edges appear immediately */
+.react-flow__edge-path {
+  opacity: 1 !important;
+  transition: none !important;
+}
+
+.react-flow__edge {
+  opacity: 1 !important;
+}
