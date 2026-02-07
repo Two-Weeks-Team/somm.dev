@@ -73,15 +73,15 @@ export function SommelierCard({
             style={{ color: theme.color }}
           >
             {isExpanded ? (
-              <>
+              <span className="flex items-center gap-1">
                 <ChevronUp size={16} />
                 Show less
-              </>
+              </span>
             ) : (
-              <>
+              <span className="flex items-center gap-1">
                 <ChevronDown size={16} />
                 Read more
-              </>
+              </span>
             )}
           </button>
         )}
