@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Image from 'next/image';
-import { Wine, Sparkles, TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { Wine, Sparkles, TrendingUp, TrendingDown, Minus, Quote } from 'lucide-react';
 import { EvaluationResult } from '../types';
 import { ScoreGauge } from './ScoreGauge';
 import { SommelierCard } from './SommelierCard';
@@ -85,60 +85,61 @@ function ScoreBreakdownChart({ results }: { results: EvaluationResult['results']
   );
 }
 
+/* Hero Section: Jean-Pierre's Verdict */
+function HeroSection({ result, tier }: { result: EvaluationResult; tier: ReturnType<typeof getScoreTier> }) {
+  return (
+    <div className="bg-gradient-to-br from-[#722F37] via-[#8B3D47] to-[#5A252C] rounded-2xl shadow-xl overflow-hidden">
+      <div className="relative">
+        {/* Jean-Pierre on the right */}
+        <div className="absolute right-0 top-0 bottom-0 w-64 md:w-80">
+          <Image
+            src="/sommeliers/jeanpierre.png"
+            alt="Jean-Pierre"
+            fill
+            className="object-cover object-top"
+            sizes="320px"
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-[#722F37] via-[#722F37]/60 to-transparent" />
+        </div>
+        
+        <div className="relative z-10 p-6 md:p-8 pr-32 md:pr-48">
+          {/* Score + Badge inline, compact */}
+          <div className="flex items-center gap-4 mb-5">
+            <div className="flex items-baseline gap-1 text-white">
+              <span className="text-5xl md:text-6xl font-bold leading-none">{result.totalScore}</span>
+              <span className="text-white/50 text-lg">/100</span>
+            </div>
+            <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full ${tier.bgColor}`}>
+              <span className="text-lg">{tier.emoji}</span>
+              <span className={`font-semibold ${tier.color}`}>{tier.name}</span>
+            </div>
+          </div>
+          
+          {/* Verdict as a quote */}
+          <div className="border-l-4 border-[#F7E7CE]/40 pl-5">
+            <div className="flex items-center gap-2 mb-2">
+              <Quote size={14} className="text-[#F7E7CE]/60" />
+              <span className="text-[#F7E7CE]/80 text-xs font-medium uppercase tracking-wider">
+                Jean-Pierre&apos;s Verdict
+              </span>
+            </div>
+            <blockquote className="text-white/90 text-base md:text-lg leading-relaxed italic font-serif max-w-2xl">
+              &ldquo;{result.finalVerdict}&rdquo;
+            </blockquote>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function TastingNotesTab({ result }: TastingNotesTabProps) {
   const tier = getScoreTier(result.totalScore || 0);
 
   return (
     <div className="animate-fadeIn space-y-8">
       {/* Hero Score Section */}
-      <div className="bg-gradient-to-br from-[#722F37] via-[#8B3D47] to-[#5A252C] rounded-2xl shadow-xl overflow-hidden">
-        <div className="relative">
-          {/* Jean-Pierre Character Image */}
-          <div className="absolute right-0 top-0 h-full w-48 md:w-64 opacity-30 md:opacity-50">
-            <Image
-              src="/sommeliers/jeanpierre.png"
-              alt="Jean-Pierre"
-              fill
-              className="object-cover object-top"
-              sizes="256px"
-            />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#722F37] via-[#722F37]/80 to-transparent" />
-          </div>
-          
-          <div className="relative z-10 p-8 md:p-12">
-            <div className="flex flex-col md:flex-row items-center gap-8">
-              {/* Left: Score */}
-              <div className="text-center">
-                <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-                  <ScoreGauge score={result.totalScore || 0} size="lg" showLabel={false} />
-                  <div className={`mt-4 inline-flex items-center gap-2 px-4 py-2 rounded-full ${tier.bgColor}`}>
-                    <span className="text-xl">{tier.emoji}</span>
-                    <span className={`font-bold ${tier.color}`}>{tier.name}</span>
-                  </div>
-                </div>
-              </div>
-              
-              {/* Right: Verdict */}
-              <div className="flex-1 text-white text-center md:text-left">
-                <div className="flex items-center justify-center md:justify-start gap-2 mb-4">
-                  <Wine size={24} className="text-[#F7E7CE]" />
-                  <h2 className="text-2xl font-serif-elegant">
-                    Jean-Pierre&apos;s Verdict
-                  </h2>
-                </div>
-                <blockquote className="text-lg md:text-xl leading-relaxed opacity-95 font-serif-elegant italic">
-                  &ldquo;{result.finalVerdict}&rdquo;
-                </blockquote>
-                {result.repoUrl && (
-                  <p className="mt-4 text-sm opacity-60 font-mono">
-                    {result.repoUrl}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <HeroSection result={result} tier={tier} />
 
       {/* Score Breakdown Chart */}
       <ScoreBreakdownChart results={result.results} />

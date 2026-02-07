@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useState, lazy, Suspense } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { api } from '../../../../lib/api';
 import { EvaluationResult } from '../../../../types';
 import { ArrowLeft, Share2, Download } from 'lucide-react';

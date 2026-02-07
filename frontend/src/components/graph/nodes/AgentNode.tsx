@@ -1,7 +1,9 @@
 import React, { memo } from 'react';
 import { Handle, Position, NodeProps, Node } from '@xyflow/react';
 import { ReactFlowNodeData } from '@/types/graph';
-import { User, CheckCircle, XCircle, Clock, Loader2 } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Loader2 } from 'lucide-react';
+import Image from 'next/image';
+import { getSommelierTheme } from '@/lib/sommeliers';
 
 const AgentNode = ({ data }: NodeProps<Node<ReactFlowNodeData>>) => {
   const statusColor = {
@@ -20,10 +22,14 @@ const AgentNode = ({ data }: NodeProps<Node<ReactFlowNodeData>>) => {
 
   const status = data.status || 'pending';
   const Icon = StatusIcon[status];
-  const themeColor = data.color || '#722F37';
+  
+  // Get sommelier theme for avatar
+  const label = (data.label as string) || '';
+  const sommelierTheme = getSommelierTheme(label.toLowerCase());
+  const themeColor = sommelierTheme.color || data.color || '#722F37';
 
   return (
-    <div className="w-64 bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
+    <div className="w-48 bg-white rounded-lg shadow-md border border-gray-200 overflow-hidden">
       <Handle type="target" position={Position.Top} className="w-3 h-3 !bg-gray-400" />
       
       <div className="h-2 w-full" style={{ backgroundColor: themeColor }} />
@@ -31,12 +37,21 @@ const AgentNode = ({ data }: NodeProps<Node<ReactFlowNodeData>>) => {
       <div className="p-4">
         <div className="flex items-start justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-gray-100 flex items-center justify-center text-gray-600" style={{ color: themeColor, backgroundColor: `${themeColor}15` }}>
-              <User size={20} />
+            <div 
+              className="w-10 h-10 rounded-full overflow-hidden border-2 flex-shrink-0"
+              style={{ borderColor: themeColor }}
+            >
+              <Image
+                src={sommelierTheme.image}
+                alt={label}
+                width={40}
+                height={40}
+                className="object-cover object-top w-full h-full"
+              />
             </div>
             <div>
-              <h3 className="font-bold text-sm" style={{ color: themeColor }}>{data.label}</h3>
-              <p className="text-xs text-gray-500">{data.hatType || 'Sommelier'}</p>
+              <h3 className="font-bold text-sm" style={{ color: themeColor }}>{sommelierTheme.name || data.label}</h3>
+              <p className="text-xs text-gray-500">{sommelierTheme.description || data.hatType || 'Sommelier'}</p>
             </div>
           </div>
           
