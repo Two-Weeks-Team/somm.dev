@@ -41,6 +41,10 @@ export interface ReactFlowEdge {
   target: string;
   animated?: boolean;
   style?: Record<string, unknown>;
+  data?: {
+    edge_type?: 'primary' | 'secondary' | 'excluded';
+    weight?: number;
+  };
 }
 
 export interface ReactFlowGraph {
