@@ -112,7 +112,7 @@ export function getScoreTier(score: number): {
   if (score >= 95) return { name: 'Legendary', emoji: '🏆', color: 'text-yellow-600', bgColor: 'bg-gradient-to-r from-yellow-100 to-amber-100' };
   if (score >= 90) return { name: 'Grand Cru', emoji: '🥇', color: 'text-amber-700', bgColor: 'bg-gradient-to-r from-amber-50 to-yellow-50' };
   if (score >= 85) return { name: 'Premier Cru', emoji: '🥈', color: 'text-orange-600', bgColor: 'bg-gradient-to-r from-orange-50 to-amber-50' };
-  if (score >= 80) return { name: 'Village', emoji: '🥉', color: 'text-green-600', bgColor: 'bg-gradient-to-r from-green-50 to-emerald-50' };
+  if (score >= 80) return { name: 'Village', emoji: '🥉', color: 'text-[#722F37]', bgColor: 'bg-gradient-to-r from-[#F7E7CE] to-[#EDE0C8]' };
   if (score >= 70) return { name: 'Table Wine', emoji: '🏅', color: 'text-blue-600', bgColor: 'bg-gradient-to-r from-blue-50 to-sky-50' };
   if (score >= 60) return { name: 'House Wine', emoji: '🍷', color: 'text-purple-600', bgColor: 'bg-gradient-to-r from-purple-50 to-violet-50' };
   return { name: 'Corked', emoji: '⚠️', color: 'text-red-600', bgColor: 'bg-gradient-to-r from-red-50 to-rose-50' };

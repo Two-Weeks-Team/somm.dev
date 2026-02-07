@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import Image from 'next/image';
 import { ChevronDown, ChevronUp, Lightbulb } from 'lucide-react';
 import { getSommelierTheme } from '../lib/sommeliers';
@@ -15,6 +15,29 @@ interface SommelierCardProps {
   recommendations?: string[];
   pairingSuggestion?: string;
   delay?: number;
+}
+
+// Format feedback: split into paragraphs
+function formatFeedback(text: string): React.ReactNode[] {
+  // Split into sentences
+  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+  
+  // Group into paragraphs (2-3 sentences each)
+  const paragraphs: string[] = [];
+  let currentParagraph = '';
+  
+  sentences.forEach((sentence, idx) => {
+    currentParagraph += sentence;
+    // Create new paragraph every 2-3 sentences
+    if ((idx + 1) % 2 === 0 || idx === sentences.length - 1) {
+      paragraphs.push(currentParagraph.trim());
+      currentParagraph = '';
+    }
+  });
+  
+  return paragraphs.map((p, idx) => (
+    <p key={idx} className={idx > 0 ? 'mt-3' : ''}>{p}</p>
+  ));
 }
 
 export function SommelierCard({
@@ -65,20 +88,20 @@ export function SommelierCard({
             </h3>
             <p className="text-sm text-white/80">{theme.description}</p>
           </div>
-          <div className="bg-white/20 backdrop-blur-sm rounded-xl px-3 py-1 self-start">
-            <span className="text-2xl font-bold text-white">{score}</span>
-            <span className="text-sm text-white/70">/100</span>
+          <div className="bg-white/20 backdrop-blur-sm rounded-lg px-2.5 py-0.5 self-start">
+            <span className="text-lg font-bold text-white">{score}</span>
+            <span className="text-xs text-white/70">/100</span>
           </div>
         </div>
       </div>
 
       {/* Feedback content */}
       <div className="p-5">
-        <p className={`text-gray-700 leading-relaxed ${isExpanded ? '' : 'line-clamp-4'}`}>
-          {feedback}
-        </p>
+        <div className={`text-gray-700 leading-relaxed ${isExpanded ? '' : 'line-clamp-6'}`}>
+          {formatFeedback(feedback)}
+        </div>
         
-        {feedback.length > 250 && (
+        {feedback.length > 300 && (
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             className="mt-3 text-sm font-medium flex items-center gap-1 hover:opacity-80 transition-opacity"
