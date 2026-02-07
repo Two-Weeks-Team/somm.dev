@@ -164,7 +164,7 @@ export default function ResultPage() {
     }
   };
 
-  const tier = result ? getScoreTier(result.totalScore || 0) : null;
+  const tier = getScoreTier(result.totalScore || 0);
 
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
