@@ -2,6 +2,8 @@ export const GRAPH_SCHEMA_VERSION = 2;
 
 export type GraphEvaluationMode = 'six_hats' | 'full_techniques';
 
+export type Graph3DViewMode = '3d' | 'topdown' | 'timeline' | '2d';
+
 export type ReactFlowNodeType = 
   | 'start' 
   | 'end' 
@@ -69,6 +71,7 @@ export interface Graph3DNode {
   technique_id?: string;
   category?: string;
   item_count?: number;
+  node_meta?: Record<string, unknown>;
 }
 
 export interface Graph3DEdge {
@@ -81,6 +84,7 @@ export interface Graph3DEdge {
   step_number: number;
   bundle_id?: string;
   bundled_path?: Position3D[];
+  control_points?: Position3D[];
   dasharray?: string;
 }
 
