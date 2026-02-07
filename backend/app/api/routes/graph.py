@@ -13,7 +13,12 @@ from typing import Any
 
 from fastapi import APIRouter, Depends
 
-from app.api.deps import get_current_user
+from app.api.deps import get_current_user, get_optional_user
+
+# Demo evaluation IDs that can be accessed without authentication
+PUBLIC_DEMO_EVALUATIONS = {
+    "6986e6d6650de8503772babf",  # ai/nanoid evaluation
+}
 from app.core.exceptions import CorkedError, EmptyCellarError
 from app.database.repositories.evaluation import EvaluationRepository
 from app.models.graph import (
@@ -47,16 +52,25 @@ async def _get_evaluation(evaluation_id: str) -> dict[str, Any] | None:
     return await repo.get_by_id(evaluation_id)
 
 
-def _check_ownership(evaluation: dict[str, Any], user) -> None:
-    """Verify user owns the evaluation.
+def _check_ownership(evaluation: dict[str, Any], user, evaluation_id: str) -> None:
+    """Verify user owns the evaluation or it's a public demo.
 
     Args:
         evaluation: The evaluation document.
-        user: The current authenticated user.
+        user: The current authenticated user (can be None for public demos).
+        evaluation_id: The evaluation ID.
 
     Raises:
-        CorkedError: If user does not own the evaluation.
+        CorkedError: If user does not own the evaluation and it's not public.
     """
+    # Allow access to public demo evaluations without auth
+    if evaluation_id in PUBLIC_DEMO_EVALUATIONS:
+        return
+    
+    # Require auth for non-public evaluations
+    if user is None:
+        raise CorkedError("Authentication required to view this evaluation")
+    
     if evaluation.get("user_id") != user.id:
         raise CorkedError(
             "Access denied: evaluation belongs to another user", status_code=403
@@ -83,16 +97,18 @@ def _determine_mode(evaluation: dict[str, Any]) -> EvaluationMode:
 @router.get("/{evaluation_id}/graph", response_model=ReactFlowGraph)
 async def get_graph(
     evaluation_id: str,
-    user=Depends(get_current_user),
+    user=Depends(get_optional_user),
 ) -> ReactFlowGraph:
     """Get ReactFlow graph for evaluation visualization.
 
     This endpoint returns the complete ReactFlow graph structure
     (nodes and edges) needed to visualize the evaluation pipeline.
 
+    Public demo evaluations can be accessed without authentication.
+
     Args:
         evaluation_id: The evaluation ID.
-        user: The authenticated user.
+        user: The authenticated user (optional for public demos).
 
     Returns:
         ReactFlowGraph containing nodes, edges, and metadata.
@@ -108,8 +124,8 @@ async def get_graph(
     if not evaluation:
         raise EmptyCellarError(f"Evaluation not found: {evaluation_id}")
 
-    # 2. Check user owns evaluation
-    _check_ownership(evaluation, user)
+    # 2. Check user owns evaluation or it's a public demo
+    _check_ownership(evaluation, user, evaluation_id)
 
     # 3. Determine mode and build graph
     mode = _determine_mode(evaluation)
@@ -126,16 +142,18 @@ async def get_graph(
 @router.get("/{evaluation_id}/graph/timeline", response_model=list[TraceEvent])
 async def get_timeline(
     evaluation_id: str,
-    user=Depends(get_current_user),
+    user=Depends(get_optional_user),
 ) -> list[TraceEvent]:
     """Get timeline of trace events ordered by step.
 
     This endpoint returns the methodology trace from the evaluation state,
     ordered by step number.
 
+    Public demo evaluations can be accessed without authentication.
+
     Args:
         evaluation_id: The evaluation ID.
-        user: The authenticated user.
+        user: The authenticated user (optional for public demos).
 
     Returns:
         List of TraceEvent objects ordered by step.
@@ -146,11 +164,11 @@ async def get_timeline(
     """
     logger.info(f"[Graph] Getting timeline for evaluation: {evaluation_id}")
 
-    # Verify evaluation exists and user owns it
+    # Verify evaluation exists and user owns it or it's public
     evaluation = await _get_evaluation(evaluation_id)
     if not evaluation:
         raise EmptyCellarError(f"Evaluation not found: {evaluation_id}")
-    _check_ownership(evaluation, user)
+    _check_ownership(evaluation, user, evaluation_id)
 
     # Get methodology_trace from evaluation state
     # For now, return empty list as placeholder
@@ -172,16 +190,18 @@ async def get_timeline(
 @router.get("/{evaluation_id}/graph/mode", response_model=ModeResponse)
 async def get_mode(
     evaluation_id: str,
-    user=Depends(get_current_user),
+    user=Depends(get_optional_user),
 ) -> ModeResponse:
     """Get current evaluation mode.
 
     Returns the evaluation mode (six_hats or full_techniques)
     for the specified evaluation.
 
+    Public demo evaluations can be accessed without authentication.
+
     Args:
         evaluation_id: The evaluation ID.
-        user: The authenticated user.
+        user: The authenticated user (optional for public demos).
 
     Returns:
         ModeResponse containing mode and evaluation_id.
@@ -192,11 +212,11 @@ async def get_mode(
     """
     logger.info(f"[Graph] Getting mode for evaluation: {evaluation_id}")
 
-    # Verify evaluation exists and user owns it
+    # Verify evaluation exists and user owns it or it's public
     evaluation = await _get_evaluation(evaluation_id)
     if not evaluation:
         raise EmptyCellarError(f"Evaluation not found: {evaluation_id}")
-    _check_ownership(evaluation, user)
+    _check_ownership(evaluation, user, evaluation_id)
 
     # Determine mode
     mode = _determine_mode(evaluation)
@@ -210,12 +230,14 @@ async def get_mode(
 @router.get("/{evaluation_id}/graph-3d", response_model=Graph3DPayload)
 async def get_graph_3d(
     evaluation_id: str,
-    user=Depends(get_current_user),
+    user=Depends(get_optional_user),
 ) -> Graph3DPayload:
     """Get 3D graph payload for evaluation visualization.
 
     Returns a deterministic 3D graph representation of the evaluation
     pipeline with layered layout and step tracking.
+
+    Public demo evaluations can be accessed without authentication.
     """
     logger.info(f"[Graph] Getting 3D graph for evaluation: {evaluation_id}")
 
@@ -223,7 +245,7 @@ async def get_graph_3d(
     if not evaluation:
         raise EmptyCellarError(f"Evaluation not found: {evaluation_id}")
 
-    _check_ownership(evaluation, user)
+    _check_ownership(evaluation, user, evaluation_id)
 
     mode = evaluation.get("criteria", "basic")
     methodology_trace = evaluation.get("methodology_trace") or []

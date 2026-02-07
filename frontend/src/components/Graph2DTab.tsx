@@ -3,7 +3,6 @@
 import React, { useEffect, useCallback, useState } from 'react';
 import { 
   ReactFlow, 
-  MiniMap, 
   Controls, 
   Background, 
   useNodesState, 
@@ -26,7 +25,6 @@ import { GraphEvaluationMode } from '@/types/graph';
 
 import { TimelinePlayer } from './graph/TimelinePlayer';
 import { useTimelinePlayer } from '@/hooks/useTimelinePlayer';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { GraphSkeleton } from './graph/GraphSkeleton';
 
 interface Graph2DTabProps {
@@ -40,7 +38,6 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
   const [error, setError] = useState<string | null>(null);
   const [maxStep, setMaxStep] = useState(0);
   const [mode, setMode] = useState<GraphEvaluationMode | string>('six_hats');
-  const isMobile = useMediaQuery('(max-width: 768px)');
 
   const {
     currentStep,
@@ -90,7 +87,11 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
         source: edge.source,
         target: edge.target,
         animated: true,
-        style: { stroke: '#722F37', strokeWidth: 2 },
+        style: { 
+          stroke: '#722F37', 
+          strokeWidth: 2,
+          opacity: 1,
+        },
       }));
 
       const { nodes: layoutedNodes, edges: layoutedEdges } = getLayoutedElements(
@@ -179,34 +180,16 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
           onConnect={onConnect}
           nodeTypes={nodeTypes}
           fitView
+          fitViewOptions={{ padding: 0.2, duration: 0 }}
+          defaultEdgeOptions={{
+            animated: true,
+            style: { stroke: '#722F37', strokeWidth: 2 },
+          }}
           attributionPosition="bottom-left"
           minZoom={0.1}
           maxZoom={1.5}
         >
           <Controls className="!bg-white !border-gray-200 !shadow-sm" />
-          {!isMobile && (
-            <MiniMap 
-              className="!bg-white !border-gray-200 !shadow-sm"
-              nodeColor={(node) => {
-                if (node.data.color && typeof node.data.color === 'string') {
-                  return node.data.color;
-                }
-                switch (node.type) {
-                  case 'start':
-                  case 'end':
-                    return '#722F37';
-                  case 'agent':
-                    return '#2E4A3F';
-                  case 'technique':
-                    return '#F7E7CE';
-                  case 'synthesis':
-                    return '#DAA520';
-                  default:
-                    return '#eee';
-                }
-              }}
-            />
-          )}
           <Background variant={BackgroundVariant.Dots} gap={12} size={1} color="#E5E7EB" />
         </ReactFlow>
       </div>
