@@ -44,13 +44,13 @@ export const Node3D: React.FC<Node3DProps> = ({ node, onClick }) => {
     switch (node.node_type) {
       case 'start':
       case 'end':
-        return <sphereGeometry args={[8, 32, 32]} />;
+        return <sphereGeometry args={[10, 32, 32]} />;
       case 'agent':
-        return <boxGeometry args={[12, 12, 12]} />;
+        return <boxGeometry args={[18, 18, 18]} />;
       case 'technique':
         return <octahedronGeometry args={[8, 0]} />;
       case 'synthesis':
-        return <cylinderGeometry args={[6, 6, 12, 32]} />;
+        return <cylinderGeometry args={[10, 10, 16, 32]} />;
       case 'rag':
         return <dodecahedronGeometry args={[8, 0]} />;
       default:
@@ -89,9 +89,9 @@ export const Node3D: React.FC<Node3DProps> = ({ node, onClick }) => {
         />
       </mesh>
       
-      <Html distanceFactor={200} position={[0, 15, 0]} center>
+      <Html distanceFactor={200} position={[0, 20, 0]} center zIndexRange={[0, 0]}>
         <div className="pointer-events-none select-none whitespace-nowrap rounded bg-black/70 px-2 py-1 text-xs text-white backdrop-blur-sm">
-          {node.label}
+          {node.node_type === 'synthesis' ? 'Jean-Pierre' : node.label}
         </div>
       </Html>
     </group>

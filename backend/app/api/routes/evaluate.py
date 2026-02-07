@@ -17,7 +17,7 @@ from fastapi import APIRouter, Depends
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
-from app.api.deps import get_current_user, get_current_user_token
+from app.api.deps import get_current_user, get_current_user_token, get_optional_user
 from app.core.exceptions import CorkedError, EmptyCellarError
 from app.services.evaluation_service import (
     get_evaluation_progress,
@@ -264,19 +264,28 @@ async def stream_evaluation(
     )
 
 
+# Demo evaluation IDs that can be accessed without authentication
+PUBLIC_DEMO_EVALUATIONS = {
+    "6986e6d6650de8503772babf",  # ai/nanoid evaluation
+}
+
+
 @router.get("/{evaluation_id}/result", response_model=ResultResponse)
 async def get_result(
     evaluation_id: str,
-    user=Depends(get_current_user),
+    user=Depends(get_optional_user),
 ) -> ResultResponse:
     """Get the results of a completed evaluation.
 
     This endpoint returns the complete evaluation results including
     the final verdict from Jean-Pierre and all sommelier outputs.
 
+    Public demo evaluations (in PUBLIC_DEMO_EVALUATIONS) can be accessed
+    without authentication.
+
     Args:
         evaluation_id: The evaluation ID.
-        user: The authenticated user.
+        user: The authenticated user (optional for public demos).
 
     Returns:
         The evaluation results.
@@ -285,6 +294,13 @@ async def get_result(
         EmptyCellarError: If the evaluation is not found.
         CorkedError: If the evaluation is still in progress.
     """
+    # Check if this is a public demo evaluation
+    is_public_demo = evaluation_id in PUBLIC_DEMO_EVALUATIONS
+    
+    # Require auth for non-public evaluations
+    if not is_public_demo and user is None:
+        raise CorkedError("Authentication required to view this evaluation")
+    
     try:
         result = await get_evaluation_result(evaluation_id)
     except EmptyCellarError:

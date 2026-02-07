@@ -4,7 +4,7 @@ import React, { useEffect, useState, lazy, Suspense, useCallback, useRef } from 
 import { useParams, useRouter } from 'next/navigation';
 import { api } from '../../../../lib/api';
 import { EvaluationResult } from '../../../../types';
-import { ArrowLeft, Share2, Download, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, Share2, Download, Check, Copy, CheckCircle, XCircle, Loader2 } from 'lucide-react';
 import { ResultTabs, useResultTab, ResultTabId } from '../../../../components/ResultTabs';
 import { TastingNotesTab } from '../../../../components/TastingNotesTab';
 import { GraphSkeleton } from '../../../../components/graph/GraphSkeleton';
@@ -39,14 +39,16 @@ export default function ResultPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
-  
+
   const [result, setResult] = useState<EvaluationResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useResultTab('tasting');
+  const [copied, setCopied] = useState(false);
   const [showStickyHeader, setShowStickyHeader] = useState(false);
   const [toast, setToast] = useState<ToastState>({ message: '', type: 'success', visible: false });
   const [isExporting, setIsExporting] = useState(false);
+  const contentRef = useRef<HTMLDivElement>(null);
   const toastTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
@@ -68,17 +70,34 @@ export default function ResultPage() {
   }, []);
 
   const handleShare = async () => {
+    const shareUrl = window.location.href;
+    const shareData = {
+      title: `Somm.dev - ${result?.repoUrl || 'Repository'} Evaluation`,
+      text: `Check out this code evaluation: ${result?.totalScore}/100 - ${result?.repoUrl}`,
+      url: shareUrl,
+    };
+
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      if (navigator.share && navigator.canShare(shareData)) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareUrl);
+        setCopied(true);
+        showToast('Link copied to clipboard!', 'success');
+        setTimeout(() => setCopied(false), 2000);
+      }
+    } catch (err) {
+      // Fallback to clipboard
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
       showToast('Link copied to clipboard!', 'success');
-    } catch {
-      showToast('Failed to copy link', 'error');
+      setTimeout(() => setCopied(false), 2000);
     }
   };
 
   const handleExportPdf = async () => {
     if (!result || isExporting) return;
-    
+
     setIsExporting(true);
     try {
       await exportResultToPdf(result);
@@ -231,8 +250,8 @@ export default function ResultPage() {
               onClick={handleShare}
               className="flex items-center px-4 py-2 text-sm font-medium text-[#722F37] bg-white border border-[#722F37] rounded-lg hover:bg-[#FAFAFA] transition-colors"
             >
-              <Share2 size={16} className="mr-2" />
-              Share
+              {copied ? <Check size={16} className="mr-2" /> : <Share2 size={16} className="mr-2" />}
+              {copied ? 'Copied!' : 'Share'}
             </button>
             <button
               onClick={handleExportPdf}
@@ -251,7 +270,9 @@ export default function ResultPage() {
 
         <ResultTabs activeTab={activeTab} onTabChange={setActiveTab} />
 
-        {renderTabContent(activeTab)}
+        <div ref={contentRef}>
+          {renderTabContent(activeTab)}
+        </div>
       </div>
 
       <div

@@ -1,13 +1,13 @@
 import React, { useRef, useCallback } from 'react';
 import { CriteriaType } from '../types';
-import { Wine, Award, BookOpen, Settings, LucideIcon } from 'lucide-react';
+import { Wine, Award, BookOpen, Settings, LucideIcon, Sparkles } from 'lucide-react';
 
 interface CriteriaSelectorProps {
   value: CriteriaType;
   onChange: (value: CriteriaType) => void;
 }
 
-const criteriaOptions: { value: CriteriaType; label: string; description: string; icon: LucideIcon }[] = [
+const criteriaOptions: { value: CriteriaType; label: string; description: string; icon: LucideIcon; recommended?: boolean }[] = [
   {
     value: 'basic',
     label: 'House Blend (Basic)',
@@ -19,6 +19,7 @@ const criteriaOptions: { value: CriteriaType; label: string; description: string
     label: 'Beaujolais Nouveau (Hackathon)',
     description: 'Quick, vibrant, and focused on innovation and "wow" factor. Perfect for prototypes and MVPs.',
     icon: Award,
+    recommended: true,
   },
   {
     value: 'academic',
@@ -89,13 +90,21 @@ export const CriteriaSelector: React.FC<CriteriaSelectorProps> = ({ value, onCha
             tabIndex={value === option.value ? 0 : -1}
             onClick={() => onChange(option.value)}
             onKeyDown={(e) => handleKeyDown(e, index)}
-            className={`cursor-pointer border-2 rounded-lg p-4 transition-all duration-200 flex items-start space-x-3 focus:outline-none focus:ring-2 focus:ring-[#722F37] focus:ring-offset-2 ${
+            className={`relative cursor-pointer border-2 rounded-xl p-4 transition-all duration-200 flex items-start space-x-3 focus:outline-none focus:ring-2 focus:ring-[#722F37] focus:ring-offset-2 ${
               value === option.value
-                ? 'border-[#722F37] bg-[#F7E7CE] bg-opacity-30'
+                ? 'border-[#722F37] bg-[#F7E7CE]/30 shadow-sm'
+                : option.recommended
+                ? 'border-[#DAA520]/50 hover:border-[#DAA520] hover:bg-[#DAA520]/5'
                 : 'border-gray-200 hover:border-[#722F37] hover:bg-gray-50'
             }`}
           >
-            <div className={`p-2 rounded-full ${value === option.value ? 'bg-[#722F37] text-white' : 'bg-gray-100 text-gray-500'}`}>
+            {option.recommended && (
+              <div className="absolute -top-2.5 right-3 flex items-center gap-1 px-2 py-0.5 bg-gradient-to-r from-[#DAA520] to-[#B8860B] text-white text-xs font-bold rounded-full shadow-sm">
+                <Sparkles className="w-3 h-3" />
+                RECOMMENDED
+              </div>
+            )}
+            <div className={`p-2 rounded-full ${value === option.value ? 'bg-[#722F37] text-white' : option.recommended ? 'bg-[#DAA520]/20 text-[#DAA520]' : 'bg-gray-100 text-gray-500'}`}>
               <option.icon size={20} />
             </div>
             <div>
