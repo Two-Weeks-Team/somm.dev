@@ -6,7 +6,7 @@ import { RepositoryPicker } from './RepositoryPicker';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRepoValidation } from '@/hooks/useRepoValidation';
 import { api, Repository, AuthError } from '@/lib/api';
-import { Search, Loader2, AlertCircle, Github, CheckCircle, Lock, XCircle } from 'lucide-react';
+import { Search, Loader2, AlertCircle, Github, CheckCircle, Lock, XCircle, ArrowRight } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.somm.dev";
 
@@ -119,15 +119,16 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
   }, [login]);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto p-6 bg-white rounded-xl shadow-sm border border-gray-100">
-      <div className="flex border-b border-gray-200">
+    <form onSubmit={handleSubmit} className="space-y-8 max-w-2xl mx-auto p-8 bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-[#722F37]/10">
+      {/* Enhanced Tabs */}
+      <div className="flex gap-2 p-1 bg-gray-100 rounded-xl">
         <button
           type="button"
           onClick={() => setActiveTab('repos')}
-          className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium rounded-lg transition-all ${
             activeTab === 'repos'
-              ? 'border-[#722F37] text-[#722F37]'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'bg-white text-[#722F37] shadow-sm'
+              : 'text-gray-500 hover:text-gray-700'
           }`}
         >
           <Github className="w-4 h-4" />
@@ -136,10 +137,10 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
         <button
           type="button"
           onClick={() => setActiveTab('url')}
-          className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 transition-colors ${
+          className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-medium rounded-lg transition-all ${
             activeTab === 'url'
-              ? 'border-[#722F37] text-[#722F37]'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'bg-white text-[#722F37] shadow-sm'
+              : 'text-gray-500 hover:text-gray-700'
           }`}
         >
           <Search className="w-4 h-4" />
@@ -260,15 +261,18 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
       <button
         type="submit"
         disabled={isLoading || !repoUrl || !isAuthenticated}
-        className="w-full flex items-center justify-center py-4 px-6 border border-transparent rounded-lg shadow-sm text-lg font-medium text-white bg-[#722F37] hover:bg-[#5a252c] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#722F37] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+        className="w-full flex items-center justify-center gap-2 py-4 px-6 border border-transparent rounded-xl shadow-lg text-lg font-semibold text-white bg-gradient-to-r from-[#722F37] to-[#5A252C] hover:from-[#5A252C] hover:to-[#4A1F24] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#722F37] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 group"
       >
         {isLoading ? (
           <>
-            <Loader2 className="animate-spin -ml-1 mr-3 h-5 w-5" />
+            <Loader2 className="animate-spin h-5 w-5" />
             Sommeliers are tasting...
           </>
         ) : (
-          'Start Tasting'
+          <>
+            Start Tasting
+            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          </>
         )}
       </button>
     </form>
