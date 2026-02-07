@@ -109,7 +109,7 @@ export default function ProgressPage() {
                       className="object-cover object-top"
                     />
                     {isCompleted && (
-                      <div className="absolute -bottom-0.5 -right-0.5 w-4 h-4 bg-[#722F37] rounded-full flex items-center justify-center border-2 border-white">
+                      <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#722F37] rounded-full flex items-center justify-center border-2 border-white">
                         <CheckCircle2 className="w-3 h-3 text-white" />
                       </div>
                     )}
@@ -200,7 +200,7 @@ export default function ProgressPage() {
                       <div className="absolute inset-0 bg-[#DAA520]/20 animate-pulse" />
                     )}
                     {isCompleted && (
-                      <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 bg-[#722F37] rounded-full flex items-center justify-center border-2 border-white">
+                      <div className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-[#722F37] rounded-full flex items-center justify-center border-2 border-white">
                         <CheckCircle2 className="w-3 h-3 text-white" />
                       </div>
                     )}
