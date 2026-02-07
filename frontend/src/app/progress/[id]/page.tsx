@@ -87,29 +87,30 @@ export default function ProgressPage() {
           
           {/* Sommelier avatars preview */}
           {!isGrandTasting && (
-            <div className="flex justify-center items-center gap-1 mb-4">
+            <div className="flex justify-center items-center gap-2 mb-4">
               {SIX_SOMMELIERS.map((s, index) => {
                 const isCompleted = completedSommeliers.some(c => c.id === s.id);
                 const isActive = !isCompleted && completedSommeliers.length === index;
                 return (
-                  <div 
-                    key={s.id}
-                    className={`relative w-10 h-10 rounded-full overflow-hidden border-2 transition-all duration-300 ${
-                      isCompleted 
-                        ? 'border-[#722F37] scale-100' 
-                        : isActive 
-                          ? 'border-[#DAA520] scale-110 shadow-lg'
-                          : 'border-gray-300 opacity-50 grayscale'
-                    }`}
-                  >
-                    <Image 
-                      src={`/sommeliers/${s.id}.png`}
-                      alt={s.name}
-                      fill
-                      className="object-cover object-top"
-                    />
+                  <div key={s.id} className="relative">
+                    <div 
+                      className={`w-10 h-10 rounded-full overflow-hidden border-2 transition-all duration-300 ${
+                        isCompleted 
+                          ? 'border-[#722F37] scale-100' 
+                          : isActive 
+                            ? 'border-[#DAA520] scale-110 shadow-lg'
+                            : 'border-gray-300 opacity-50 grayscale'
+                      }`}
+                    >
+                      <Image 
+                        src={`/sommeliers/${s.id}.png`}
+                        alt={s.name}
+                        fill
+                        className="object-cover object-top"
+                      />
+                    </div>
                     {isCompleted && (
-                      <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#722F37] rounded-full flex items-center justify-center border-2 border-white">
+                      <div className="absolute -top-0.5 -right-0.5 w-4 h-4 bg-[#722F37] rounded-full flex items-center justify-center border-2 border-white z-10">
                         <CheckCircle2 className="w-3 h-3 text-white" />
                       </div>
                     )}
@@ -173,34 +174,36 @@ export default function ProgressPage() {
                   }`}
                 >
                   {/* Avatar */}
-                  <div className={`relative w-14 h-14 rounded-full overflow-hidden mr-4 border-2 transition-all ${
-                    isCompleted 
-                      ? 'border-[#722F37]'
-                      : isActive
-                        ? 'border-[#DAA520] shadow-lg'
-                        : 'border-gray-200 grayscale'
-                  }`}>
-                    {!isGrandTasting ? (
-                      <Image 
-                        src={`/sommeliers/${evaluator.id}.png`}
-                        alt={evaluator.name}
-                        fill
-                        className="object-cover object-top"
-                      />
-                    ) : (
-                      <div className={`w-full h-full flex items-center justify-center ${
-                        isCompleted ? 'bg-[#F7E7CE]' : isActive ? 'bg-amber-50' : 'bg-gray-100'
-                      }`}>
-                        <Sparkles className={`w-6 h-6 ${
-                          isCompleted ? 'text-[#722F37]' : isActive ? 'text-[#DAA520]' : 'text-gray-400'
-                        }`} />
-                      </div>
-                    )}
-                    {isActive && (
-                      <div className="absolute inset-0 bg-[#DAA520]/20 animate-pulse" />
-                    )}
+                  <div className="relative mr-4">
+                    <div className={`w-14 h-14 rounded-full overflow-hidden border-2 transition-all ${
+                      isCompleted 
+                        ? 'border-[#722F37]'
+                        : isActive
+                          ? 'border-[#DAA520] shadow-lg'
+                          : 'border-gray-200 grayscale'
+                    }`}>
+                      {!isGrandTasting ? (
+                        <Image 
+                          src={`/sommeliers/${evaluator.id}.png`}
+                          alt={evaluator.name}
+                          fill
+                          className="object-cover object-top"
+                        />
+                      ) : (
+                        <div className={`w-full h-full flex items-center justify-center ${
+                          isCompleted ? 'bg-[#F7E7CE]' : isActive ? 'bg-amber-50' : 'bg-gray-100'
+                        }`}>
+                          <Sparkles className={`w-6 h-6 ${
+                            isCompleted ? 'text-[#722F37]' : isActive ? 'text-[#DAA520]' : 'text-gray-400'
+                          }`} />
+                        </div>
+                      )}
+                      {isActive && (
+                        <div className="absolute inset-0 bg-[#DAA520]/20 animate-pulse" />
+                      )}
+                    </div>
                     {isCompleted && (
-                      <div className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-[#722F37] rounded-full flex items-center justify-center border-2 border-white">
+                      <div className="absolute -top-0.5 -right-0.5 w-5 h-5 bg-[#722F37] rounded-full flex items-center justify-center border-2 border-white z-10">
                         <CheckCircle2 className="w-3 h-3 text-white" />
                       </div>
                     )}
