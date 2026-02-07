@@ -39,29 +39,33 @@ export function SommelierCard({
         className="relative h-32 overflow-hidden"
         style={{ backgroundColor: theme.color }}
       >
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black/30 to-transparent z-10" />
-        
         {/* Character Image */}
-        <div className="absolute right-0 top-0 h-full w-32">
+        <div className="absolute right-0 top-0 h-full w-40">
           <Image
             src={theme.image}
             alt={theme.name}
             fill
-            className="object-cover object-top"
-            sizes="128px"
+            className={`object-cover ${id === 'isabella' ? 'object-[center_15%]' : 'object-top'}`}
+            sizes="160px"
+          />
+          {/* Soft edge blend */}
+          <div 
+            className="absolute inset-y-0 left-0 w-16"
+            style={{ 
+              background: `linear-gradient(to right, ${theme.color}, transparent)` 
+            }}
           />
         </div>
         
-        {/* Name and Score */}
-        <div className="absolute inset-0 z-20 p-4 flex justify-between items-start">
+        {/* Name and Score - stacked to avoid overlap with character */}
+        <div className="absolute inset-0 z-20 p-4 flex flex-col justify-between">
           <div>
             <h3 className="text-xl font-bold text-white drop-shadow-md">
               {theme.name}
             </h3>
             <p className="text-sm text-white/80">{theme.description}</p>
           </div>
-          <div className="bg-white/20 backdrop-blur-sm rounded-xl px-3 py-1">
+          <div className="bg-white/20 backdrop-blur-sm rounded-xl px-3 py-1 self-start">
             <span className="text-2xl font-bold text-white">{score}</span>
             <span className="text-sm text-white/70">/100</span>
           </div>
