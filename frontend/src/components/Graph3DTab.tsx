@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState, useCallback } from 'react';
 import dynamic from 'next/dynamic';
-import { AlertCircle, RefreshCw } from 'lucide-react';
+import { AlertCircle, RefreshCw, ChevronDown, ChevronUp, Network } from 'lucide-react';
 import { api } from '@/lib/api';
 import { Graph3DPayload } from '@/types/graph';
 import { TimelinePlayer } from './graph/TimelinePlayer';
@@ -29,6 +29,7 @@ export function Graph3DTab({ evaluationId }: Graph3DTabProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [maxStep, setMaxStep] = useState(0);
+  const [isExpanded, setIsExpanded] = useState(true);
 
   const {
     currentStep,
@@ -90,25 +91,47 @@ export function Graph3DTab({ evaluationId }: Graph3DTabProps) {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <ModeIndicatorBadge mode={data.mode} />
-      </div>
+    <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+      <button
+        onClick={() => setIsExpanded(!isExpanded)}
+        className="flex items-center justify-between w-full px-6 py-4 text-left hover:bg-gray-50 transition-colors"
+      >
+        <div className="flex items-center gap-3">
+          <Network size={20} className="text-[#722F37]" />
+          <span className="font-semibold text-gray-900">Evaluation Flow</span>
+          <ModeIndicatorBadge mode={data.mode} />
+        </div>
+        {isExpanded ? (
+          <ChevronUp size={20} className="text-gray-400" />
+        ) : (
+          <ChevronDown size={20} className="text-gray-400" />
+        )}
+      </button>
 
-      <div className="md:h-[600px] h-[400px] bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 overflow-hidden relative">
-        <GraphLegend mode={data.mode} />
-        <GraphView3D data={data} currentStep={currentStep} />
-      </div>
+      {isExpanded && (
+        <div className="flex flex-col gap-4 px-6 pb-6">
+          <div className="md:h-[600px] h-[400px] bg-neutral-900 rounded-2xl shadow-sm border border-gray-200 overflow-hidden relative">
+            <GraphLegend mode={data.mode} />
+            <GraphView3D
+              data={data}
+              evaluationId={evaluationId}
+              currentStep={currentStep}
+              isPlaying={isPlaying}
+              playbackSpeed={playbackSpeed}
+            />
+          </div>
 
-      <TimelinePlayer
-        currentStep={currentStep}
-        maxStep={maxStep}
-        isPlaying={isPlaying}
-        onStepChange={setCurrentStep}
-        onPlayPause={togglePlay}
-        playbackSpeed={playbackSpeed}
-        onSpeedChange={setPlaybackSpeed}
-      />
+          <TimelinePlayer
+            currentStep={currentStep}
+            maxStep={maxStep}
+            isPlaying={isPlaying}
+            onStepChange={setCurrentStep}
+            onPlayPause={togglePlay}
+            playbackSpeed={playbackSpeed}
+            onSpeedChange={setPlaybackSpeed}
+          />
+        </div>
+      )}
     </div>
   );
 }
