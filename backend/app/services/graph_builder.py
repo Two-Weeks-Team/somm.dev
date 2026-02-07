@@ -4,7 +4,12 @@ This module provides functions to build ReactFlow-compatible graph
 structures for visualization of the evaluation pipeline.
 """
 
-from app.models.graph import ReactFlowGraph, ReactFlowNode, ReactFlowEdge, EvaluationMode
+from app.models.graph import (
+    ReactFlowGraph,
+    ReactFlowNode,
+    ReactFlowEdge,
+    EvaluationMode,
+)
 
 # Sommelier node configurations
 SOMMELIER_CONFIG = {
@@ -13,7 +18,11 @@ SOMMELIER_CONFIG = {
     "heinrich": {"name": "Heinrich", "role": "Quality Inspector", "color": "#2F4F4F"},
     "sofia": {"name": "Sofia", "role": "Vineyard Scout", "color": "#DAA520"},
     "laurent": {"name": "Laurent", "role": "Winemaker", "color": "#228B22"},
-    "jeanpierre": {"name": "Jean-Pierre", "role": "Master Sommelier", "color": "#4169E1"},
+    "jeanpierre": {
+        "name": "Jean-Pierre",
+        "role": "Master Sommelier",
+        "color": "#4169E1",
+    },
 }
 
 # Technique group configurations for full_techniques mode
@@ -40,17 +49,17 @@ def build_six_hats_topology() -> ReactFlowGraph:
     nodes: list[ReactFlowNode] = []
     edges: list[ReactFlowEdge] = []
 
-    # Start node
+    # Start node (step 0)
     nodes.append(
         ReactFlowNode(
             id="start",
             type="start",
             position={"x": 400, "y": 0},
-            data={"label": "Start", "description": "Evaluation begins"},
+            data={"label": "Start", "description": "Evaluation begins", "step": 0},
         )
     )
 
-    # Parallel sommelier agents (5 in parallel)
+    # Parallel sommelier agents (5 in parallel, steps 1-5)
     sommelier_ids = ["marcel", "isabella", "heinrich", "sofia", "laurent"]
     spacing = 160
     start_x = 80
@@ -67,6 +76,7 @@ def build_six_hats_topology() -> ReactFlowGraph:
                     "label": config["name"],
                     "role": config["role"],
                     "color": config["color"],
+                    "step": i + 1,
                 },
             )
         )
@@ -80,7 +90,7 @@ def build_six_hats_topology() -> ReactFlowGraph:
             )
         )
 
-    # Synthesis node (Jean-Pierre)
+    # Synthesis node (Jean-Pierre, step 6)
     nodes.append(
         ReactFlowNode(
             id="jeanpierre",
@@ -91,6 +101,7 @@ def build_six_hats_topology() -> ReactFlowGraph:
                 "role": "Master Sommelier",
                 "color": "#4169E1",
                 "description": "Final synthesis and verdict",
+                "step": 6,
             },
         )
     )
@@ -106,13 +117,13 @@ def build_six_hats_topology() -> ReactFlowGraph:
             )
         )
 
-    # End node
+    # End node (step 7)
     nodes.append(
         ReactFlowNode(
             id="end",
             type="end",
             position={"x": 400, "y": 420},
-            data={"label": "End", "description": "Evaluation complete"},
+            data={"label": "End", "description": "Evaluation complete", "step": 7},
         )
     )
 
@@ -151,22 +162,22 @@ def build_full_techniques_topology() -> ReactFlowGraph:
     nodes: list[ReactFlowNode] = []
     edges: list[ReactFlowEdge] = []
 
-    # Start node
+    # Start node (step 0)
     nodes.append(
         ReactFlowNode(
             id="start",
             type="start",
             position={"x": 500, "y": 0},
-            data={"label": "Start", "description": "Evaluation begins"},
+            data={"label": "Start", "description": "Evaluation begins", "step": 0},
         )
     )
 
-    # Technique groups (8 groups in two rows)
+    # Technique groups (8 groups in two rows, steps 1-8)
     group_ids = list(TECHNIQUE_GROUPS.keys())
     spacing_x = 120
     start_x = 140
 
-    # First row (4 groups)
+    # First row (4 groups, steps 1-4)
     for i, group_id in enumerate(group_ids[:4]):
         config = TECHNIQUE_GROUPS[group_id]
         x_pos = start_x + (i * spacing_x)
@@ -179,10 +190,10 @@ def build_full_techniques_topology() -> ReactFlowGraph:
                     "label": config["name"],
                     "color": config["color"],
                     "group": group_id,
+                    "step": i + 1,
                 },
             )
         )
-        # Edge from start to each group
         edges.append(
             ReactFlowEdge(
                 id=f"edge-start-{group_id}",
@@ -192,7 +203,7 @@ def build_full_techniques_topology() -> ReactFlowGraph:
             )
         )
 
-    # Second row (4 groups)
+    # Second row (4 groups, steps 5-8)
     for i, group_id in enumerate(group_ids[4:]):
         config = TECHNIQUE_GROUPS[group_id]
         x_pos = start_x + (i * spacing_x)
@@ -205,10 +216,10 @@ def build_full_techniques_topology() -> ReactFlowGraph:
                     "label": config["name"],
                     "color": config["color"],
                     "group": group_id,
+                    "step": i + 5,
                 },
             )
         )
-        # Edge from start to each group
         edges.append(
             ReactFlowEdge(
                 id=f"edge-start-{group_id}",
@@ -218,7 +229,7 @@ def build_full_techniques_topology() -> ReactFlowGraph:
             )
         )
 
-    # Synthesis node
+    # Synthesis node (step 9)
     nodes.append(
         ReactFlowNode(
             id="synthesis",
@@ -228,11 +239,11 @@ def build_full_techniques_topology() -> ReactFlowGraph:
                 "label": "Synthesis",
                 "description": "Aggregate all technique analyses",
                 "color": "#4169E1",
+                "step": 9,
             },
         )
     )
 
-    # Edges from each technique group to synthesis
     for group_id in group_ids:
         edges.append(
             ReactFlowEdge(
@@ -243,13 +254,13 @@ def build_full_techniques_topology() -> ReactFlowGraph:
             )
         )
 
-    # End node
+    # End node (step 10)
     nodes.append(
         ReactFlowNode(
             id="end",
             type="end",
             position={"x": 500, "y": 480},
-            data={"label": "End", "description": "Evaluation complete"},
+            data={"label": "End", "description": "Evaluation complete", "step": 10},
         )
     )
 
