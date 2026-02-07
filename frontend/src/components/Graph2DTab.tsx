@@ -207,6 +207,7 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
           onNodeClick={onNodeClick}
+          onPaneClick={handleCloseDetails}
           nodeTypes={nodeTypes}
           fitView
           attributionPosition="bottom-left"

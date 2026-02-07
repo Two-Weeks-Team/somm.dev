@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 
 const SynthesisNode = ({ data }: NodeProps<Node<ReactFlowNodeData>>) => {
   const isActive = data.status === 'running';
-  const isFuture = data.isFuture as boolean | undefined;
+  const isFuture = data.isFuture;
 
   return (
     <div className={cn(

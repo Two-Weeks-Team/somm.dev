@@ -23,7 +23,7 @@ const AgentNode = ({ data }: NodeProps<Node<ReactFlowNodeData>>) => {
   const Icon = StatusIcon[status];
   const themeColor = data.color || '#722F37';
   const isActive = status === 'running';
-  const isFuture = data.isFuture as boolean | undefined;
+  const isFuture = data.isFuture;
 
   return (
     <div 
