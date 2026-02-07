@@ -1,15 +1,14 @@
 'use client';
 
-import React, { useEffect, useState, lazy, Suspense, useCallback, useRef } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import React, { useEffect, useState, lazy, Suspense, useRef } from 'react';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { api } from '../../../../lib/api';
 import { EvaluationResult } from '../../../../types';
-import { ArrowLeft, Share2, Download, Check, Copy, CheckCircle, XCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, Share2, Download, Check, Copy } from 'lucide-react';
 import { ResultTabs, useResultTab, ResultTabId } from '../../../../components/ResultTabs';
 import { TastingNotesTab } from '../../../../components/TastingNotesTab';
 import { GraphSkeleton } from '../../../../components/graph/GraphSkeleton';
-import { cn } from '../../../../lib/utils';
-import { exportResultToPdf } from '../../../../lib/exportPdf';
+// PDF export uses native print dialog
 
 const Graph2DTab = lazy(() => import('../../../../components/Graph2DTab').then(m => ({ default: m.Graph2DTab })));
 const Graph3DTab = lazy(() => import('../../../../components/Graph3DTab').then(m => ({ default: m.Graph3DTab })));
@@ -22,52 +21,18 @@ function TabLoadingFallback() {
   );
 }
 
-function getScoreTier(score: number): { label: string; color: string } {
-  if (score >= 90) return { label: 'Grand Cru', color: 'bg-[#722F37]/20 text-[#722F37]' };
-  if (score >= 80) return { label: 'Premier Cru', color: 'bg-emerald-100 text-emerald-700' };
-  if (score >= 70) return { label: 'Village', color: 'bg-blue-100 text-blue-700' };
-  return { label: 'Table Wine', color: 'bg-gray-100 text-gray-700' };
-}
-
-interface ToastState {
-  message: string;
-  type: 'success' | 'error';
-  visible: boolean;
-}
-
 export default function ResultPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
-
+  
   const [result, setResult] = useState<EvaluationResult | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useResultTab('tasting');
   const [copied, setCopied] = useState(false);
-  const [showStickyHeader, setShowStickyHeader] = useState(false);
-  const [toast, setToast] = useState<ToastState>({ message: '', type: 'success', visible: false });
-  const [isExporting, setIsExporting] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const contentRef = useRef<HTMLDivElement>(null);
-  const toastTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-
-  const showToast = useCallback((message: string, type: 'success' | 'error' = 'success') => {
-    if (toastTimerRef.current) {
-      clearTimeout(toastTimerRef.current);
-    }
-    setToast({ message, type, visible: true });
-    toastTimerRef.current = setTimeout(() => {
-      setToast(prev => ({ ...prev, visible: false }));
-    }, 3000);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (toastTimerRef.current) {
-        clearTimeout(toastTimerRef.current);
-      }
-    };
-  }, []);
 
   const handleShare = async () => {
     const shareUrl = window.location.href;
@@ -83,39 +48,374 @@ export default function ResultPage() {
       } else {
         await navigator.clipboard.writeText(shareUrl);
         setCopied(true);
-        showToast('Link copied to clipboard!', 'success');
         setTimeout(() => setCopied(false), 2000);
       }
     } catch (err) {
       // Fallback to clipboard
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
-      showToast('Link copied to clipboard!', 'success');
       setTimeout(() => setCopied(false), 2000);
     }
   };
 
-  const handleExportPdf = async () => {
-    if (!result || isExporting) return;
-
-    setIsExporting(true);
-    try {
-      await exportResultToPdf(result);
-      showToast('PDF exported successfully!', 'success');
-    } catch {
-      showToast('Failed to export PDF', 'error');
-    } finally {
-      setIsExporting(false);
+  const handleExportPDF = () => {
+    if (!result) return;
+    
+    setExporting(true);
+    
+    const printWindow = window.open('', '_blank');
+    if (!printWindow) {
+      setExporting(false);
+      return;
     }
-  };
 
-  useEffect(() => {
-    const handleScroll = () => {
-      setShowStickyHeader(window.scrollY > 300);
+    const repoName = result.repoUrl?.split('/').pop() || 'Repository';
+    const getTier = (score: number) => {
+      if (score >= 95) return { name: 'Legendary', color: '#B8860B', bg: 'linear-gradient(145deg, #DAA520 0%, #B8860B 50%, #8B6914 100%)' };
+      if (score >= 90) return { name: 'Grand Cru', color: '#8B0000', bg: 'linear-gradient(145deg, #A52A2A 0%, #8B0000 50%, #5C0000 100%)' };
+      if (score >= 85) return { name: 'Premier Cru', color: '#8B4513', bg: 'linear-gradient(145deg, #CD853F 0%, #8B4513 50%, #5D2E0C 100%)' };
+      if (score >= 80) return { name: 'Village', color: '#722F37', bg: 'linear-gradient(145deg, #8B3D47 0%, #722F37 50%, #4A1F24 100%)' };
+      if (score >= 70) return { name: 'Table Wine', color: '#4A3728', bg: 'linear-gradient(145deg, #6B4423 0%, #4A3728 50%, #2D211A 100%)' };
+      return { name: 'House Wine', color: '#555', bg: 'linear-gradient(145deg, #777 0%, #555 50%, #333 100%)' };
     };
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+    const tier = getTier(result.totalScore || 0);
+    
+    const sommelierColors: Record<string, string> = {
+      'Marcel': '#8B7355',
+      'Isabella': '#C41E3A', 
+      'Heinrich': '#2F4F4F',
+      'Sofia': '#DAA520',
+      'Laurent': '#228B22',
+    };
+    
+    const sommelierImages: Record<string, string> = {
+      'Marcel': '/sommeliers/marcel.png',
+      'Isabella': '/sommeliers/isabella.png',
+      'Heinrich': '/sommeliers/heinrich.png',
+      'Sofia': '/sommeliers/sofia.png',
+      'Laurent': '/sommeliers/laurent.png',
+    };
+    
+    const baseUrl = window.location.origin;
+    
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>Somm.dev Report - ${repoName}</title>
+        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+        <style>
+          :root {
+            --wine: #722F37;
+            --wine-dark: #5D262D;
+            --wine-light: #F7E7CE;
+            --gold: #C9A227;
+            --text: #2D2D2D;
+            --text-muted: #6B6B6B;
+            --bg: #FAFAF8;
+            --border: #E8E4E0;
+          }
+          
+          * { margin: 0; padding: 0; box-sizing: border-box; }
+          
+          body { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            color: var(--text); 
+            background: white;
+            line-height: 1.7; 
+            font-size: 14px;
+          }
+          
+          .page { max-width: 720px; margin: 0 auto; padding: 60px 50px; }
+          
+          /* Cover Header */
+          .cover { text-align: center; padding: 50px 0 40px; border-bottom: 1px solid var(--border); margin-bottom: 50px; }
+          .cover-brand { 
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 12px; letter-spacing: 4px; color: var(--wine); 
+            text-transform: uppercase; margin-bottom: 25px;
+          }
+          .cover-brand svg { width: 20px; height: 20px; }
+          .cover h1 { 
+            font-family: 'Cormorant Garamond', serif; 
+            font-size: 42px; font-weight: 600; color: var(--text);
+            margin-bottom: 8px; letter-spacing: -0.5px;
+          }
+          .cover .repo { 
+            font-family: 'SF Mono', Monaco, monospace; 
+            font-size: 13px; color: var(--text-muted);
+            background: var(--bg); padding: 6px 14px; border-radius: 4px;
+            display: inline-block; margin-top: 10px;
+          }
+          .cover .meta { font-size: 12px; color: var(--text-muted); margin-top: 20px; }
+          
+          /* Score Card */
+          .score-card { 
+            display: flex; align-items: center; gap: 40px;
+            padding: 35px 40px; margin: 40px 0;
+            background: linear-gradient(135deg, var(--wine) 0%, var(--wine-dark) 100%);
+            border-radius: 16px; color: white;
+          }
+          .score-main { text-align: center; flex-shrink: 0; }
+          .score-number { 
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 80px; font-weight: 700; line-height: 1; 
+          }
+          .score-label { font-size: 13px; opacity: 0.7; margin-top: 4px; }
+          .score-tier { 
+            position: relative; margin-top: 16px;
+            width: 85px; height: 80px;
+            border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; text-align: center; line-height: 1.3;
+            background-color: #861C0E;
+            color: rgba(0,0,0,0.55);
+            text-shadow: 0px 1px 1px rgba(255,255,255,0.25);
+            box-shadow: 
+              inset 0 0 1px rgba(0,0,0,0.8),
+              inset -2px -2px 4px rgba(255,255,255,0.3),
+              inset 2px 2px 4px rgba(0,0,0,0.3),
+              0 0 5px rgba(0,0,0,0.5),
+              0 0 10px rgba(0,0,0,0.3);
+            filter: drop-shadow(0 0 3px rgba(0,0,0,0.4));
+          }
+          .score-tier::before {
+            content: ''; position: absolute;
+            top: 8px; left: 8px; right: 8px; bottom: 8px;
+            border-radius: 50%; 
+            border: 2px solid rgba(0,0,0,0.15);
+            box-shadow: inset 0 0 2px rgba(0,0,0,0.2);
+          }
+          .score-breakdown { flex: 1; }
+          .score-breakdown h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.7; margin-bottom: 15px; }
+          .score-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 10px; }
+          .score-bar-name { font-size: 12px; width: 70px; opacity: 0.9; }
+          .score-bar-track { flex: 1; height: 6px; background: rgba(255,255,255,0.2); border-radius: 3px; overflow: hidden; }
+          .score-bar-fill { height: 100%; background: var(--wine-light); border-radius: 3px; }
+          .score-bar-value { font-size: 12px; font-weight: 600; width: 30px; text-align: right; }
+          
+          /* Verdict */
+          .verdict { margin: 45px 0; padding: 30px 35px; background: var(--bg); border-radius: 12px; position: relative; }
+          .verdict-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
+          }
+          .verdict-profile {
+            display: flex; align-items: center; gap: 12px;
+          }
+          .verdict-profile img {
+            width: 48px; height: 48px; border-radius: 50%;
+            object-fit: cover; object-position: top;
+            border: 2px solid var(--wine);
+          }
+          .verdict-profile-name { font-weight: 600; font-size: 16px; color: var(--text); }
+          .verdict-profile-role { font-size: 12px; color: var(--text-muted); }
+          .verdict-label { 
+            font-size: 10px; text-transform: uppercase; letter-spacing: 2px; 
+            color: var(--wine); font-weight: 600;
+            background: var(--wine); color: white; padding: 6px 12px; border-radius: 4px;
+          }
+          .verdict blockquote { 
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 20px; font-style: italic; color: var(--text);
+            line-height: 1.6; position: relative; padding-left: 25px;
+          }
+          .verdict blockquote::before {
+            content: '"'; position: absolute; top: -10px; left: 0;
+            font-family: 'Cormorant Garamond', serif; font-size: 50px;
+            color: var(--wine); opacity: 0.2; line-height: 1;
+          }
+          .verdict-author { 
+            margin-top: 18px; padding-left: 25px;
+            font-size: 12px; color: var(--text-muted);
+          }
+          
+          /* Sommeliers */
+          .section-title { 
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 24px; font-weight: 600; color: var(--text);
+            margin: 50px 0 30px; padding-bottom: 12px;
+            border-bottom: 2px solid var(--wine);
+          }
+          
+          .sommelier { 
+            margin-bottom: 35px; padding: 25px 0;
+            border-bottom: 1px solid var(--border);
+            page-break-inside: avoid;
+          }
+          .sommelier:last-child { border-bottom: none; }
+          
+          .sommelier-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; }
+          .sommelier-info { display: flex; align-items: center; gap: 12px; }
+          .sommelier-avatar { 
+            width: 48px; height: 48px; border-radius: 50%; 
+            object-fit: cover; object-position: top;
+            border: 2px solid;
+          }
+          .sommelier-name { font-weight: 600; font-size: 16px; }
+          .sommelier-role { font-size: 12px; color: var(--text-muted); }
+          
+          .sommelier-score-badge { 
+            display: flex; align-items: center; gap: 8px;
+            padding: 8px 14px; background: var(--bg); border-radius: 8px;
+          }
+          .sommelier-score-value { font-size: 22px; font-weight: 700; }
+          .sommelier-score-max { font-size: 13px; color: var(--text-muted); }
+          
+          .sommelier-feedback { 
+            font-size: 14px; color: var(--text); line-height: 1.75;
+            margin-bottom: 16px; text-align: justify;
+          }
+          
+          .techniques { margin-top: 16px; }
+          .techniques-label { 
+            font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px;
+            color: var(--text-muted); margin-bottom: 10px; font-weight: 500;
+          }
+          .techniques-list { display: flex; flex-wrap: wrap; gap: 6px; }
+          .technique-tag { 
+            font-size: 11px; padding: 5px 12px; 
+            background: white; border: 1px solid var(--border);
+            border-radius: 15px; color: var(--text-muted);
+          }
+          
+          /* Footer */
+          .footer { 
+            margin-top: 60px; padding-top: 25px; 
+            border-top: 1px solid var(--border);
+            display: flex; justify-content: space-between; align-items: center;
+          }
+          .footer-brand { font-size: 12px; color: var(--wine); font-weight: 500; }
+          .footer-meta { font-size: 11px; color: var(--text-muted); }
+          
+          @media print { 
+            .page { padding: 40px 35px; }
+            .sommelier { page-break-inside: avoid; }
+          }
+        </style>
+      </head>
+      <body>
+        <div class="page">
+          <div class="cover">
+            <div class="cover-brand">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C10.08 2 8.5 3.58 8.5 5.5c0 1.58 1.07 2.9 2.5 3.33V19h-3v2h8v-2h-3V8.83c1.43-.43 2.5-1.75 2.5-3.33C15.5 3.58 13.92 2 12 2zm0 5c-.83 0-1.5-.67-1.5-1.5S11.17 4 12 4s1.5.67 1.5 1.5S12.83 7 12 7z"/></svg>
+              Somm.dev
+            </div>
+            <h1>Code Evaluation Report</h1>
+            <div class="repo">${result.repoUrl || 'Repository'}</div>
+            <div class="meta">${new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</div>
+          </div>
+          
+          <div class="score-card">
+            <div class="score-main">
+              <div class="score-number">${result.totalScore}</div>
+              <div class="score-label">out of 100</div>
+              <div class="score-tier">${tier.name}</div>
+            </div>
+            <div class="score-breakdown">
+              <h3>Score Breakdown</h3>
+              ${result.results.map(s => `
+                <div class="score-bar">
+                  <span class="score-bar-name">${s.name}</span>
+                  <div class="score-bar-track"><div class="score-bar-fill" style="width: ${s.score}%"></div></div>
+                  <span class="score-bar-value">${s.score}</span>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+          
+          <div class="verdict">
+            <div class="verdict-header">
+              <div class="verdict-profile">
+                <img src="${baseUrl}/sommeliers/jeanpierre.png" alt="Jean-Pierre">
+                <div>
+                  <div class="verdict-profile-name">Jean-Pierre</div>
+                  <div class="verdict-profile-role">Grand Sommelier</div>
+                </div>
+              </div>
+              <div class="verdict-label">Executive Summary</div>
+            </div>
+            <blockquote>${result.finalVerdict}</blockquote>
+            <div class="verdict-author">— Jean-Pierre, Grand Sommelier</div>
+          </div>
+          
+          <h2 class="section-title">Detailed Evaluations</h2>
+          
+          ${result.results.map(s => {
+            const color = sommelierColors[s.name] || '#722F37';
+            return `
+            <div class="sommelier">
+              <div class="sommelier-header">
+                <div class="sommelier-info">
+                  <img class="sommelier-avatar" src="${baseUrl}${sommelierImages[s.name] || '/sommeliers/jeanpierre.png'}" style="border-color: ${color}" alt="${s.name}">
+                  <div>
+                    <div class="sommelier-name">${s.name}</div>
+                    <div class="sommelier-role">${s.role || 'Sommelier'}</div>
+                  </div>
+                </div>
+                <div class="sommelier-score-badge">
+                  <span class="sommelier-score-value" style="color: ${color}">${s.score}</span>
+                  <span class="sommelier-score-max">/ 100</span>
+                </div>
+              </div>
+              <div class="sommelier-feedback">${s.feedback}</div>
+              ${s.recommendations && s.recommendations.length > 0 ? `
+                <div class="techniques">
+                  <div class="techniques-label">Techniques Applied</div>
+                  <div class="techniques-list">
+                    ${s.recommendations.map(r => `<span class="technique-tag">${r}</span>`).join('')}
+                  </div>
+                </div>
+              ` : ''}
+            </div>
+          `}).join('')}
+          
+          <div class="footer">
+            <div class="footer-brand">Somm.dev — AI-Powered Code Evaluation</div>
+            <div class="footer-meta">Powered by Gemini</div>
+          </div>
+        </div>
+      </body>
+      </html>
+    `);
+    
+    printWindow.document.close();
+    
+    // Wait for all images to load before printing
+    printWindow.onload = () => {
+      const images = printWindow.document.images;
+      let loadedCount = 0;
+      const totalImages = images.length;
+      
+      if (totalImages === 0) {
+        printWindow.print();
+        setExporting(false);
+        return;
+      }
+      
+      const checkAllLoaded = () => {
+        loadedCount++;
+        if (loadedCount >= totalImages) {
+          // Small delay to ensure rendering is complete
+          setTimeout(() => {
+            printWindow.print();
+            setExporting(false);
+          }, 300);
+        }
+      };
+      
+      for (let i = 0; i < totalImages; i++) {
+        if (images[i].complete) {
+          checkAllLoaded();
+        } else {
+          images[i].onload = checkAllLoaded;
+          images[i].onerror = checkAllLoaded; // Continue even if image fails
+        }
+      }
+    };
+  };
 
   useEffect(() => {
     const fetchResult = async () => {
@@ -183,59 +483,8 @@ export default function ResultPage() {
     }
   };
 
-  const tier = getScoreTier(result.totalScore || 0);
-
   return (
     <div className="min-h-screen bg-[#FAFAFA]">
-      <div
-        className={cn(
-          'fixed top-0 left-0 right-0 z-40 transition-all duration-300',
-          showStickyHeader
-            ? 'translate-y-0 opacity-100'
-            : '-translate-y-full opacity-0 pointer-events-none'
-        )}
-      >
-        <div className="bg-white/90 backdrop-blur-md border-b border-gray-200 shadow-sm">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <button
-                  onClick={() => router.push('/evaluate')}
-                  className="p-2 text-gray-500 hover:text-[#722F37] transition-colors"
-                >
-                  <ArrowLeft size={20} />
-                </button>
-                <div className="flex items-center gap-3">
-                  <span className="text-2xl font-bold text-[#722F37]">
-                    {result?.totalScore || 0}
-                  </span>
-                  <span className="text-gray-400">/100</span>
-                  {tier && (
-                    <span className={cn('px-2 py-0.5 rounded-full text-xs font-medium', tier.color)}>
-                      {tier.label}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="flex gap-2">
-                <button
-                  onClick={() => router.push('/evaluate')}
-                  className="px-3 py-1.5 text-sm font-medium text-[#722F37] bg-white border border-[#722F37] rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  New Tasting
-                </button>
-                <button
-                  onClick={handleShare}
-                  className="p-2 text-[#722F37] hover:bg-gray-100 rounded-lg transition-colors"
-                >
-                  <Share2 size={18} />
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <div className="max-w-5xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center mb-6">
           <button
@@ -246,24 +495,20 @@ export default function ResultPage() {
             New Tasting
           </button>
           <div className="flex space-x-4">
-            <button
+            <button 
               onClick={handleShare}
               className="flex items-center px-4 py-2 text-sm font-medium text-[#722F37] bg-white border border-[#722F37] rounded-lg hover:bg-[#FAFAFA] transition-colors"
             >
               {copied ? <Check size={16} className="mr-2" /> : <Share2 size={16} className="mr-2" />}
               {copied ? 'Copied!' : 'Share'}
             </button>
-            <button
-              onClick={handleExportPdf}
-              disabled={isExporting}
-              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-[#722F37] rounded-lg hover:bg-[#5a252c] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            <button 
+              onClick={handleExportPDF}
+              disabled={exporting}
+              className="flex items-center px-4 py-2 text-sm font-medium text-white bg-[#722F37] rounded-lg hover:bg-[#5a252c] transition-colors disabled:opacity-50"
             >
-              {isExporting ? (
-                <Loader2 size={16} className="mr-2 animate-spin" />
-              ) : (
-                <Download size={16} className="mr-2" />
-              )}
-              {isExporting ? 'Exporting...' : 'Export PDF'}
+              <Download size={16} className={`mr-2 ${exporting ? 'animate-pulse' : ''}`} />
+              {exporting ? 'Exporting...' : 'Export PDF'}
             </button>
           </div>
         </div>
@@ -273,27 +518,6 @@ export default function ResultPage() {
         <div ref={contentRef}>
           {renderTabContent(activeTab)}
         </div>
-      </div>
-
-      <div
-        role="status"
-        aria-hidden={!toast.visible}
-        className={cn(
-          'fixed bottom-4 right-4 flex items-center gap-2 px-4 py-3 rounded-lg shadow-lg transition-all duration-300 z-50',
-          toast.visible
-            ? 'opacity-100 translate-y-0'
-            : 'opacity-0 translate-y-2 pointer-events-none',
-          toast.type === 'success'
-            ? 'bg-green-50 text-green-700 border border-green-200'
-            : 'bg-red-50 text-red-700 border border-red-200'
-        )}
-      >
-        {toast.type === 'success' ? (
-          <CheckCircle className="h-4 w-4" />
-        ) : (
-          <XCircle className="h-4 w-4" />
-        )}
-        <span className="text-sm font-medium">{toast.message}</span>
       </div>
     </div>
   );
