@@ -71,12 +71,12 @@ export default function ResultPage() {
 
     const repoName = result.repoUrl?.split('/').pop() || 'Repository';
     const getTier = (score: number) => {
-      if (score >= 95) return { name: 'Legendary', color: '#FFD700' };
-      if (score >= 90) return { name: 'Grand Cru', color: '#C9A227' };
-      if (score >= 85) return { name: 'Premier Cru', color: '#CD7F32' };
-      if (score >= 80) return { name: 'Village', color: '#2E7D32' };
-      if (score >= 70) return { name: 'Table Wine', color: '#5D4E8C' };
-      return { name: 'House Wine', color: '#757575' };
+      if (score >= 95) return { name: 'Legendary', color: '#B8860B', bg: 'linear-gradient(145deg, #DAA520 0%, #B8860B 50%, #8B6914 100%)' };
+      if (score >= 90) return { name: 'Grand Cru', color: '#8B0000', bg: 'linear-gradient(145deg, #A52A2A 0%, #8B0000 50%, #5C0000 100%)' };
+      if (score >= 85) return { name: 'Premier Cru', color: '#8B4513', bg: 'linear-gradient(145deg, #CD853F 0%, #8B4513 50%, #5D2E0C 100%)' };
+      if (score >= 80) return { name: 'Village', color: '#722F37', bg: 'linear-gradient(145deg, #8B3D47 0%, #722F37 50%, #4A1F24 100%)' };
+      if (score >= 70) return { name: 'Table Wine', color: '#4A3728', bg: 'linear-gradient(145deg, #6B4423 0%, #4A3728 50%, #2D211A 100%)' };
+      return { name: 'House Wine', color: '#555', bg: 'linear-gradient(145deg, #777 0%, #555 50%, #333 100%)' };
     };
     const tier = getTier(result.totalScore || 0);
     
@@ -103,7 +103,7 @@ export default function ResultPage() {
       <html>
       <head>
         <title>Somm.dev Report - ${repoName}</title>
-        <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
         <style>
           :root {
             --wine: #722F37;
@@ -163,9 +163,30 @@ export default function ResultPage() {
           }
           .score-label { font-size: 13px; opacity: 0.7; margin-top: 4px; }
           .score-tier { 
-            display: inline-block; margin-top: 12px;
-            padding: 6px 16px; background: rgba(255,255,255,0.15);
-            border-radius: 20px; font-size: 13px; font-weight: 500;
+            position: relative; margin-top: 16px;
+            width: 85px; height: 80px;
+            border-radius: 63% 37% 54% 46% / 55% 48% 52% 45%;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Cinzel', serif;
+            font-size: 10px; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; text-align: center; line-height: 1.3;
+            background-color: #861C0E;
+            color: rgba(0,0,0,0.55);
+            text-shadow: 0px 1px 1px rgba(255,255,255,0.25);
+            box-shadow: 
+              inset 0 0 1px rgba(0,0,0,0.8),
+              inset -2px -2px 4px rgba(255,255,255,0.3),
+              inset 2px 2px 4px rgba(0,0,0,0.3),
+              0 0 5px rgba(0,0,0,0.5),
+              0 0 10px rgba(0,0,0,0.3);
+            filter: drop-shadow(0 0 3px rgba(0,0,0,0.4));
+          }
+          .score-tier::before {
+            content: ''; position: absolute;
+            top: 8px; left: 8px; right: 8px; bottom: 8px;
+            border-radius: 50%; 
+            border: 2px solid rgba(0,0,0,0.15);
+            box-shadow: inset 0 0 2px rgba(0,0,0,0.2);
           }
           .score-breakdown { flex: 1; }
           .score-breakdown h3 { font-size: 11px; text-transform: uppercase; letter-spacing: 1.5px; opacity: 0.7; margin-bottom: 15px; }
@@ -177,22 +198,37 @@ export default function ResultPage() {
           
           /* Verdict */
           .verdict { margin: 45px 0; padding: 30px 35px; background: var(--bg); border-radius: 12px; position: relative; }
-          .verdict::before { 
-            content: '"'; position: absolute; top: 15px; left: 20px;
-            font-family: 'Cormorant Garamond', serif; font-size: 60px; 
-            color: var(--wine); opacity: 0.2; line-height: 1;
+          .verdict-header {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);
           }
+          .verdict-profile {
+            display: flex; align-items: center; gap: 12px;
+          }
+          .verdict-profile img {
+            width: 48px; height: 48px; border-radius: 50%;
+            object-fit: cover; object-position: top;
+            border: 2px solid var(--wine);
+          }
+          .verdict-profile-name { font-weight: 600; font-size: 16px; color: var(--text); }
+          .verdict-profile-role { font-size: 12px; color: var(--text-muted); }
           .verdict-label { 
             font-size: 10px; text-transform: uppercase; letter-spacing: 2px; 
-            color: var(--wine); margin-bottom: 12px; font-weight: 600;
+            color: var(--wine); font-weight: 600;
+            background: var(--wine); color: white; padding: 6px 12px; border-radius: 4px;
           }
           .verdict blockquote { 
             font-family: 'Cormorant Garamond', serif;
             font-size: 20px; font-style: italic; color: var(--text);
-            line-height: 1.6; padding-left: 25px;
+            line-height: 1.6; position: relative; padding-left: 25px;
+          }
+          .verdict blockquote::before {
+            content: '"'; position: absolute; top: -10px; left: 0;
+            font-family: 'Cormorant Garamond', serif; font-size: 50px;
+            color: var(--wine); opacity: 0.2; line-height: 1;
           }
           .verdict-author { 
-            margin-top: 15px; padding-left: 25px;
+            margin-top: 18px; padding-left: 25px;
             font-size: 12px; color: var(--text-muted);
           }
           
@@ -276,7 +312,7 @@ export default function ResultPage() {
             <div class="score-main">
               <div class="score-number">${result.totalScore}</div>
               <div class="score-label">out of 100</div>
-              <div class="score-tier" style="background: ${tier.color}33; color: ${tier.color}">${tier.name}</div>
+              <div class="score-tier">${tier.name}</div>
             </div>
             <div class="score-breakdown">
               <h3>Score Breakdown</h3>
@@ -291,7 +327,16 @@ export default function ResultPage() {
           </div>
           
           <div class="verdict">
-            <div class="verdict-label">Executive Summary</div>
+            <div class="verdict-header">
+              <div class="verdict-profile">
+                <img src="${baseUrl}/sommeliers/jeanpierre.png" alt="Jean-Pierre">
+                <div>
+                  <div class="verdict-profile-name">Jean-Pierre</div>
+                  <div class="verdict-profile-role">Grand Sommelier</div>
+                </div>
+              </div>
+              <div class="verdict-label">Executive Summary</div>
+            </div>
             <blockquote>${result.finalVerdict}</blockquote>
             <div class="verdict-author">— Jean-Pierre, Grand Sommelier</div>
           </div>
