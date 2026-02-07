@@ -204,6 +204,14 @@ export const api = {
     return fetchWithConfig(`/api/evaluate/${evaluationId}/graph${queryParams}`);
   },
 
+  getGraphStructure: async (evaluationId: string): Promise<ReactFlowGraph> => {
+    return fetchWithConfig(`/api/evaluate/${evaluationId}/graph/structure`);
+  },
+
+  getGraphExecution: async (evaluationId: string): Promise<ReactFlowGraph> => {
+    return fetchWithConfig(`/api/evaluate/${evaluationId}/graph/execution`);
+  },
+
   getGraph3D: async (evaluationId: string, refresh?: boolean): Promise<Graph3DPayload> => {
     const queryParams = refresh ? '?refresh=true' : '';
     return fetchWithConfig(`/api/evaluate/${evaluationId}/graph-3d${queryParams}`);

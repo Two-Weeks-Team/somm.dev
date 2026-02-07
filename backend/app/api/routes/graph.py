@@ -123,6 +123,80 @@ async def get_graph(
     return graph
 
 
+@router.get("/{evaluation_id}/graph/structure", response_model=ReactFlowGraph)
+async def get_graph_structure(
+    evaluation_id: str,
+    user=Depends(get_current_user),
+) -> ReactFlowGraph:
+    """Get static graph structure (topology only, no execution state).
+
+    Returns the evaluation workflow topology without any runtime state.
+    Use this for displaying the graph structure before execution starts.
+    """
+    logger.info(f"[Graph] Getting structure for evaluation: {evaluation_id}")
+
+    evaluation = await _get_evaluation(evaluation_id)
+    if not evaluation:
+        raise EmptyCellarError(f"Evaluation not found: {evaluation_id}")
+    _check_ownership(evaluation, user)
+
+    mode = _determine_mode(evaluation)
+    if mode == EvaluationMode.FULL_TECHNIQUES:
+        graph = build_full_techniques_topology()
+    else:
+        graph = build_six_hats_topology()
+
+    return graph
+
+
+@router.get("/{evaluation_id}/graph/execution", response_model=ReactFlowGraph)
+async def get_graph_execution(
+    evaluation_id: str,
+    user=Depends(get_current_user),
+) -> ReactFlowGraph:
+    """Get graph with execution state overlay (status, progress from trace).
+
+    Returns the evaluation workflow with runtime state from methodology_trace.
+    Node status reflects the execution progress.
+    """
+    logger.info(f"[Graph] Getting execution graph for evaluation: {evaluation_id}")
+
+    evaluation = await _get_evaluation(evaluation_id)
+    if not evaluation:
+        raise EmptyCellarError(f"Evaluation not found: {evaluation_id}")
+    _check_ownership(evaluation, user)
+
+    mode = _determine_mode(evaluation)
+    if mode == EvaluationMode.FULL_TECHNIQUES:
+        graph = build_full_techniques_topology()
+    else:
+        graph = build_six_hats_topology()
+
+    methodology_trace = evaluation.get("methodology_trace", [])
+    if methodology_trace:
+        completed_agents = set()
+        for event in methodology_trace:
+            if isinstance(event, dict):
+                agent = event.get("agent") or event.get("sommelier")
+                if agent:
+                    completed_agents.add(agent.lower())
+
+        for node in graph.nodes:
+            node_id_lower = node.id.lower()
+            if node_id_lower in completed_agents:
+                node.data["status"] = "completed"
+            elif node.type == "start":
+                node.data["status"] = "completed"
+            elif node.type == "end" and len(completed_agents) >= 5:
+                node.data["status"] = "completed"
+            elif node.type == "synthesis" and len(completed_agents) >= 5:
+                node.data["status"] = "completed"
+            else:
+                node.data["status"] = "pending"
+
+    return graph
+
+
 @router.get("/{evaluation_id}/graph/timeline", response_model=list[TraceEvent])
 async def get_timeline(
     evaluation_id: str,
