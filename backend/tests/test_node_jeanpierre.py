@@ -63,7 +63,7 @@ class TestJeanPierreNode:
         mock_llm = MagicMock()
         mock_llm.ainvoke = AsyncMock(return_value=mock_response)
 
-        with patch("app.graph.nodes.base.build_llm", return_value=mock_llm):
+        with patch("app.graph.nodes.jeanpierre.build_llm", return_value=mock_llm):
             node = JeanPierreNode()
             state: EvaluationState = {
                 "repo_url": "https://github.com/example/repo",
@@ -100,7 +100,7 @@ class TestJeanPierreNode:
         mock_llm = MagicMock()
         mock_llm.ainvoke = AsyncMock(side_effect=Exception("API error"))
 
-        with patch("app.graph.nodes.base.build_llm", return_value=mock_llm):
+        with patch("app.graph.nodes.jeanpierre.build_llm", return_value=mock_llm):
             node = JeanPierreNode()
             state: EvaluationState = {
                 "repo_url": "https://github.com/example/repo",
