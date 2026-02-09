@@ -69,7 +69,7 @@ def _resolve_thinking_level(model_name: str) -> Optional[str]:
 
 
 PROVIDER_DEFAULTS = {
-    "gemini": "gemini-3-flash-preview",
+    "google": "gemini-3-flash-preview",
     "vertex": "gemini-3-flash-preview",
 }
 
@@ -82,20 +82,7 @@ def build_llm(
     max_output_tokens: Optional[int],
     enable_fallback: bool = False,
 ) -> BaseChatModel:
-    """Build an LLM instance for the specified provider.
-
-    Args:
-        provider: Provider name (gemini, vertex)
-        api_key: User-provided API key (BYOK) or None for server-side key
-        model: Model name or None for provider default
-        temperature: Temperature setting or None for default (0.7)
-        max_output_tokens: Max output tokens or None for default (2048)
-        enable_fallback: If True, attach fallback to provider's default model
-
-    Returns:
-        LLM instance, optionally wrapped with fallback chain
-    """
-    provider_key = (provider or "gemini").lower()
+    provider_key = (provider or "vertex").lower()
     resolved_key, byok_error = resolve_byok(api_key, provider_key)
 
     if byok_error:
@@ -106,37 +93,40 @@ def build_llm(
     )
     resolved_max_tokens = max_output_tokens or DEFAULT_MAX_OUTPUT_TOKENS
 
-    if provider_key == "gemini":
-        resolved_model = model or PROVIDER_DEFAULTS["gemini"]
-        gemini_kwargs: dict = {
-            "model": resolved_model,
-            "temperature": resolved_temperature,
-            "max_output_tokens": resolved_max_tokens,
-            "google_api_key": resolved_key or settings.GEMINI_API_KEY,
-            "timeout": DEFAULT_REQUEST_TIMEOUT,
-        }
-        thinking_level = _resolve_thinking_level(resolved_model)
-        if thinking_level:
-            gemini_kwargs["thinking_level"] = thinking_level
-        llm = ChatGoogleGenerativeAI(**gemini_kwargs)
-    elif provider_key == "vertex":
-        resolved_model = model or PROVIDER_DEFAULTS["vertex"]
-        if not settings.VERTEX_API_KEY:
-            raise ValueError("VERTEX_API_KEY is required for Vertex AI Express")
-        vertex_kwargs: dict = {
-            "model": resolved_model,
-            "temperature": resolved_temperature,
-            "max_output_tokens": resolved_max_tokens,
-            "timeout": DEFAULT_REQUEST_TIMEOUT,
-            "api_key": settings.VERTEX_API_KEY,
-            "vertexai": True,
-        }
-        thinking_level = _resolve_thinking_level(resolved_model)
-        if thinking_level:
-            vertex_kwargs["thinking_level"] = thinking_level
-        llm = ChatGoogleGenerativeAI(**vertex_kwargs)
+    if provider_key not in ("google", "vertex"):
+        raise ValueError(
+            f"Unsupported provider: {provider_key}. Use 'vertex' or 'google'."
+        )
+
+    resolved_model = model or PROVIDER_DEFAULTS[provider_key]
+
+    if resolved_key:
+        use_vertex = provider_key == "vertex"
+        final_key = resolved_key
     else:
-        raise ValueError(f"Unsupported provider: {provider_key}")
+        if not settings.VERTEX_API_KEY:
+            raise ValueError("VERTEX_API_KEY is required")
+        use_vertex = True
+        final_key = settings.VERTEX_API_KEY
+
+    llm_kwargs: dict = {
+        "model": resolved_model,
+        "temperature": resolved_temperature,
+        "max_output_tokens": resolved_max_tokens,
+        "timeout": DEFAULT_REQUEST_TIMEOUT,
+    }
+
+    if use_vertex:
+        llm_kwargs["api_key"] = final_key
+        llm_kwargs["vertexai"] = True
+    else:
+        llm_kwargs["google_api_key"] = final_key
+
+    thinking_level = _resolve_thinking_level(resolved_model)
+    if thinking_level:
+        llm_kwargs["thinking_level"] = thinking_level
+
+    llm = ChatGoogleGenerativeAI(**llm_kwargs)
 
     if enable_fallback and model and model != PROVIDER_DEFAULTS.get(provider_key):
         fallback_llm = build_llm(

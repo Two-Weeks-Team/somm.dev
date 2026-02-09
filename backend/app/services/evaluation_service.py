@@ -181,7 +181,7 @@ def _create_graph_config(
     return {
         "configurable": {
             "thread_id": str(uuid.uuid4()),
-            "provider": provider or "gemini",
+            "provider": provider or "vertex",
             "api_key": resolved_key,
             "model": model,
             "temperature": temperature,

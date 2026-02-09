@@ -99,7 +99,7 @@ Provide structured output with technique results and an aggregate summary."""
     ) -> Dict[str, Any]:
         started_at = datetime.now(timezone.utc).isoformat()
         configurable = (config or {}).get("configurable", {})
-        provider = configurable.get("provider", "gemini")
+        provider = configurable.get("provider", "vertex")
         api_key = configurable.get("api_key")
         model = configurable.get("model")
         temperature = configurable.get("temperature")
