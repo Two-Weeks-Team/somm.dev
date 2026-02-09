@@ -141,6 +141,26 @@ export const api = {
     return { id: response.evaluation_id };
   },
 
+  startPublicEvaluation: async (repoUrl: string): Promise<{ id: string }> => {
+    const response = await fetch(`${BASE_API_URL}/api/evaluate/public`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        repo_url: repoUrl, 
+        criteria: 'basic',
+        evaluation_mode: 'six_sommeliers' 
+      }),
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.detail || errorData.message || `API Error: ${response.statusText}`);
+    }
+    
+    const data = await response.json();
+    return { id: data.evaluation_id };
+  },
+
   getEvaluationStream: (evaluationId: string, onMessage: (event: MessageEvent) => void, onError?: (error: Event) => void): EventSource => {
     const token = typeof window !== 'undefined' ? localStorage.getItem(TOKEN_STORAGE_KEY) : null;
     const url = token 

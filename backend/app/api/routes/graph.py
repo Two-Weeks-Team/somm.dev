@@ -13,7 +13,7 @@ from typing import Any
 
 from fastapi import APIRouter, Depends
 
-from app.api.deps import get_current_user, get_optional_user
+from app.api.deps import get_optional_user
 
 # Demo evaluation IDs that can be accessed without authentication
 PUBLIC_DEMO_EVALUATIONS = {
@@ -53,25 +53,28 @@ async def _get_evaluation(evaluation_id: str) -> dict[str, Any] | None:
 
 
 def _check_ownership(evaluation: dict[str, Any], user, evaluation_id: str) -> None:
-    """Verify user owns the evaluation or it's a public demo.
+    """Verify user owns the evaluation or it's publicly accessible.
 
     Args:
         evaluation: The evaluation document.
-        user: The current authenticated user (can be None for public demos).
+        user: The current authenticated user (can be None for public/anonymous).
         evaluation_id: The evaluation ID.
 
     Raises:
         CorkedError: If user does not own the evaluation and it's not public.
     """
-    # Allow access to public demo evaluations without auth
     if evaluation_id in PUBLIC_DEMO_EVALUATIONS:
         return
 
-    # Require auth for non-public evaluations
+    eval_user_id = evaluation.get("user_id")
+
+    if eval_user_id == "anonymous":
+        return
+
     if user is None:
         raise CorkedError("Authentication required to view this evaluation")
 
-    if evaluation.get("user_id") != user.id:
+    if eval_user_id != user.id:
         raise CorkedError(
             "Access denied: evaluation belongs to another user", status_code=403
         )
@@ -148,24 +151,26 @@ async def get_graph(
 @router.get("/{evaluation_id}/graph/structure", response_model=ReactFlowGraph)
 async def get_graph_structure(
     evaluation_id: str,
-    user=Depends(get_current_user),
+    user=Depends(get_optional_user),
 ) -> ReactFlowGraph:
     """Get static graph structure (topology only, no execution state).
 
     Returns the evaluation workflow topology without any runtime state.
     Use this for displaying the graph structure before execution starts.
+
+    Public demo and anonymous evaluations can be accessed without authentication.
     """
     logger.info(f"[Graph] Getting structure for evaluation: {evaluation_id}")
 
     evaluation = await _get_evaluation(evaluation_id)
     if not evaluation:
         raise EmptyCellarError(f"Evaluation not found: {evaluation_id}")
-    _check_ownership(evaluation, user)
+    _check_ownership(evaluation, user, evaluation_id)
 
     mode = _determine_mode(evaluation)
     if mode == EvaluationMode.FULL_TECHNIQUES:
         graph = build_full_techniques_topology()
-    else:  # SIX_SOMMELIERS, GRAND_TASTING
+    else:
         graph = build_six_sommeliers_topology()
 
     return graph
@@ -174,24 +179,26 @@ async def get_graph_structure(
 @router.get("/{evaluation_id}/graph/execution", response_model=ReactFlowGraph)
 async def get_graph_execution(
     evaluation_id: str,
-    user=Depends(get_current_user),
+    user=Depends(get_optional_user),
 ) -> ReactFlowGraph:
     """Get graph with execution state overlay (status, progress from trace).
 
     Returns the evaluation workflow with runtime state from methodology_trace.
     Node status reflects the execution progress.
+
+    Public demo and anonymous evaluations can be accessed without authentication.
     """
     logger.info(f"[Graph] Getting execution graph for evaluation: {evaluation_id}")
 
     evaluation = await _get_evaluation(evaluation_id)
     if not evaluation:
         raise EmptyCellarError(f"Evaluation not found: {evaluation_id}")
-    _check_ownership(evaluation, user)
+    _check_ownership(evaluation, user, evaluation_id)
 
     mode = _determine_mode(evaluation)
     if mode == EvaluationMode.FULL_TECHNIQUES:
         graph = build_full_techniques_topology()
-    else:  # SIX_SOMMELIERS, GRAND_TASTING
+    else:
         graph = build_six_sommeliers_topology()
 
     methodology_trace = evaluation.get("methodology_trace", [])
