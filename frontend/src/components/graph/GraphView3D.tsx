@@ -191,15 +191,11 @@ const GraphView3D: React.FC<GraphView3DProps> = ({
 
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [focusedNodeId, setFocusedNodeId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<Graph3DViewMode>('3d');
+  const [userViewMode, setUserViewMode] = useState<Graph3DViewMode>('3d');
 
   const webglSupported = useWebGLSupport();
-
-  useEffect(() => {
-    if (!webglSupported) {
-      setViewMode('2d');
-    }
-  }, [webglSupported]);
+  const viewMode: Graph3DViewMode = webglSupported ? userViewMode : '2d';
+  const setViewMode = setUserViewMode;
 
   useEffect(() => {
     const container = containerRef.current;

@@ -58,10 +58,11 @@ export default function Home() {
   const [activeSommelier, setActiveSommelier] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const [positions, setPositions] = useState(initialPositions);
-  const velocitiesRef = useRef(initialPositions.map(() => ({
+  const [velocities] = useState(() => initialPositions.map(() => ({
     x: (Math.random() - 0.5) * 2,
     y: (Math.random() - 0.5) * 2,
   })));
+  const velocitiesRef = useRef(velocities);
 
   useEffect(() => {
     setMounted(true);
@@ -69,7 +70,7 @@ export default function Home() {
     const animate = () => {
       setPositions(prev => {
         const newPositions = [...prev];
-        const velocities = velocitiesRef.current;
+        const velocities = velocitiesRef.current!;
         const bounds = { x: 180, y: 150 };
         
         // Update positions
