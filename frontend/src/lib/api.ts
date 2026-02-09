@@ -9,6 +9,28 @@ import {
   ModeResponse
 } from '../types';
 
+export interface KeyStatusResponse {
+  provider: string;
+  key_hint: string;
+  registered_at: string | null;
+  expires_at: string | null;
+  last_used_at: string | null;
+  usage_count: number;
+}
+
+export interface RegisterKeyResponse {
+  valid: boolean;
+  key_hint: string;
+  provider: string;
+  expires_at: string | null;
+}
+
+export interface ValidateKeyResponse {
+  valid: boolean;
+  error: string | null;
+  models_available: string[];
+}
+
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.somm.dev';
 const TOKEN_STORAGE_KEY = 'somm_auth_token';
 
@@ -224,5 +246,30 @@ export const api = {
 
   getGraphMode: async (evaluationId: string): Promise<ModeResponse> => {
     return fetchWithConfig(`/api/evaluate/${evaluationId}/graph/mode`);
+  },
+
+  // API Key methods
+  registerKey: async (provider: string, apiKey: string): Promise<RegisterKeyResponse> => {
+    return fetchWithConfig('/api/keys/register', {
+      method: 'POST',
+      body: JSON.stringify({ provider, api_key: apiKey }),
+    });
+  },
+
+  getKeyStatus: async (): Promise<KeyStatusResponse[]> => {
+    return fetchWithConfig('/api/keys/status');
+  },
+
+  deleteKey: async (provider: string): Promise<{ deleted: boolean; provider: string }> => {
+    return fetchWithConfig(`/api/keys/${provider}`, {
+      method: 'DELETE',
+    });
+  },
+
+  validateKey: async (provider: string, apiKey: string): Promise<ValidateKeyResponse> => {
+    return fetchWithConfig('/api/keys/validate', {
+      method: 'POST',
+      body: JSON.stringify({ provider, api_key: apiKey }),
+    });
   },
 };

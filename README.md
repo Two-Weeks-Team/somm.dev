@@ -107,14 +107,16 @@ Somm.dev uses **six specialized AI agents** built with LangGraph to evaluate you
 
 ## 📊 Evaluation Criteria
 
-Somm.dev provides **4 customizable evaluation modes**:
+Somm.dev provides **6 evaluation modes**:
 
-| Mode | Use Case | Weights |
-|------|----------|---------|
-| **Basic** | General code review | Code Quality (25%), Architecture (20%), Documentation (20%), Testing (20%), Security (15%) |
-| **Hackathon** | Gemini 3 Hackathon judging | Technical (40%), Innovation (30%), Impact (20%), Presentation (10%) |
-| **Academic** | Research projects | Novelty (25%), Methodology (25%), Reproducibility (20%), Documentation (20%), Impact (10%) |
-| **Custom** | Special requirements | User-defined criteria |
+| Mode | Use Case | Description |
+|------|----------|-------------|
+| **six_sommeliers** | Default evaluation | 6 AI sommelier agents with parallel fan-out pattern |
+| **grand_tasting** | Quick evaluation | P0 priority techniques only for faster results |
+| **full_techniques** | Comprehensive evaluation | All 75 techniques across 8 categories with deep synthesis |
+| **basic** | General code review | Code Quality (25%), Architecture (20%), Documentation (20%), Testing (20%), Security (15%) |
+| **hackathon** | Gemini 3 Hackathon judging | Technical (40%), Innovation (30%), Impact (20%), Presentation (10%) |
+| **academic** | Research projects | Novelty (25%), Methodology (25%), Reproducibility (20%), Documentation (20%), Impact (10%) |
 
 ---
 
@@ -144,6 +146,14 @@ Somm.dev evaluates repositories on a **0-100 point scale**:
 | `/api/evaluate/{id}/stream` | GET | SSE stream for progress |
 | `/api/evaluate/{id}/result` | GET | Get evaluation results |
 | `/api/history` | GET | User evaluation history |
+
+### Techniques API
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/techniques` | GET | List all 75 techniques (filter by category, hat, mode) |
+| `/api/techniques/stats` | GET | Get aggregated statistics |
+| `/api/techniques/{id}` | GET | Get detailed technique definition |
 
 ### Request Example
 ```bash

@@ -11,7 +11,16 @@ from typing import Optional
 
 from app.core.config import settings
 from app.database import connect_to_mongo, close_mongo_connection
-from app.api.routes import evaluate, history, auth, repositories, graph, admin, api_keys
+from app.api.routes import (
+    evaluate,
+    history,
+    auth,
+    repositories,
+    graph,
+    admin,
+    api_keys,
+    techniques,
+)
 
 
 @asynccontextmanager
@@ -55,6 +64,8 @@ app.include_router(admin.router, prefix=settings.API_V1_STR)
 
 # API key management routes
 app.include_router(api_keys.router, prefix=settings.API_V1_STR)
+
+app.include_router(techniques.router, prefix=settings.API_V1_STR)
 
 
 class HealthResponse(BaseModel):
