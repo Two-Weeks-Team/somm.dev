@@ -18,6 +18,9 @@ from app.criteria.technique_mappings import (
 
 router = APIRouter(prefix="/techniques", tags=["techniques"])
 
+VALID_CATEGORIES = {cat.value for cat in TechniqueCategory}
+VALID_HATS = {"white", "red", "black", "yellow", "green", "blue"}
+
 
 class TechniqueSummary(BaseModel):
     """Summary response for a technique."""
@@ -147,6 +150,18 @@ async def list_techniques(
         List of technique summaries matching the filters.
     """
     registry: TechniqueRegistry = get_registry()
+
+    if category and category not in VALID_CATEGORIES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid category: {category}. Must be one of: {', '.join(sorted(VALID_CATEGORIES))}",
+        )
+
+    if hat and hat not in VALID_HATS:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid hat: {hat}. Must be one of: {', '.join(sorted(VALID_HATS))}",
+        )
 
     if mode:
         if mode not in ("six_sommeliers", "grand_tasting", "full_techniques"):

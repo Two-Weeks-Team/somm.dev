@@ -1,6 +1,7 @@
 """Scoring aggregation module for BMAD evaluation system."""
 
 from enum import Enum
+from functools import lru_cache
 from typing import Literal
 
 # Constants
@@ -30,6 +31,17 @@ class ItemStatus(str, Enum):
 
 
 ConfidenceLevel = Literal["high", "medium", "low"]
+
+
+@lru_cache(maxsize=1)
+def _get_total_bmad_items() -> int:
+    """Get total BMAD item count dynamically from bmad_items module."""
+    try:
+        from app.criteria.bmad_items import list_items
+
+        return len(list_items())
+    except ImportError:
+        return 17
 
 
 def adjust_score_by_confidence(
@@ -83,7 +95,7 @@ def calculate_exclusion_normalized_score(item_scores: dict) -> dict:
             - coverage_rate: Ratio of evaluated items to total BMAD items (17)
             - summary: Human-readable summary string
     """
-    total_bmad_items = 17
+    total_bmad_items = _get_total_bmad_items()
 
     evaluated_items = []
     excluded_items = []

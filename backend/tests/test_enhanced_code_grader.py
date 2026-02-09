@@ -61,13 +61,13 @@ class TestSubjectiveItems:
         assert "A2" in subjective_items
         assert "A3" in subjective_items
         assert "A4" in subjective_items
-        assert "B2" in subjective_items
         assert "B3" in subjective_items
         assert "B4" in subjective_items
         assert "C3" in subjective_items
         assert "C5" in subjective_items
         assert "D3" in subjective_items
         assert "D4" in subjective_items
+        assert "B2" not in subjective_items
 
 
 class TestEvaluateAll:

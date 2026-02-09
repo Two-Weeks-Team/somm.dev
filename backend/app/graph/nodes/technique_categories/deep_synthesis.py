@@ -8,10 +8,10 @@ from app.models.graph import ItemScore
 async def deep_synthesis(
     state: EvaluationState, config: Optional[RunnableConfig] = None
 ) -> Dict[str, Any]:
-    item_scores = state.get("item_scores", {})
+    item_scores = dict(state.get("item_scores", {}))
 
     conflicts = []
-    methodology_trace = state.get("methodology_trace", [])
+    methodology_trace = list(state.get("methodology_trace", []))
 
     if methodology_trace:
         item_score_variants = {}
