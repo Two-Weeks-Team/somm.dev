@@ -157,6 +157,42 @@ Provide structured output with technique results and an aggregate summary."""
                     web_section += f"- [{src.get('title', '')}]({src.get('uri', '')})\n"
             rendered_context += web_section
 
+        code_analysis = state.get("code_analysis", {})
+        if code_analysis and code_analysis.get("status") != "skipped":
+            code_section = "\n\n## Source Code Analysis\n"
+            if metrics := code_analysis.get("code_metrics"):
+                code_section += f"\n**Quality Metrics:**\n"
+                code_section += f"- Files: {metrics.get('total_files', 0)}\n"
+                code_section += f"- Functions: {metrics.get('total_functions', 0)}\n"
+                code_section += f"- Classes: {metrics.get('total_classes', 0)}\n"
+                code_section += (
+                    f"- Avg Complexity: {metrics.get('avg_cyclomatic_complexity', 0)}\n"
+                )
+                code_section += (
+                    f"- Max Complexity: {metrics.get('max_cyclomatic_complexity', 0)}\n"
+                )
+                code_section += (
+                    f"- Maintainability: {metrics.get('maintainability_index', 0)}\n"
+                )
+                if high_cc := metrics.get("high_complexity_functions", []):
+                    code_section += (
+                        f"\n**High Complexity Functions ({len(high_cc)}):**\n"
+                    )
+                    for fn in high_cc[:5]:
+                        code_section += f"- `{fn['file_path']}:{fn['name']}` CC={fn['cyclomatic_complexity']}\n"
+
+            main_files = code_analysis.get("main_files", [])
+            if main_files:
+                code_section += f"\n**Source Files ({len(main_files)} analyzed):**\n"
+                for f in main_files[:20]:
+                    code_section += f"\n### {f['path']}\n```{f.get('language', '')}\n"
+                    code_section += f["content"][:2000]
+                    if len(f["content"]) > 2000:
+                        code_section += "\n... (truncated)"
+                    code_section += "\n```\n"
+
+            rendered_context += code_section
+
         observability = {
             "completed_sommeliers": [self.category.value],
             "token_usage": {self.category.value: {}},
