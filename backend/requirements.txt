@@ -24,8 +24,7 @@ langgraph>=1.0.8
 langgraph-checkpoint-mongodb>=0.3.1
 langsmith>=0.6.9
 
-# RAG Enrichment (Synthetic embeddings via OpenAI SDK)
-openai>=2.17.0
+# RAG Enrichment (Gemini embeddings)
 numpy>=1.24.0
 
 # SSE Support
