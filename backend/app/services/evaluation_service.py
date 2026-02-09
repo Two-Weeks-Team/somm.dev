@@ -25,10 +25,39 @@ from app.services.provider_routing import decide_provider
 logger = logging.getLogger(__name__)
 
 
+async def _get_stored_key(
+    user_id: str, provider: str = "google"
+) -> tuple[str | None, str]:
+    """Retrieve user's stored BYOK API key.
+
+    Returns:
+        Tuple of (decrypted_key_or_None, source_label)
+        source_label: "stored_byok" if found, "none" if not
+    """
+    if not user_id:
+        return None, "none"
+    try:
+        from app.database.repositories.api_key import APIKeyRepository
+        from app.services.encryption import EncryptionService
+
+        repo = APIKeyRepository()
+        key_doc = await repo.get_key(user_id, provider)
+        if not key_doc:
+            return None, "none"
+
+        encryption = EncryptionService()
+        decrypted = encryption.decrypt(key_doc["encrypted_key"])
+        return decrypted, "stored_byok"
+    except Exception as e:
+        logger.warning(f"Failed to retrieve stored key for user {user_id}: {e}")
+        return None, "none"
+
+
 async def _prepare_repo_context(
     repo_url: str,
     api_key: Optional[str] = None,
     github_token: Optional[str] = None,
+    user_id: Optional[str] = None,
 ) -> tuple[dict, str]:
     """Prepare repository context for evaluation.
 
@@ -36,6 +65,7 @@ async def _prepare_repo_context(
         repo_url: The GitHub repository URL.
         api_key: Optional BYOK API key.
         github_token: Optional user's GitHub access token for private repo access.
+        user_id: Optional user ID for stored key lookup.
 
     Returns:
         Tuple of (repo_context dict, resolved_api_key).
@@ -51,7 +81,16 @@ async def _prepare_repo_context(
     # Load all 75 techniques without source-based filtering
     repo_context["techniques"] = [tech.model_dump() for tech in techniques]
 
-    resolved_key, byok_error = resolve_byok(api_key)
+    effective_key = api_key
+    api_key_source = "request_byok" if api_key else "system"
+    if not effective_key and user_id:
+        stored_key, source = await _get_stored_key(user_id)
+        if stored_key:
+            effective_key = stored_key
+            api_key_source = source
+
+    resolved_key, byok_error = resolve_byok(effective_key)
+    repo_context["api_key_source"] = api_key_source
     if byok_error:
         repo_context["byok_error"] = byok_error
 
@@ -189,7 +228,7 @@ async def start_evaluation(
     if not is_valid_mode(evaluation_mode):
         raise CorkedError(
             f"Invalid evaluation mode: {evaluation_mode}. "
-            "Must be 'six_sommeliers' or 'grand_tasting'"
+            "Must be 'six_sommeliers', 'grand_tasting', or 'full_techniques'"
         )
 
     repo = EvaluationRepository()
@@ -225,7 +264,7 @@ async def run_evaluation_pipeline(
     use run_evaluation_pipeline_with_events() instead.
     """
     repo_context, resolved_key = await _prepare_repo_context(
-        repo_url, api_key, github_token
+        repo_url, api_key, github_token, user_id
     )
     user_doc = await _get_user_doc(user_id)
     provider_decision = decide_provider(
@@ -383,7 +422,11 @@ async def get_evaluation_progress(
     user_id = evaluation.get("user_id")
     evaluation_mode = evaluation.get("evaluation_mode", "six_sommeliers")
 
-    total_steps = 8 if evaluation_mode == "grand_tasting" else 6
+    total_steps = (
+        10
+        if evaluation_mode == "full_techniques"
+        else (8 if evaluation_mode == "grand_tasting" else 6)
+    )
 
     if status == "pending":
         return {
@@ -493,7 +536,7 @@ async def run_evaluation_pipeline_with_events(
 
     try:
         repo_context, resolved_key = await _prepare_repo_context(
-            repo_url, api_key, github_token
+            repo_url, api_key, github_token, user_id
         )
         user_doc = await _get_user_doc(user_id)
         provider_decision = decide_provider(
@@ -526,6 +569,15 @@ async def run_evaluation_pipeline_with_events(
 
         await save_evaluation_results(evaluation_id, result, evaluation_mode)
         await eval_repo.update_status(evaluation_id, "completed")
+
+        if evaluation_mode == "full_techniques":
+            return {
+                "evaluation_id": evaluation_id,
+                "status": "completed",
+                "score": result.get("normalized_score", 0),
+                "quality_gate": result.get("quality_gate", ""),
+                "coverage_rate": result.get("coverage_rate", 0),
+            }
 
         jeanpierre = result.get("jeanpierre_result") or {}
         return {

@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { LogOut, History, ChevronDown } from "lucide-react";
+import { LogOut, History, ChevronDown, Key } from "lucide-react";
 import Link from "next/link";
 
 export function UserMenu() {
@@ -78,6 +78,14 @@ export function UserMenu() {
           </div>
 
           <div className="py-1">
+            <Link
+              href="/settings/api-keys"
+              onClick={() => setIsOpen(false)}
+              className="flex items-center gap-3 px-4 py-2 text-sm text-gray-700 transition-colors hover:bg-[#722F37]/5"
+            >
+              <Key className="h-4 w-4" />
+              API Keys
+            </Link>
             <Link
               href="/history"
               onClick={() => setIsOpen(false)}

@@ -2,6 +2,8 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
+from app.criteria.llm_grader import LLMGrader
+
 
 @dataclass
 class CodeGraderResult:
@@ -14,7 +16,42 @@ class CodeGraderResult:
 
 
 class CodeGraderAgent:
-    EVALUABLE_ITEMS = ["D1", "D2", "C4", "B1", "B2"]
+    EVALUABLE_ITEMS = [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "B1",
+        "B2",
+        "B3",
+        "B4",
+        "C1",
+        "C2",
+        "C3",
+        "C4",
+        "C5",
+        "D1",
+        "D2",
+        "D3",
+        "D4",
+    ]
+
+    OBJECTIVE_ITEMS = ["C1", "C2", "C4", "B1", "B2", "D1", "D2"]
+
+    SUBJECTIVE_ITEMS = [
+        "A1",
+        "A2",
+        "A3",
+        "A4",
+        "B3",
+        "B4",
+        "C3",
+        "C5",
+        "D3",
+        "D4",
+    ]
+
+    ORIGINAL_ITEMS = ["D1", "D2", "C4", "B1", "B2"]
 
     def __init__(self):
         self.name = "Code Grader"
@@ -23,7 +60,18 @@ class CodeGraderAgent:
     def get_evaluable_items(self) -> list[str]:
         return list(self.EVALUABLE_ITEMS)
 
+    def get_objective_items(self) -> list[str]:
+        return list(self.OBJECTIVE_ITEMS)
+
+    def get_subjective_items(self) -> list[str]:
+        return list(self.SUBJECTIVE_ITEMS)
+
     def evaluate(self, context: dict[str, Any]) -> dict[str, Any]:
+        """Evaluate repository using deterministic heuristics.
+
+        Maintains backward compatibility - returns only original 5 items.
+        Use evaluate_all() for full 17-item evaluation.
+        """
         repo_context = context.get("repo_context", {})
 
         if not repo_context:
@@ -60,6 +108,77 @@ class CodeGraderAgent:
                 "duration_ms": 0,
                 "cost_usd": 0,
             },
+        }
+
+    async def evaluate_all(
+        self, context: dict[str, Any], llm: Any = None
+    ) -> dict[str, Any]:
+        """Evaluate all 17 BMAD items using objective heuristics and optional LLM.
+
+        Args:
+            context: Repository context dictionary
+            llm: Optional LLM client for subjective items. If None, subjective
+                 items return placeholder scores with confidence="low".
+
+        Returns:
+            Dictionary with all 17 item scores and usage tracking
+        """
+        repo_context = context.get("repo_context", {})
+
+        if not repo_context:
+            return {
+                "item_scores": {},
+                "_usage": {
+                    "input_tokens": 0,
+                    "output_tokens": 0,
+                    "duration_ms": 0,
+                    "cost_usd": 0,
+                },
+            }
+
+        item_scores = {}
+
+        objective_map = {
+            "C1": self._evaluate_code_quality,
+            "C2": self._evaluate_testing_coverage,
+            "C4": self._evaluate_test_existence,
+            "B1": self._evaluate_tech_stack,
+            "B2": self._evaluate_system_architecture,
+            "D1": self._evaluate_readme_quality,
+            "D2": self._evaluate_code_comments,
+        }
+
+        for item_code, method in objective_map.items():
+            result = method(repo_context)
+            if result:
+                item_score = self._to_item_score(result)
+                item_scores[item_code] = item_score
+
+        llm_grader = LLMGrader()
+        for item_code in self.SUBJECTIVE_ITEMS:
+            if llm is not None or item_code not in item_scores:
+                result = await llm_grader.grade_item(item_code, repo_context, llm)
+                item_scores[item_code] = {
+                    "item_code": result["item_id"],
+                    "score": result["score"],
+                    "max_score": result["max_score"],
+                    "evidence": result["evidence"],
+                    "rationale": result["rationale"],
+                    "confidence": result["confidence"],
+                    "metrics": {},
+                }
+
+        llm_usage = llm_grader.get_usage()
+        usage = {
+            "input_tokens": llm_usage["prompt_tokens"],
+            "output_tokens": llm_usage["completion_tokens"],
+            "duration_ms": 0,
+            "cost_usd": llm_usage["cost_usd"],
+        }
+
+        return {
+            "item_scores": item_scores,
+            "_usage": usage,
         }
 
     def _to_item_score(self, result: CodeGraderResult) -> dict[str, Any]:
@@ -557,5 +676,196 @@ class CodeGraderAgent:
             max_score=6,
             evidence=evidence,
             rationale=f"시스템 아키텍처 평가: {score}/6점",
+            metrics=metrics,
+        )
+
+    def _evaluate_code_quality(
+        self, repo_context: dict[str, Any]
+    ) -> CodeGraderResult | None:
+        """Evaluate code quality (C1) based on linting configs and code metrics."""
+        file_tree = repo_context.get("file_tree", [])
+        main_files = repo_context.get("main_files", [])
+
+        score = 0
+        evidence = []
+        metrics = {
+            "has_linter_config": False,
+            "has_formatter_config": False,
+            "has_type_checker": False,
+            "avg_file_length": 0,
+            "total_files": len(main_files),
+        }
+
+        filenames = {path.split("/")[-1].lower() for path in file_tree}
+
+        linter_configs = {
+            "ruff.toml": "ruff",
+            ".flake8": "flake8",
+            ".pylintrc": "pylint",
+            ".eslintrc": "eslint",
+            ".eslintrc.js": "eslint",
+            ".eslintrc.json": "eslint",
+            "eslint.config.js": "eslint",
+            ".golangci.yml": "golangci-lint",
+        }
+        detected_linters = [
+            tool for cfg, tool in linter_configs.items() if cfg.lower() in filenames
+        ]
+        if detected_linters:
+            score += 2
+            evidence.append(f"린터 설정: {', '.join(set(detected_linters))}")
+            metrics["has_linter_config"] = True
+
+        formatter_configs = {
+            ".prettierrc": "prettier",
+            ".prettierrc.js": "prettier",
+            ".prettierrc.json": "prettier",
+            "biome.json": "biome",
+            "black.toml": "black",
+            "pyproject.toml": "black/isort",
+        }
+        detected_formatters = [
+            tool for cfg, tool in formatter_configs.items() if cfg.lower() in filenames
+        ]
+        if detected_formatters:
+            score += 1
+            evidence.append(f"포맷터 설정: {', '.join(set(detected_formatters))}")
+            metrics["has_formatter_config"] = True
+
+        type_configs = {
+            "mypy.ini": "mypy",
+            ".mypy.ini": "mypy",
+            "pyrightconfig.json": "pyright",
+            "tsconfig.json": "typescript",
+        }
+        detected_type_checkers = [
+            tool for cfg, tool in type_configs.items() if cfg.lower() in filenames
+        ]
+        if detected_type_checkers:
+            score += 2
+            evidence.append(f"타입 체커: {', '.join(set(detected_type_checkers))}")
+            metrics["has_type_checker"] = True
+
+        if main_files:
+            total_lines = 0
+            for file_info in main_files:
+                content = file_info.get("content", "")
+                if content:
+                    total_lines += len(content.split("\n"))
+
+            avg_length = total_lines / len(main_files) if main_files else 0
+            metrics["avg_file_length"] = round(avg_length, 2)
+
+            if avg_length <= 300:
+                score += 1
+                evidence.append(f"적절한 파일 길이 (평균 {avg_length:.0f}줄)")
+            elif avg_length <= 500:
+                score += 1
+                evidence.append(f"양호한 파일 길이 (평균 {avg_length:.0f}줄)")
+
+        if ".pre-commit-config.yaml" in filenames:
+            score += 1
+            evidence.append("pre-commit 훅 설정")
+
+        if not evidence:
+            evidence.append("코드 품질 도구 설정 없음")
+
+        return CodeGraderResult(
+            item_code="C1",
+            score=min(score, 7),
+            max_score=7,
+            evidence=evidence,
+            rationale=f"코드 품질 평가: {score}/7점",
+            metrics=metrics,
+        )
+
+    def _evaluate_testing_coverage(
+        self, repo_context: dict[str, Any]
+    ) -> CodeGraderResult | None:
+        """Evaluate testing coverage (C2) based on test files and coverage configs."""
+        file_tree = repo_context.get("file_tree", [])
+
+        score = 0
+        evidence = []
+        metrics = {
+            "test_file_count": 0,
+            "has_coverage_config": False,
+            "has_test_framework": False,
+            "test_to_source_ratio": 0.0,
+        }
+
+        test_patterns = ["test_", "_test.", ".test.", ".spec."]
+        test_files = [
+            path for path in file_tree if any(p in path.lower() for p in test_patterns)
+        ]
+        test_file_count = len(test_files)
+        metrics["test_file_count"] = test_file_count
+
+        if test_file_count > 0:
+            score += 1
+            evidence.append(f"테스트 파일 {test_file_count}개")
+
+        if test_file_count >= 5:
+            score += 1
+            evidence.append("충분한 테스트 파일 (5개 이상)")
+
+        coverage_configs = [
+            ".coveragerc",
+            "coverage.ini",
+            ".nycrc",
+            "codecov.yml",
+            ".codecov.yml",
+        ]
+        filenames_for_coverage = {path.split("/")[-1].lower() for path in file_tree}
+        has_coverage = any(
+            cfg.lower() in filenames_for_coverage for cfg in coverage_configs
+        )
+        if has_coverage:
+            score += 2
+            evidence.append("커버리지 설정 존재")
+            metrics["has_coverage_config"] = True
+
+        framework_configs = {
+            "pytest.ini": "pytest",
+            "setup.cfg": "pytest/distutils",
+            "jest.config.js": "jest",
+            "jest.config.ts": "jest",
+            "vitest.config.js": "vitest",
+            "vitest.config.ts": "vitest",
+            "karma.conf.js": "karma",
+        }
+        filenames = {path.split("/")[-1].lower() for path in file_tree}
+        detected_frameworks = [
+            fw for cfg, fw in framework_configs.items() if cfg.lower() in filenames
+        ]
+        if detected_frameworks:
+            score += 1
+            evidence.append(f"테스트 프레임워크: {', '.join(set(detected_frameworks))}")
+            metrics["has_test_framework"] = True
+
+        source_files = [
+            f
+            for f in file_tree
+            if f.endswith((".py", ".js", ".ts", ".go", ".java", ".rs"))
+            and not any(
+                p in f.lower() for p in test_patterns + ["tests/", "__tests__/"]
+            )
+        ]
+        if source_files and test_files:
+            ratio = len(test_files) / len(source_files)
+            metrics["test_to_source_ratio"] = round(ratio, 2)
+            if ratio >= 0.5:
+                score += 1
+                evidence.append(f"양호한 테스트 비율 ({ratio:.2f})")
+
+        if not evidence:
+            evidence.append("테스트 관련 설정 부족")
+
+        return CodeGraderResult(
+            item_code="C2",
+            score=min(score, 6),
+            max_score=6,
+            evidence=evidence,
+            rationale=f"테스트 커버리지 평가: {score}/6점",
             metrics=metrics,
         )
