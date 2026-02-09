@@ -65,12 +65,12 @@ _provider_rpm_limiters: dict[str, RpmLimiter] = {}
 _semaphore_lock = asyncio.Lock()
 
 PROVIDER_CONCURRENCY_LIMITS = {
-    "gemini": 3,
+    "google": 3,
     "vertex": 3,
 }
 
 PROVIDER_RPM_LIMITS = {
-    "gemini": 10,
+    "google": 10,
     "vertex": 10,
 }
 
