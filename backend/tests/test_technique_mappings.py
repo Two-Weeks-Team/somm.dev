@@ -3,7 +3,6 @@
 import pytest
 
 from app.techniques.mappings import (
-    InvalidMappingError,
     Priority,
     TastingNote,
     get_category_summary,
@@ -168,3 +167,104 @@ class TestPriorityEnum:
 
     def test_p0_value_is_0(self):
         assert Priority.P0.value == 0
+
+
+class TestCriteriaTechniqueMappings:
+    """Test cases for app.criteria.technique_mappings module."""
+
+    def test_full_techniques_returns_75(self):
+        """get_techniques_for_mode('full_techniques') returns 75 techniques."""
+        from app.criteria.technique_mappings import get_techniques_for_mode
+
+        techs = get_techniques_for_mode("full_techniques")
+        assert len(techs) == 75, f"Expected 75 techniques, got {len(techs)}"
+
+    def test_six_sommeliers_returns_p0_p1(self):
+        """six_sommeliers returns fewer than 75, only P0+P1."""
+        from app.criteria.technique_mappings import get_techniques_for_mode
+
+        techs = get_techniques_for_mode("six_sommeliers")
+        assert len(techs) < 75
+        # All should be P0 or P1
+        for t_id in techs:
+            p = get_technique_priority(t_id)
+            assert p in (Priority.P0, Priority.P1), f"{t_id} is not P0 or P1"
+
+    def test_grand_tasting_returns_p0_only(self):
+        """grand_tasting returns fewer than six_sommeliers, only P0."""
+        from app.criteria.technique_mappings import get_techniques_for_mode
+
+        grand_tasting = get_techniques_for_mode("grand_tasting")
+        six_sommeliers = get_techniques_for_mode("six_sommeliers")
+        assert len(grand_tasting) < len(six_sommeliers)
+        # All should be P0
+        for t_id in grand_tasting:
+            p = get_technique_priority(t_id)
+            assert p == Priority.P0, f"{t_id} is not P0"
+
+    def test_mode_count_ordering(self):
+        """grand_tasting < six_sommeliers < full_techniques(75)."""
+        from app.criteria.technique_mappings import get_techniques_for_mode
+
+        grand = len(get_techniques_for_mode("grand_tasting"))
+        six = len(get_techniques_for_mode("six_sommeliers"))
+        full = len(get_techniques_for_mode("full_techniques"))
+        assert grand < six < full
+        assert full == 75
+
+    def test_five_representative_mappings(self):
+        """Verify specific technique→item relationships."""
+        from app.criteria.technique_mappings import TECHNIQUE_TO_ITEMS
+
+        assert "A1" in TECHNIQUE_TO_ITEMS["five-whys"]
+        assert "A1" in TECHNIQUE_TO_ITEMS["5w1h"]
+        assert "A2" in TECHNIQUE_TO_ITEMS["empathy-mapping"]
+        assert "B1" in TECHNIQUE_TO_ITEMS["scamper"]
+        assert "B4" in TECHNIQUE_TO_ITEMS["pre-mortem"]
+
+    def test_get_primary_technique_for_item_returns_highest_priority(self):
+        """get_primary_technique_for_item returns highest priority technique."""
+        from app.criteria.technique_mappings import (
+            get_primary_technique_for_item,
+            get_techniques_for_item,
+        )
+
+        # A1 has multiple techniques, should return a P0 one
+        primary = get_primary_technique_for_item("A1")
+        assert primary is not None
+        p = get_technique_priority(primary)
+        # Should be the lowest value (highest priority)
+        all_a1_techs = get_techniques_for_item("A1")
+        min_priority = min(get_technique_priority(t).value for t in all_a1_techs)
+        assert p.value == min_priority
+
+    def test_get_techniques_for_item_a1(self):
+        """A1 has multiple techniques."""
+        from app.criteria.technique_mappings import get_techniques_for_item
+
+        techs = get_techniques_for_item("A1")
+        assert len(techs) > 1
+        # Should include five-whys, 5w1h, etc.
+        assert "five-whys" in techs
+        assert "5w1h" in techs
+
+    def test_all_techniques_have_items(self):
+        """All techniques in TECHNIQUE_TO_ITEMS have at least one item."""
+        from app.criteria.technique_mappings import TECHNIQUE_TO_ITEMS
+
+        for tech_id, items in TECHNIQUE_TO_ITEMS.items():
+            assert len(items) >= 1, f"Technique {tech_id} has no items"
+
+    def test_get_techniques_for_item_returns_sorted(self):
+        """get_techniques_for_item returns sorted list."""
+        from app.criteria.technique_mappings import get_techniques_for_item
+
+        techs = get_techniques_for_item("B1")
+        assert techs == sorted(techs)
+
+    def test_get_techniques_for_mode_invalid_returns_all(self):
+        """Invalid mode returns all techniques."""
+        from app.criteria.technique_mappings import get_techniques_for_mode
+
+        techs = get_techniques_for_mode("invalid_mode")
+        assert len(techs) == 75

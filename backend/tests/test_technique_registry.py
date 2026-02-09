@@ -11,6 +11,7 @@ from app.techniques.registry import (
     list_available_categories,
     list_techniques,
 )
+from app.techniques.schema import TechniqueCategory
 
 
 @pytest.fixture(autouse=True)
@@ -38,7 +39,7 @@ class TestTechniqueRegistry:
         technique = registry.get_technique("five-whys")
         assert technique is not None
         assert technique.id == "five-whys"
-        assert technique.category == "aroma"
+        assert technique.category == TechniqueCategory.AROMA
 
     def test_get_technique_unknown_id_returns_none(self):
         registry = TechniqueRegistry()
@@ -63,49 +64,49 @@ class TestTechniqueRegistry:
         registry = TechniqueRegistry()
         aroma = registry.get_techniques_by_category("aroma")
         assert len(aroma) == 11
-        assert all(t.category == "aroma" for t in aroma)
+        assert all(t.category == TechniqueCategory.AROMA for t in aroma)
 
     def test_get_techniques_by_category_palate(self):
         registry = TechniqueRegistry()
         palate = registry.get_techniques_by_category("palate")
         assert len(palate) == 13
-        assert all(t.category == "palate" for t in palate)
+        assert all(t.category == TechniqueCategory.PALATE for t in palate)
 
     def test_get_techniques_by_category_body(self):
         registry = TechniqueRegistry()
         body = registry.get_techniques_by_category("body")
         assert len(body) == 8
-        assert all(t.category == "body" for t in body)
+        assert all(t.category == TechniqueCategory.BODY for t in body)
 
     def test_get_techniques_by_category_finish(self):
         registry = TechniqueRegistry()
         finish = registry.get_techniques_by_category("finish")
         assert len(finish) == 12
-        assert all(t.category == "finish" for t in finish)
+        assert all(t.category == TechniqueCategory.FINISH for t in finish)
 
     def test_get_techniques_by_category_balance(self):
         registry = TechniqueRegistry()
         balance = registry.get_techniques_by_category("balance")
         assert len(balance) == 8
-        assert all(t.category == "balance" for t in balance)
+        assert all(t.category == TechniqueCategory.BALANCE for t in balance)
 
     def test_get_techniques_by_category_vintage(self):
         registry = TechniqueRegistry()
         vintage = registry.get_techniques_by_category("vintage")
         assert len(vintage) == 10
-        assert all(t.category == "vintage" for t in vintage)
+        assert all(t.category == TechniqueCategory.VINTAGE for t in vintage)
 
     def test_get_techniques_by_category_terroir(self):
         registry = TechniqueRegistry()
         terroir = registry.get_techniques_by_category("terroir")
         assert len(terroir) == 5
-        assert all(t.category == "terroir" for t in terroir)
+        assert all(t.category == TechniqueCategory.TERROIR for t in terroir)
 
     def test_get_techniques_by_category_cellar(self):
         registry = TechniqueRegistry()
         cellar = registry.get_techniques_by_category("cellar")
         assert len(cellar) == 8
-        assert all(t.category == "cellar" for t in cellar)
+        assert all(t.category == TechniqueCategory.CELLAR for t in cellar)
 
     def test_get_techniques_by_unknown_category_returns_empty(self):
         registry = TechniqueRegistry()
@@ -117,14 +118,14 @@ class TestTechniqueRegistry:
         categories = registry.list_categories()
         assert len(categories) == 8
         assert set(categories) == {
-            "aroma",
-            "palate",
-            "body",
-            "finish",
-            "balance",
-            "vintage",
-            "terroir",
-            "cellar",
+            TechniqueCategory.AROMA,
+            TechniqueCategory.PALATE,
+            TechniqueCategory.BODY,
+            TechniqueCategory.FINISH,
+            TechniqueCategory.BALANCE,
+            TechniqueCategory.VINTAGE,
+            TechniqueCategory.TERROIR,
+            TechniqueCategory.CELLAR,
         }
 
     def test_count_returns_75(self):
