@@ -1,6 +1,5 @@
 id: synthesis-framework
 name: Synthesis Framework
-nameKo: 종합 프레임워크
 category: cellar
 applicableHats:
 - blue
@@ -9,52 +8,50 @@ evaluationDimensions:
 - B2
 - D1
 - D3
-description: '테제-안티테제-신테제의 변증법적 사고나
+description: 'Technique to integrate various inputs into a single conclusion using dialectical thinking (Thesis-Antithesis-Synthesis).
 
-  다양한 입력을 하나의 결론으로 통합하는 기법.
-
-  상반된 요소들을 조화시킵니다.
+  Harmonizes conflicting elements.
 
   '
-promptTemplate: '## Synthesis Framework 분석
+promptTemplate: '## Synthesis Framework Analysis
 
 
-  프로젝트가 다양한 요소를 효과적으로 종합했는지 분석하세요.
+  Analyze if the project effectively synthesized various elements.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **요소 수집**: 다양한 입력/의견을 수집했는가?
+  1. **Element Collection**: Were various inputs/opinions collected?
 
-  2. **통합 프레임워크**: 통합을 위한 구조가 있는가?
+  2. **Integration Framework**: Is there a structure for integration?
 
-  3. **균형점 발견**: 상충 요소의 균형점을 찾았는가?
+  3. **Balance Point**: Was a balance point found for conflicting elements?
 
-  4. **종합 결론**: 통합된 결론/방향이 있는가?
+  4. **Synthesized Conclusion**: Is there an integrated conclusion/direction?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 체계적 종합 프레임워크, 명확한 통합 결론
+  - 5 points: Systematic synthesis framework, clear integrated conclusion
 
-  - 4점: 효과적인 요소 통합
+  - 4 points: Effective element integration
 
-  - 3점: 일부 요소 종합
+  - 3 points: Some elements synthesized
 
-  - 2점: 요소 나열만
+  - 2 points: Elements listed only
 
-  - 1점: 종합 없음
+  - 1 points: No synthesis
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 체계적 프레임워크, 통합 결론
-    4: 효과적 요소 통합
-    3: 일부 요소 종합
-    2: 요소 나열만
-    1: 종합 없음
+    5: Systematic framework, integrated conclusion
+    4: Effective integration
+    3: Some synthesis
+    2: Elements listed only
+    1: No synthesis
 outputSchema:
   score: number
   inputElements: string[]

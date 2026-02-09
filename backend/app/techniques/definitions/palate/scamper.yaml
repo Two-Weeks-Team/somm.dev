@@ -1,6 +1,5 @@
 id: scamper
 name: SCAMPER
-nameKo: SCAMPER
 category: palate
 applicableHats:
 - green
@@ -9,58 +8,56 @@ evaluationDimensions:
 - A3
 - B1
 - B3
-description: 'SCAMPER는 7가지 관점(Substitute, Combine, Adapt, Modify, Put to other uses,
+description: 'SCAMPER is a creative thinking technique that transforms and innovates ideas from 7 perspectives (Substitute, Combine, Adapt, Modify, Put to other uses, Eliminate, Reverse).
 
-  Eliminate, Reverse)에서 아이디어를 변형하고 혁신하는 창의적 사고 기법.
-
-  Bob Eberle가 Alex Osborn의 체크리스트를 발전시켜 개발.
+  Developed by Bob Eberle advancing Alex Osborn''s checklist.
 
   '
-promptTemplate: '## SCAMPER 분석
+promptTemplate: '## SCAMPER Analysis
 
 
-  이 프로젝트가 SCAMPER 7가지 관점에서 얼마나 혁신적인지 분석하세요.
+  Analyze how innovative this project is from the 7 SCAMPER perspectives.
 
 
-  ### SCAMPER 7가지 관점:
+  ### SCAMPER 7 Perspectives:
 
-  1. **S (Substitute)**: 기존 요소를 다른 것으로 대체했는가?
+  1. **S (Substitute)**: Did it substitute existing elements with others?
 
-  2. **C (Combine)**: 기존 기능/아이디어를 새롭게 결합했는가?
+  2. **C (Combine)**: Did it combine existing functions/ideas anew?
 
-  3. **A (Adapt)**: 다른 분야의 해결책을 적용했는가?
+  3. **A (Adapt)**: Did it apply solutions from other fields?
 
-  4. **M (Modify)**: 크기, 형태, 속성을 의미있게 변경했는가?
+  4. **M (Modify)**: Did it meaningfully change size, shape, or attributes?
 
-  5. **P (Put to other uses)**: 기존 것을 새로운 용도로 활용했는가?
+  5. **P (Put to other uses)**: Did it use existing things for new purposes?
 
-  6. **E (Eliminate)**: 불필요한 요소를 제거하여 단순화했는가?
+  6. **E (Eliminate)**: Did it eliminate unnecessary elements to simplify?
 
-  7. **R (Reverse/Rearrange)**: 순서나 관점을 뒤집어 새로운 가치를 창출했는가?
+  7. **R (Reverse/Rearrange)**: Did it reverse order or perspective to create new value?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 5개 이상 SCAMPER 요소가 명확히 적용됨
+  - 5 points: 5+ SCAMPER elements clearly applied
 
-  - 4점: 3-4개 SCAMPER 요소가 적용됨
+  - 4 points: 3-4 SCAMPER elements applied
 
-  - 3점: 2개 SCAMPER 요소가 적용됨
+  - 3 points: 2 SCAMPER elements applied
 
-  - 2점: 1개 SCAMPER 요소만 부분적으로 적용
+  - 2 points: 1 SCAMPER element partially applied
 
-  - 1점: SCAMPER 요소 적용 없음 (기존 방식 그대로)
+  - 1 points: No SCAMPER elements applied (Existing method as is)
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 5개+ SCAMPER 요소 명확히 적용
-    4: 3-4개 SCAMPER 요소 적용
-    3: 2개 SCAMPER 요소 적용
-    2: 1개 요소 부분 적용
-    1: SCAMPER 적용 없음
+    5: 5+ SCAMPER elements applied
+    4: 3-4 SCAMPER elements applied
+    3: 2 SCAMPER elements applied
+    2: 1 element partial applied
+    1: No SCAMPER application
 outputSchema:
   score: number
   substituteEvidence: string
@@ -77,4 +74,4 @@ metadata:
   requiresWebSearch: false
   requiresRAG: false
   source: Bob Eberle / Alex Osborn
-  requiredSources: either
+requiredSources: both

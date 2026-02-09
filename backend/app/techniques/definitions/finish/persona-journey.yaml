@@ -1,6 +1,5 @@
 id: persona-journey
 name: Persona Journey Mapping
-nameKo: 페르소나 여정
 category: finish
 applicableHats:
 - red
@@ -11,52 +10,50 @@ evaluationDimensions:
 - C2
 - C3
 - D2
-description: '구체적인 사용자 페르소나를 정의하고,
+description: 'Technique to define concrete user personas and map their experience journey step by step.
 
-  그들의 경험 여정을 단계별로 매핑하는 기법.
-
-  터치포인트, 감정, 니즈를 시각화합니다.
+  Visualizes touchpoints, emotions, and needs.
 
   '
-promptTemplate: '## Persona Journey Mapping 분석
+promptTemplate: '## Persona Journey Mapping Analysis
 
 
-  프로젝트가 사용자 페르소나와 여정을 어떻게 정의했는지 분석하세요.
+  Analyze how the project defined user personas and journeys.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **페르소나 구체성**: 상세한 사용자 프로필이 있는가?
+  1. **Persona Concreteness**: Is there a detailed user profile?
 
-  2. **여정 단계**: 사용자 경험의 단계가 명확히 정의되었는가?
+  2. **Journey Stages**: Are user experience stages clearly defined?
 
-  3. **감정 곡선**: 각 단계에서의 감정이 고려되었는가?
+  3. **Emotional Curve**: Are emotions at each stage considered?
 
-  4. **Pain Points**: 문제점과 개선 기회가 식별되었는가?
+  4. **Pain Points**: Have problems and improvement opportunities been identified?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 다중 페르소나, 상세 여정, 감정 곡선, 개선점 도출
+  - 5 points: Multiple personas, detailed journey, emotional curve, improvements identified
 
-  - 4점: 명확한 페르소나와 여정 단계
+  - 4 points: Clear persona and journey stages
 
-  - 3점: 기본 페르소나 정의
+  - 3 points: Basic persona definition
 
-  - 2점: 타겟 사용자 언급만
+  - 2 points: Target user mentioned only
 
-  - 1점: 사용자 정의 없음
+  - 1 points: No user definition
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 다중 페르소나, 상세 여정, 감정 곡선
-    4: 명확한 페르소나와 여정
-    3: 기본 페르소나 정의
-    2: 타겟 사용자 언급만
-    1: 사용자 정의 없음
+    5: Multiple personas, detailed journey
+    4: Clear persona and journey
+    3: Basic persona definition
+    2: Target user mentioned
+    1: No user definition
 outputSchema:
   score: number
   personasIdentified: string[]

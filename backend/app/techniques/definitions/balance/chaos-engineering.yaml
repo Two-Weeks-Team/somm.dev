@@ -1,6 +1,5 @@
 id: chaos-engineering
 name: Chaos Engineering
-nameKo: 카오스 엔지니어링 사고
 category: balance
 applicableHats:
 - black
@@ -9,52 +8,50 @@ evaluationDimensions:
 - B2
 - B3
 - B4
-description: '의도적으로 시스템에 장애를 주입하여
+description: 'A technique to test resilience and stability by intentionally injecting failures into the system.
 
-  복원력과 안정성을 테스트하는 기법.
-
-  Netflix가 개발한 시스템 신뢰성 검증 방법론입니다.
+  Methodology for validating system reliability developed by Netflix.
 
   '
-promptTemplate: '## Chaos Engineering 분석
+promptTemplate: '## Chaos Engineering Analysis
 
 
-  프로젝트가 시스템 복원력을 어떻게 고려했는지 분석하세요.
+  Analyze how the project has considered system resilience.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **장애 시나리오**: 가능한 장애 상황을 식별했는가?
+  1. **Failure Scenarios**: Have potential failure situations been identified?
 
-  2. **복원 전략**: 각 장애에 대한 복구 방안이 있는가?
+  2. **Recovery Strategies**: Are there recovery plans for each failure?
 
-  3. **테스트 계획**: 장애 대응을 테스트할 계획이 있는가?
+  3. **Testing Plan**: Is there a plan to test failure responses?
 
-  4. **모니터링**: 시스템 상태 모니터링 방안이 있는가?
+  4. **Monitoring**: Is there a way to monitor system health?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 체계적 장애 시나리오, 복원 전략, 테스트 계획 수립
+  - 5 points: Systematic failure scenarios, recovery strategies, and test plans established
 
-  - 4점: 주요 장애 대응 계획 존재
+  - 4 points: Major failure response plans exist
 
-  - 3점: 일부 장애 상황 고려
+  - 3 points: Some failure situations considered
 
-  - 2점: 장애 대응 불명확
+  - 2 points: Failure response unclear
 
-  - 1점: 장애/복원 고려 없음
+  - 1 points: No consideration of failure/recovery
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 체계적 장애/복원/테스트 계획
-    4: 주요 장애 대응 존재
-    3: 일부 장애 고려
-    2: 대응 불명확
-    1: 장애 고려 없음
+    5: Systematic failure/recovery/test plans
+    4: Major failure responses exist
+    3: Some failures considered
+    2: Response unclear
+    1: No failure consideration
 outputSchema:
   score: number
   failureScenarios: string[]

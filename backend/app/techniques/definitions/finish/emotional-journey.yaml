@@ -1,6 +1,5 @@
 id: emotional-journey
 name: Emotional Journey Mapping
-nameKo: 감정 여정
 category: finish
 applicableHats:
 - red
@@ -8,52 +7,50 @@ evaluationDimensions:
 - A2
 - C1
 - D3
-description: '사용자가 제품/서비스를 사용하는 과정에서 경험하는
-
-  감정의 변화를 추적하고 분석하는 기법.
+description: 'Technique to track and analyze emotional changes experienced by users while using the product/service.
 
   '
-promptTemplate: '## Emotional Journey Mapping (감정 여정 매핑)
+promptTemplate: '## Emotional Journey Mapping Analysis
 
 
-  사용자가 이 프로젝트를 경험하는 과정에서 느끼는 감정의 흐름을 분석하세요.
+  Analyze the flow of emotions users feel while experiencing this project.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **첫 접촉**: 처음 발견했을 때의 감정은?
+  1. **First Contact**: Emotion when discovered for the first time?
 
-  2. **온보딩**: 시작하는 과정의 감정은?
+  2. **Onboarding**: Emotion during the starting process?
 
-  3. **핵심 경험**: 주요 기능 사용 시 감정은?
+  3. **Core Experience**: Emotion when using key functions?
 
-  4. **문제 상황**: 오류나 어려움을 겪을 때 감정은?
+  4. **Problem Situation**: Emotion when facing errors or difficulties?
 
-  5. **완료 후**: 사용을 마친 후의 감정은?
+  5. **After Completion**: Emotion after finishing use?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 전 과정에서 긍정적 감정 유지, 감동적 순간 있음
+  - 5 points: Positive emotion maintained throughout, touching moments exist
 
-  - 4점: 대체로 긍정적, 일부 불편한 순간
+  - 4 points: Mostly positive, some uncomfortable moments
 
-  - 3점: 감정 기복이 있음, 중립적
+  - 3 points: Emotional ups and downs, neutral
 
-  - 2점: 부정적 감정이 더 많음
+  - 2 points: Negative emotions prevail
 
-  - 1점: 전반적으로 불쾌하거나 좌절감
+  - 1 points: Generally unpleasant or frustrating
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 전 과정 긍정적, 감동적 순간
-    4: 대체로 긍정적
-    3: 감정 기복, 중립
-    2: 부정적 감정 우세
-    1: 전반적 불쾌/좌절
+    5: Positive throughout, touching moments
+    4: Mostly positive
+    3: Emotional ups and downs
+    2: Negative emotions prevail
+    1: Generally unpleasant
 outputSchema:
   score: number
   firstContact: string
