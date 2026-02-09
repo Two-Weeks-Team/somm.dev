@@ -44,6 +44,15 @@ class TestProviderSelection:
         llm = build_llm("gemini", "test-key", None, 0.1, 128)
         assert isinstance(llm, ChatGoogleGenerativeAI)
 
+    @patch("app.providers.llm.ChatGoogleGenerativeAI")
+    @patch("app.providers.llm.settings")
+    def test_build_llm_vertex_routing(self, mock_settings, mock_vertex):
+        mock_settings.GOOGLE_CLOUD_PROJECT = "test-project"
+        mock_settings.GOOGLE_CLOUD_LOCATION = "us-central1"
+        mock_settings.GOOGLE_GENAI_USE_VERTEXAI = True
+        build_llm("vertex", None, None, 0.1, 128)
+        mock_vertex.assert_called_once()
+
     def test_build_llm_openai_routing(self):
         llm = build_llm("openai", "test-key", None, 0.1, 128)
         assert isinstance(llm, ChatOpenAI)
@@ -81,6 +90,9 @@ class TestBYOKFallback:
     def test_invalid_byok_uses_server_key(self, mock_chat_google):
         with patch("app.providers.llm.settings") as mock_settings:
             mock_settings.GEMINI_API_KEY = "server-side-key"
+            mock_settings.GOOGLE_CLOUD_PROJECT = ""
+            mock_settings.GOOGLE_CLOUD_LOCATION = "us-central1"
+            mock_settings.GOOGLE_GENAI_USE_VERTEXAI = True
             build_llm("gemini", "   ", None, 0.3, 128)
             mock_chat_google.assert_called_once()
             assert (
