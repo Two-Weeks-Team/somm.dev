@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useFullTechniquesStream } from '../../hooks/useFullTechniquesStream';
 import { ProgressTopBar } from './ProgressTopBar';
 import { CategoryGlassCard } from './CategoryGlassCard';
-import { Loader2, Sparkles, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { Sparkles, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface FullTechniquesProgressProps {

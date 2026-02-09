@@ -1,9 +1,8 @@
 import React, { memo } from 'react';
-import { Handle, Position, NodeProps, Node } from '@xyflow/react';
-import { ReactFlowNodeData } from '@/types/graph';
+import { Handle, Position } from '@xyflow/react';
 import { Wine } from 'lucide-react';
 
-const StartNode = ({ data: _data }: NodeProps<Node<ReactFlowNodeData>>) => {
+const StartNode = () => {
   return (
     <div className="flex flex-col items-center justify-center">
       <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[#722F37] to-[#5D262D] flex items-center justify-center shadow-lg border-2 border-[#F7E7CE]">

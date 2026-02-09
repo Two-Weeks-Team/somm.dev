@@ -188,7 +188,7 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
             console.error('Error parsing SSE data:', err);
           }
         },
-        (_error) => {
+        () => {
           const readyState = eventSource?.readyState;
           const readyStateLabel = readyState === 0 ? 'CONNECTING' : readyState === 1 ? 'OPEN' : 'CLOSED';
           const isOnline = typeof navigator !== 'undefined' ? navigator.onLine : true;

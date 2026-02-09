@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useCallback, useState, useRef } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { 
   ReactFlow, 
   Controls, 
@@ -28,7 +28,6 @@ import { GraphEvaluationMode, ReactFlowNodeData } from '@/types/graph';
 import { TimelinePlayer } from './graph/TimelinePlayer';
 import { useTimelinePlayer } from '@/hooks/useTimelinePlayer';
 import { GraphSkeleton } from './graph/GraphSkeleton';
-import { useMediaQuery } from '@/hooks/useMediaQuery';
 
 interface SelectedNode {
   id: string;
@@ -48,8 +47,6 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
   const [maxStep, setMaxStep] = useState(0);
   const [mode, setMode] = useState<GraphEvaluationMode | string>('six_hats');
   const [selectedNode, setSelectedNode] = useState<SelectedNode | null>(null);
-  const _isMobile = useMediaQuery('(max-width: 768px)');
-  const _nodeContainerRef = useRef<HTMLDivElement>(null);
 
   const {
     currentStep,
