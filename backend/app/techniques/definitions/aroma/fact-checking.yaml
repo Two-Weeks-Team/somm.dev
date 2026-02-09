@@ -41,7 +41,7 @@ promptTemplate: '## Fact Checking Analysis
 
   - 2 points: Some inaccurate or exaggerated claims
 
-  - 1 points: Basis of claims unclear or inaccurate
+  - 1 point: Basis of claims unclear or inaccurate
 
   '
 scoring:

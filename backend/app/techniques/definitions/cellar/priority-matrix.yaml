@@ -11,7 +11,7 @@ description: 'Technique to classify elements into a 2D matrix of Importance and 
   Variation of Eisenhower Matrix.
 
   '
-promptTemplate: "## Priority Matrix Analysis\n\nPrioritize the improvements and next steps of this project.\n\n### Priority Matrix:\n```\n            │ Impact Low  │ Impact High\n────────────┼─────────────┼─────────────\nEffort Low  │  Fill-ins   │  Quick Wins\nEffort High │  Thankless  │  Major Proj\n```\n\n### Analysis Perspectives:\n1. **Quick Wins**: Low effort, high impact\n2. **Major Projects**: High effort, high impact\n3. **Fill-ins**: Do when spare time available\n4. **Thankless Tasks**: High effort, low impact\n\n### Scoring Criteria:\n- 5 points: Clear priorities and concrete execution plan\n- 4 points: Priorities set, plan is partial\n- 3 points: Priorities recognized but unclear\n- 2 points: Listed without priority\n- 1 points: No consideration of next steps\n"
+promptTemplate: "## Priority Matrix Analysis\n\nPrioritize the improvements and next steps of this project.\n\n### Priority Matrix:\n```\n            │ Impact Low  │ Impact High\n────────────┼─────────────┼─────────────\nEffort Low  │  Fill-ins   │  Quick Wins\nEffort High │  Thankless  │  Major Proj\n```\n\n### Analysis Perspectives:\n1. **Quick Wins**: Low effort, high impact\n2. **Major Projects**: High effort, high impact\n3. **Fill-ins**: Do when spare time available\n4. **Thankless Tasks**: High effort, low impact\n\n### Scoring Criteria:\n- 5 points: Clear priorities and concrete execution plan\n- 4 points: Priorities set, plan is partial\n- 3 points: Priorities recognized but unclear\n- 2 points: Listed without priority\n- 1 point: No consideration of next steps\n"
 scoring:
   min: 1
   max: 5

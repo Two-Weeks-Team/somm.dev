@@ -5,7 +5,7 @@ This module provides centralized logging setup for the application.
 
 import logging
 import sys
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 
@@ -21,7 +21,7 @@ def setup_logging() -> logging.Logger:
     log_dir = Path(__file__).parent.parent.parent / "logs"
     log_dir.mkdir(exist_ok=True)
 
-    log_filename = log_dir / f"somm_{datetime.utcnow().strftime('%Y%m%d')}.log"
+    log_filename = log_dir / f"somm_{datetime.now(timezone.utc).strftime('%Y%m%d')}.log"
 
     logger = logging.getLogger("somm")
     logger.setLevel(logging.DEBUG)

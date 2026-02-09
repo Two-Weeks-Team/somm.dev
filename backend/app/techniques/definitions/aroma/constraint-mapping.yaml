@@ -39,7 +39,7 @@ promptTemplate: '## Constraint Mapping Analysis
 
   - 2 points: Recognized constraints in only 1 area
 
-  - 1 points: No constraint analysis
+  - 1 point: No constraint analysis
 
   '
 scoring:

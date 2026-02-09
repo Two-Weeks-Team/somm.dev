@@ -39,7 +39,7 @@ promptTemplate: '## Zombie Apocalypse Scenario Analysis
 
   - 2 points: Only normal situations considered
 
-  - 1 points: Extreme scenarios ignored
+  - 1 point: Extreme scenarios ignored
 
   '
 scoring:

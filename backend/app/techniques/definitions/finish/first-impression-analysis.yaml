@@ -42,7 +42,7 @@ promptTemplate: '## First Impression Analysis
 
   - 2 points: Somewhat negative, complex or confusing
 
-  - 1 points: Negative first impression, no interest generated
+  - 1 point: Negative first impression, no interest generated
 
   '
 scoring:

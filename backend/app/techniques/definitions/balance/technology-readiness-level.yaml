@@ -50,7 +50,7 @@ promptTemplate: '## Technology Readiness Level Analysis
 
   - 2 points: TRL 2, Concept level
 
-  - 1 points: TRL 1 or Unable to evaluate
+  - 1 point: TRL 1 or Unable to evaluate
 
   '
 scoring:

@@ -39,7 +39,7 @@ promptTemplate: '## Question Storming Analysis
 
   - 2 points: Questions are superficial
 
-  - 1 points: Proceeded to solution without questions
+  - 1 point: Proceeded to solution without questions
 
   '
 scoring:

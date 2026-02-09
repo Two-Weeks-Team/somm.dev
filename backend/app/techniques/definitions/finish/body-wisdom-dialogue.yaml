@@ -38,7 +38,7 @@ promptTemplate: '## Body Wisdom Dialogue Analysis
 
   - 2 points: Superficial mention
 
-  - 1 points: Physical/sensory experience ignored
+  - 1 point: Physical/sensory experience ignored
 
   '
 scoring:

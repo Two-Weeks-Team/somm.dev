@@ -134,7 +134,7 @@ async def get_graph(
 
     if mode == EvaluationMode.FULL_TECHNIQUES:
         graph = build_full_techniques_topology()
-    else:
+    else:  # SIX_SOMMELIERS, GRAND_TASTING
         graph = build_six_sommeliers_topology()
 
     logger.info(f"[Graph] Returning {mode.value} graph for {evaluation_id}")
@@ -161,7 +161,7 @@ async def get_graph_structure(
     mode = _determine_mode(evaluation)
     if mode == EvaluationMode.FULL_TECHNIQUES:
         graph = build_full_techniques_topology()
-    else:
+    else:  # SIX_SOMMELIERS, GRAND_TASTING
         graph = build_six_sommeliers_topology()
 
     return graph
@@ -187,7 +187,7 @@ async def get_graph_execution(
     mode = _determine_mode(evaluation)
     if mode == EvaluationMode.FULL_TECHNIQUES:
         graph = build_full_techniques_topology()
-    else:
+    else:  # SIX_SOMMELIERS, GRAND_TASTING
         graph = build_six_sommeliers_topology()
 
     methodology_trace = evaluation.get("methodology_trace", [])

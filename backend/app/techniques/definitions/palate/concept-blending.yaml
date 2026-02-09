@@ -38,7 +38,7 @@ promptTemplate: '## Concept Blending Analysis
 
   - 2 points: Combination of functions within the same field
 
-  - 1 points: Single concept applied, no blending
+  - 1 point: Single concept applied, no blending
 
   '
 scoring:

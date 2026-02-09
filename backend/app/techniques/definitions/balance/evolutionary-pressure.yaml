@@ -40,7 +40,7 @@ promptTemplate: '## Evolutionary Pressure Analysis
 
   - 2 points: Focused only on current situation
 
-  - 1 points: Environmental changes ignored
+  - 1 point: Environmental changes ignored
 
   '
 scoring:

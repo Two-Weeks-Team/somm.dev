@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
-import { User, LogOut, History, ChevronDown } from "lucide-react";
+import { LogOut, History, ChevronDown } from "lucide-react";
 import Link from "next/link";
 
 export function UserMenu() {

@@ -40,7 +40,7 @@ promptTemplate: '## Anti-Solution Design Analysis
 
   - 2 points: Mentioned negative examples only
 
-  - 1 points: No anti-solution thinking
+  - 1 point: No anti-solution thinking
 
   '
 scoring:
