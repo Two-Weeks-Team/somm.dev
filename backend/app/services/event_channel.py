@@ -35,7 +35,12 @@ logger = logging.getLogger(__name__)
 
 PENDING_EVENTS_MAX_SIZE = 50
 PENDING_EVENTS_MAX_AGE_SECONDS = 30.0
-CRITICAL_EVENT_TYPES = {"sommelier_error", "evaluation_complete", "evaluation_error"}
+CRITICAL_EVENT_TYPES = {
+    "sommelier_error",
+    "evaluation_complete",
+    "evaluation_error",
+    "technique_error",
+}
 TRANSFER_LOOP_INTERVAL_SECONDS = 0.01
 TRANSFER_BATCH_SIZE = 10
 STALE_CHANNEL_MAX_AGE_SECONDS = 600.0
@@ -52,6 +57,15 @@ class EventType(str, Enum):
     EVALUATION_ERROR = "evaluation_error"
     HEARTBEAT = "heartbeat"
     STATUS = "status"
+    TECHNIQUE_START = "technique_start"
+    TECHNIQUE_COMPLETE = "technique_complete"
+    TECHNIQUE_ERROR = "technique_error"
+    CATEGORY_START = "category_start"
+    CATEGORY_COMPLETE = "category_complete"
+    DEEP_SYNTHESIS_START = "deep_synthesis_start"
+    DEEP_SYNTHESIS_COMPLETE = "deep_synthesis_complete"
+    QUALITY_GATE_COMPLETE = "quality_gate_complete"
+    METRICS_UPDATE = "metrics_update"
 
 
 @dataclass
@@ -88,6 +102,32 @@ class SommelierProgressEvent:
             "progress_percent": self.progress_percent,
             "tokens_used": self.tokens_used,
             "cost_usd": self.cost_usd,
+            "timestamp": self.timestamp.isoformat(),
+        }
+
+
+@dataclass
+class SSEEvent:
+    """Event data structure for technique-level progress updates.
+
+    Attributes:
+        evaluation_id: The evaluation this event belongs to.
+        event_type: Type of event (technique_start, technique_complete, etc.).
+        data: Flexible dictionary containing event-specific data.
+        timestamp: When the event occurred.
+    """
+
+    evaluation_id: str
+    event_type: EventType
+    data: dict = field(default_factory=dict)
+    timestamp: datetime = field(default_factory=lambda: datetime.now(timezone.utc))
+
+    def to_dict(self) -> dict:
+        """Convert event to JSON-serializable dictionary."""
+        return {
+            "evaluation_id": self.evaluation_id,
+            "event_type": self.event_type.value,
+            "data": self.data,
             "timestamp": self.timestamp.isoformat(),
         }
 
@@ -511,4 +551,37 @@ def create_sommelier_event(
         progress_percent=progress_percent,
         tokens_used=tokens_used,
         cost_usd=cost_usd,
+    )
+
+
+def create_technique_event(
+    evaluation_id: str,
+    event_type: str,
+    technique_id: str = "",
+    technique_name: str = "",
+    category_id: str = "",
+    progress_percent: float = 0,
+    score: float | None = None,
+    max_score: float | None = None,
+    confidence: str | None = None,
+    duration_ms: int | None = None,
+    error_message: str | None = None,
+    message: str = "",
+) -> SSEEvent:
+    """Create a technique-level SSE event."""
+    return SSEEvent(
+        evaluation_id=evaluation_id,
+        event_type=EventType(event_type),
+        data={
+            "technique_id": technique_id,
+            "technique_name": technique_name,
+            "category_id": category_id,
+            "progress_percent": progress_percent,
+            "score": score,
+            "max_score": max_score,
+            "confidence": confidence,
+            "duration_ms": duration_ms,
+            "error_message": error_message,
+            "message": message,
+        },
     )

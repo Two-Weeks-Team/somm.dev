@@ -1,8 +1,12 @@
+import asyncio
 import logging
 from abc import ABC, abstractmethod
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
+
 from langchain_core.runnables import RunnableConfig
+
+from app.core.config import settings
 from app.graph.state import EvaluationState
 from app.techniques.router import TechniqueRouter
 from app.techniques.schema import TechniqueCategory
@@ -35,6 +39,36 @@ class BaseCategoryNode(ABC):
     @abstractmethod
     def display_name(self) -> str:
         pass
+
+    async def _execute_technique_with_limit(
+        self,
+        sem: asyncio.Semaphore,
+        technique_id: str,
+        state: Dict[str, Any],
+    ) -> Dict[str, Any]:
+        async with sem:
+            try:
+                result = await asyncio.wait_for(
+                    self.router.execute_single_technique(technique_id, dict(state)),
+                    timeout=settings.TECHNIQUE_TIMEOUT_SECONDS,
+                )
+                return {"result": result, "technique_id": technique_id}
+            except asyncio.TimeoutError:
+                logger.error(
+                    f"Technique {technique_id} timed out after {settings.TECHNIQUE_TIMEOUT_SECONDS}s"
+                )
+                return {
+                    "technique_id": technique_id,
+                    "error": f"timeout after {settings.TECHNIQUE_TIMEOUT_SECONDS}s",
+                    "failed": True,
+                }
+            except Exception as e:
+                logger.error(f"Technique {technique_id} execution failed: {e}")
+                return {
+                    "technique_id": technique_id,
+                    "error": str(e),
+                    "failed": True,
+                }
 
     async def evaluate(
         self, state: EvaluationState, config: Optional[RunnableConfig] = None
@@ -77,11 +111,19 @@ class BaseCategoryNode(ABC):
                 )
             return self._empty_result(started_at)
 
-        logger.info(f"{self.category.value}: running {len(technique_ids)} techniques")
+        logger.info(
+            f"{self.category.value}: running {len(technique_ids)} techniques concurrently (max {settings.MAX_CONCURRENT_TECHNIQUES})"
+        )
+
+        sem = asyncio.Semaphore(settings.MAX_CONCURRENT_TECHNIQUES)
+
+        tasks = [
+            self._execute_technique_with_limit(sem, tid, dict(state))
+            for tid in technique_ids
+        ]
 
         try:
-            results = await self.router.execute_techniques(technique_ids, dict(state))
-            aggregated = self.router.aggregate_results(results)
+            task_results = await asyncio.gather(*tasks, return_exceptions=False)
         except Exception as e:
             logger.error(f"{self.category.value}: execution failed - {e}")
             if evaluation_id:
@@ -108,6 +150,33 @@ class BaseCategoryNode(ABC):
                     }
                 },
             }
+
+        successful_results = []
+        failed_techniques = []
+
+        for task_result in task_results:
+            if task_result.get("failed"):
+                failed_techniques.append(
+                    {
+                        "technique_id": task_result["technique_id"],
+                        "error": task_result.get("error", "Unknown error"),
+                    }
+                )
+            elif "result" in task_result:
+                successful_results.append(task_result["result"])
+            else:
+                failed_techniques.append(
+                    {
+                        "technique_id": task_result.get("technique_id", "unknown"),
+                        "error": "Invalid result format",
+                    }
+                )
+
+        aggregated = self.router.aggregate_results(successful_results)
+
+        all_failed_techniques = (
+            list(aggregated.failed_techniques or []) + failed_techniques
+        )
 
         if evaluation_id:
             event_channel.emit_sync(
@@ -136,8 +205,8 @@ class BaseCategoryNode(ABC):
                     "completed_at": datetime.now(timezone.utc).isoformat(),
                     "techniques_count": len(technique_ids),
                     "techniques_succeeded": len(aggregated.techniques_used),
-                    "techniques_failed": len(aggregated.failed_techniques),
-                    "failed_techniques": aggregated.failed_techniques,
+                    "techniques_failed": len(all_failed_techniques),
+                    "failed_techniques": all_failed_techniques,
                 }
             },
         }

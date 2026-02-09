@@ -4,6 +4,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { useEvaluationStream } from '../../../hooks/useEvaluationStream';
+import { FullTechniquesProgress } from '../../../components/evaluation/FullTechniquesProgress';
 import { Sparkles, CheckCircle2, Loader2, AlertTriangle, XCircle, ArrowLeft, WifiOff, Clock } from 'lucide-react';
 import { EvaluationMode } from '../../../types';
 
@@ -33,8 +34,10 @@ export default function ProgressPage() {
   const searchParams = useSearchParams();
   const id = params.id as string;
   const modeParam = searchParams.get('mode');
-  const mode: EvaluationMode = modeParam === 'grand_tasting' ? 'grand_tasting' : 'six_sommeliers';
+  const mode: EvaluationMode = modeParam === 'grand_tasting' ? 'grand_tasting' : 
+                               modeParam === 'full_techniques' ? 'full_techniques' : 'six_sommeliers';
   
+  // All hooks MUST be called before any conditional returns (Rules of Hooks)
   const { completedSommeliers, errors, isComplete, progress, status, connectionStatus, retryInfo } = useEvaluationStream(id);
 
   const evaluators = useMemo(() => {
@@ -59,6 +62,11 @@ export default function ProgressPage() {
     const remaining = Math.ceil((100 - progress) / 50);
     return Math.max(1, remaining);
   }, [progress]);
+
+  // Conditional return AFTER all hooks
+  if (mode === 'full_techniques') {
+    return <FullTechniquesProgress evaluationId={id} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#FDFBF7] via-[#FAF4E8] to-[#F5EED8] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">

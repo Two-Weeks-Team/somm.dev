@@ -1,6 +1,7 @@
 """Application settings and configuration"""
 
 import secrets
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
 
@@ -74,6 +75,28 @@ class Settings(BaseSettings):
     RAG_ENABLED: bool = True
     RAG_TOP_K: int = 4
     RAG_EMBEDDING_MODEL: str = "gemini-embedding-001"
+
+    # Technique Execution Settings
+    MAX_CONCURRENT_TECHNIQUES: int = 5
+    TECHNIQUE_TIMEOUT_SECONDS: int = 60
+
+    # Technique Cache Settings
+    TECHNIQUE_CACHE_TTL_HOURS: int = 24
+    TECHNIQUE_CACHE_ENABLED: bool = True
+
+    @field_validator("MAX_CONCURRENT_TECHNIQUES")
+    @classmethod
+    def validate_max_concurrent(cls, v: int) -> int:
+        if v <= 0:
+            raise ValueError("MAX_CONCURRENT_TECHNIQUES must be positive (> 0)")
+        return v
+
+    @field_validator("TECHNIQUE_TIMEOUT_SECONDS")
+    @classmethod
+    def validate_timeout(cls, v: int) -> int:
+        if v <= 0:
+            raise ValueError("TECHNIQUE_TIMEOUT_SECONDS must be positive (> 0)")
+        return v
 
     # Server settings
     PORT: int = 8000

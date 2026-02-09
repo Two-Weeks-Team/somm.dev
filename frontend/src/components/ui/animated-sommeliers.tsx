@@ -3,7 +3,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 
 type Sommelier = {
@@ -27,13 +27,15 @@ export const AnimatedSommeliers = ({
 }) => {
   const [active, setActive] = useState(0);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
+    if (sommeliers.length === 0) return;
     setActive((prev) => (prev + 1) % sommeliers.length);
-  };
+  }, [sommeliers.length]);
 
-  const handlePrev = () => {
+  const handlePrev = useCallback(() => {
+    if (sommeliers.length === 0) return;
     setActive((prev) => (prev - 1 + sommeliers.length) % sommeliers.length);
-  };
+  }, [sommeliers.length]);
 
   const isActive = (index: number) => {
     return index === active;
@@ -44,7 +46,7 @@ export const AnimatedSommeliers = ({
       const interval = setInterval(handleNext, 4000);
       return () => clearInterval(interval);
     }
-  }, [autoplay]);
+  }, [autoplay, handleNext]);
 
   // Deterministic rotation based on index to avoid hydration mismatch
   const getRotation = (index: number) => {
