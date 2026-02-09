@@ -1,6 +1,5 @@
 id: drunk-history-retelling
 name: Drunk History Retelling
-nameKo: 취중 역사 리텔링
 category: terroir
 applicableHats:
 - green
@@ -8,52 +7,50 @@ applicableHats:
 evaluationDimensions:
 - D2
 - D3
-description: '복잡한 이야기를 친구에게 술자리에서
+description: 'Technique to explain complex stories simply and funnily as if explaining to a friend over drinks.
 
-  설명하듯 단순하고 재미있게 전달하는 기법.
-
-  핵심만 남기고 재미있게 풀어냅니다.
+  Leaves only the core and unravels it in an interesting way.
 
   '
-promptTemplate: '## Drunk History Retelling 분석
+promptTemplate: '## Drunk History Retelling Analysis
 
 
-  프로젝트를 단순하고 재미있게 설명할 수 있는지 분석하세요.
+  Analyze if the project can be explained simply and funnily.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **단순화**: 복잡한 것을 쉽게 설명할 수 있는가?
+  1. **Simplification**: Can complex things be explained easily?
 
-  2. **핵심 추출**: 가장 중요한 포인트가 명확한가?
+  2. **Core Extraction**: Is the most important point clear?
 
-  3. **재미 요소**: 이야기에 재미가 있는가?
+  3. **Fun Factor**: Is there fun in the story?
 
-  4. **기억성**: 한 줄로 기억할 수 있는가?
+  4. **Memorability**: Can it be remembered in one line?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 한 줄 요약 가능, 재미있고 기억에 남음
+  - 5 points: One-line summary possible, funny and memorable
 
-  - 4점: 쉬운 설명과 명확한 핵심
+  - 4 points: Easy explanation and clear core
 
-  - 3점: 어느 정도 단순화
+  - 3 points: Some simplification
 
-  - 2점: 여전히 복잡
+  - 2 points: Still complex
 
-  - 1점: 단순화 불가
+  - 1 points: Cannot simplify
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 한 줄 요약, 재미, 기억성
-    4: 쉬운 설명, 명확한 핵심
-    3: 어느 정도 단순화
-    2: 여전히 복잡
-    1: 단순화 불가
+    5: One-line summary, funny, memorable
+    4: Easy explanation, clear core
+    3: Some simplification
+    2: Still complex
+    1: Cannot simplify
 outputSchema:
   score: number
   oneLiner: string

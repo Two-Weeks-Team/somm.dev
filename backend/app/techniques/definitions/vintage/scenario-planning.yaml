@@ -1,6 +1,5 @@
 id: scenario-planning
 name: Scenario Planning
-nameKo: 시나리오 플래닝
 category: vintage
 applicableHats:
 - yellow
@@ -10,56 +9,54 @@ evaluationDimensions:
 - A4
 - B3
 - B4
-description: 'Herman Kahn(RAND Corporation)과 Pierre Wack(Shell)이 발전시킨 전략 기획 기법.
+description: 'Strategic planning technique developed by Herman Kahn (RAND Corporation) and Pierre Wack (Shell).
 
-  불확실한 미래에 대해 여러 시나리오를 구성하고,
+  Methodology to construct multiple scenarios for an uncertain future and prepare strategic responses for each.
 
-  각 시나리오에 대한 전략적 대응을 준비하는 방법론.
-
-  Shell은 1973년 석유위기를 이 기법으로 예측하고 대비.
+  Shell predicted and prepared for the 1973 oil crisis using this technique.
 
   '
-promptTemplate: '## Scenario Planning 분석
+promptTemplate: '## Scenario Planning Analysis
 
 
-  이 프로젝트가 시나리오 플래닝으로 미래를 대비했는지 평가하세요.
+  Evaluate if this project prepared for the future using Scenario Planning.
 
 
-  ### Scenario Planning 핵심 요소:
+  ### Scenario Planning Core Elements:
 
-  1. **핵심 불확실성**: 미래를 좌우하는 주요 변수 식별?
+  1. **Key Uncertainties**: Identified key variables determining the future?
 
-  2. **시나리오 구성**: 최소 2-4개 대안 미래 시나리오?
+  2. **Scenario Construction**: At least 2-4 alternative future scenarios?
 
-  3. **각 시나리오의 논리**: 내적 일관성과 타당성?
+  3. **Logic of Each Scenario**: Internal consistency and validity?
 
-  4. **조기 경고 지표**: 어떤 시나리오로 전개되는지 알려주는 신호?
+  4. **Early Warning Indicators**: Signals indicating which scenario is unfolding?
 
-  5. **전략적 대응**: 각 시나리오별 대응 전략?
+  5. **Strategic Response**: Response strategies for each scenario?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 다중 시나리오, 조기 경고, 전략별 대응
+  - 5 points: Multiple scenarios, early warnings, response per strategy
 
-  - 4점: 3-4개 시나리오, 대응 전략 수립
+  - 4 points: 3-4 scenarios, strategy established
 
-  - 3점: 2개 시나리오(최선/최악)
+  - 3 points: 2 scenarios (Best/Worst)
 
-  - 2점: 단일 시나리오만 고려
+  - 2 points: Only single scenario considered
 
-  - 1점: 미래 대비 없음
+  - 1 points: No preparation for future
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 다중 시나리오, 조기 경고, 대응
-    4: 3-4개 시나리오, 전략 수립
-    3: 2개 시나리오
-    2: 단일 시나리오
-    1: 미래 대비 없음
+    5: Multiple scenarios, early warning, response
+    4: 3-4 scenarios, strategy established
+    3: 2 scenarios
+    2: Single scenario
+    1: No preparation
 outputSchema:
   score: number
   keyUncertainties: string[]
@@ -74,5 +71,5 @@ metadata:
   requiresWebSearch: false
   requiresRAG: false
   source: Herman Kahn (RAND), Pierre Wack (Shell)
-  academicReference: Shell 1973 석유위기 예측 성공, 전략경영 표준 도구
+  academicReference: Successfully predicted Shell 1973 oil crisis, standard tool for strategic management
 requiredSources: either

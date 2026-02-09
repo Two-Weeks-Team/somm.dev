@@ -1,6 +1,5 @@
 id: porters-five-forces
 name: Porter's Five Forces
-nameKo: 포터의 5가지 경쟁요인
 category: balance
 applicableHats:
 - white
@@ -10,54 +9,52 @@ evaluationDimensions:
 - A4
 - B3
 - B4
-description: 'Michael Porter(Harvard Business School, 1979)가 개발한 산업 경쟁 분석 프레임워크.
+description: 'Industry competition analysis framework developed by Michael Porter (Harvard Business School, 1979).
 
-  5가지 경쟁 요인(기존 경쟁자, 잠재적 진입자, 대체재, 공급자 교섭력, 구매자 교섭력)을
-
-  분석하여 산업의 수익성과 경쟁 강도를 평가.
+  Evaluates industry profitability and competitive intensity by analyzing 5 competitive forces (Existing Competitors, Potential Entrants, Substitutes, Supplier Power, Buyer Power).
 
   '
-promptTemplate: '## Porter''s Five Forces 분석
+promptTemplate: '## Porter''s Five Forces Analysis
 
 
-  이 프로젝트가 포터의 5가지 경쟁 요인을 분석했는지 평가하세요.
+  Evaluate if the project has analyzed Porter''s 5 competitive forces.
 
 
-  ### 5가지 경쟁 요인:
+  ### 5 Competitive Forces:
 
-  1. **기존 경쟁자 간 경쟁**: 현재 시장 경쟁 강도는?
+  1. **Rivalry Among Existing Competitors**: What is the current market competition intensity?
 
-  2. **잠재적 진입자 위협**: 신규 진입 장벽은?
+  2. **Threat of New Entrants**: What are the barriers to entry?
 
-  3. **대체재 위협**: 대체 솔루션/기술의 위협은?
+  3. **Threat of Substitutes**: What is the threat from alternative solutions/technologies?
 
-  4. **공급자 교섭력**: 핵심 자원/기술 공급자의 영향력은?
+  4. **Bargaining Power of Suppliers**: What is the influence of key resource/technology suppliers?
 
-  5. **구매자 교섭력**: 고객의 협상력과 전환 비용은?
+  5. **Bargaining Power of Buyers**: What is the negotiation power and switching cost of customers?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 5가지 요인 심층 분석, 전략적 대응 수립
+  - 5 points: In-depth analysis of 5 forces, strategic response established
 
-  - 4점: 4-5가지 요인 분석, 경쟁 우위 식별
+  - 4 points: Analysis of 4-5 forces, competitive advantage identified
 
-  - 3점: 3가지 요인 분석
+  - 3 points: Analysis of 3 forces
 
-  - 2점: 1-2가지 요인만 고려
+  - 2 points: Only 1-2 forces considered
 
-  - 1점: 경쟁 분석 없음
+  - 1 points: No competition analysis
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 5가지 심층 분석, 전략 대응
-    4: 4-5가지 분석, 경쟁 우위
-    3: 3가지 요인 분석
-    2: 1-2가지만 고려
-    1: 경쟁 분석 없음
+    5: In-depth 5 forces analysis, strategic response
+    4: 4-5 forces analyzed, competitive advantage
+    3: 3 forces analyzed
+    2: 1-2 forces considered
+    1: No competition analysis
 outputSchema:
   score: number
   industryRivalry: string
@@ -73,5 +70,5 @@ metadata:
   requiresWebSearch: false
   requiresRAG: false
   source: Michael Porter, Harvard Business School (1979)
-  academicReference: Harvard Business Review 게재, 전략경영 필수 도구
+  academicReference: Published in Harvard Business Review, essential tool for strategic management
 requiredSources: either

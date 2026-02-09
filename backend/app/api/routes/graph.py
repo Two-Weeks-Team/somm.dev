@@ -21,15 +21,15 @@ PUBLIC_DEMO_EVALUATIONS = {
 }
 from app.core.exceptions import CorkedError, EmptyCellarError
 from app.database.repositories.evaluation import EvaluationRepository
+from app.graph.graph_factory import EvaluationMode
 from app.models.graph import (
     ReactFlowGraph,
     TraceEvent,
     ModeResponse,
-    EvaluationMode,
     Graph3DPayload,
 )
 from app.services.graph_builder import (
-    build_six_hats_topology,
+    build_six_sommeliers_topology,
     build_full_techniques_topology,
 )
 from app.services.graph_builder_3d import build_3d_graph
@@ -66,11 +66,11 @@ def _check_ownership(evaluation: dict[str, Any], user, evaluation_id: str) -> No
     # Allow access to public demo evaluations without auth
     if evaluation_id in PUBLIC_DEMO_EVALUATIONS:
         return
-    
+
     # Require auth for non-public evaluations
     if user is None:
         raise CorkedError("Authentication required to view this evaluation")
-    
+
     if evaluation.get("user_id") != user.id:
         raise CorkedError(
             "Access denied: evaluation belongs to another user", status_code=403
@@ -84,14 +84,16 @@ def _determine_mode(evaluation: dict[str, Any]) -> EvaluationMode:
         evaluation: The evaluation document.
 
     Returns:
-        EvaluationMode (six_hats or full_techniques).
+        EvaluationMode (six_sommeliers, grand_tasting, or full_techniques).
     """
-    # Check for explicit mode in evaluation data
-    mode = evaluation.get("mode")
+    # Check for explicit evaluation_mode first, then fall back to mode
+    mode = evaluation.get("evaluation_mode") or evaluation.get("mode")
     if mode == EvaluationMode.FULL_TECHNIQUES.value:
         return EvaluationMode.FULL_TECHNIQUES
-    # Default to six_hats mode
-    return EvaluationMode.SIX_HATS
+    if mode == EvaluationMode.GRAND_TASTING.value:
+        return EvaluationMode.GRAND_TASTING
+    # Default to six_sommeliers mode
+    return EvaluationMode.SIX_SOMMELIERS
 
 
 @router.get("/{evaluation_id}/graph", response_model=ReactFlowGraph)
@@ -133,7 +135,7 @@ async def get_graph(
     if mode == EvaluationMode.FULL_TECHNIQUES:
         graph = build_full_techniques_topology()
     else:
-        graph = build_six_hats_topology()
+        graph = build_six_sommeliers_topology()
 
     logger.info(f"[Graph] Returning {mode.value} graph for {evaluation_id}")
     return graph
@@ -160,7 +162,7 @@ async def get_graph_structure(
     if mode == EvaluationMode.FULL_TECHNIQUES:
         graph = build_full_techniques_topology()
     else:
-        graph = build_six_hats_topology()
+        graph = build_six_sommeliers_topology()
 
     return graph
 
@@ -186,7 +188,7 @@ async def get_graph_execution(
     if mode == EvaluationMode.FULL_TECHNIQUES:
         graph = build_full_techniques_topology()
     else:
-        graph = build_six_hats_topology()
+        graph = build_six_sommeliers_topology()
 
     methodology_trace = evaluation.get("methodology_trace", [])
     if methodology_trace:
@@ -268,7 +270,7 @@ async def get_mode(
 ) -> ModeResponse:
     """Get current evaluation mode.
 
-    Returns the evaluation mode (six_hats or full_techniques)
+    Returns the evaluation mode (six_sommeliers, grand_tasting, or full_techniques)
     for the specified evaluation.
 
     Public demo evaluations can be accessed without authentication.

@@ -1,6 +1,5 @@
 id: analogical-thinking
 name: Analogical Thinking
-nameKo: 유추적 사고
 category: palate
 applicableHats:
 - green
@@ -8,52 +7,50 @@ applicableHats:
 evaluationDimensions:
 - A3
 - B2
-description: '유사한 상황이나 문제에서 패턴을 찾아
+description: 'Thinking method to find patterns in similar situations or problems and apply them to the current problem.
 
-  현재 문제에 적용하는 사고 방식.
-
-  "X는 Y와 같다"의 형태로 새로운 통찰을 얻습니다.
+  Gains new insights in the form of ''X is like Y''.
 
   '
-promptTemplate: '## Analogical Thinking 분석
+promptTemplate: '## Analogical Thinking Analysis
 
 
-  이 프로젝트에서 유추적 사고의 흔적을 분석하세요.
+  Analyze traces of analogical thinking in this project.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **유추 발견**: 다른 영역의 유사한 문제/해결책을 참조했는가?
+  1. **Analogy Discovery**: Did it reference similar problems/solutions in other domains?
 
-  2. **패턴 추출**: 유사 사례에서 공통 패턴을 추출했는가?
+  2. **Pattern Extraction**: Did it extract common patterns from similar cases?
 
-  3. **적용 품질**: 유추가 현재 문제에 적절히 적용되었는가?
+  3. **Application Quality**: Was the analogy appropriately applied to the current problem?
 
-  4. **통찰 깊이**: 유추를 통해 얻은 통찰이 깊이 있는가?
+  4. **Insight Depth**: Is the insight gained through analogy deep?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 깊은 구조적 유추로 핵심 해결책 도출
+  - 5 points: Core solution derived from deep structural analogy
 
-  - 4점: 효과적인 유추로 새로운 접근법 발견
+  - 4 points: New approach discovered through effective analogy
 
-  - 3점: 유추를 활용하나 표면적 수준
+  - 3 points: Uses analogy but at a surface level
 
-  - 2점: 피상적인 비교만 존재
+  - 2 points: Only superficial comparison exists
 
-  - 1점: 유추적 사고 흔적 없음
+  - 1 points: No trace of analogical thinking
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 깊은 구조적 유추로 핵심 해결책
-    4: 효과적인 유추로 새로운 접근
-    3: 표면적 유추 활용
-    2: 피상적 비교만 존재
-    1: 유추적 사고 없음
+    5: Core solution via deep structural analogy
+    4: New approach via effective analogy
+    3: Surface level analogy
+    2: Superficial comparison only
+    1: No analogical thinking
 outputSchema:
   score: number
   analogiesFound: string[]

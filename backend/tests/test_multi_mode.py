@@ -109,18 +109,32 @@ class TestGraphRegistry:
 
 
 class TestModeConstants:
-    def test_six_hats_constant(self):
-        from app.models.graph import EvaluationMode
+    def test_six_sommeliers_constant(self):
+        from app.graph.graph_factory import EvaluationMode
 
-        assert EvaluationMode.SIX_HATS.value == "six_hats"
+        assert EvaluationMode.SIX_SOMMELIERS.value == "six_sommeliers"
+
+    def test_grand_tasting_constant(self):
+        from app.graph.graph_factory import EvaluationMode
+
+        assert EvaluationMode.GRAND_TASTING.value == "grand_tasting"
 
     def test_full_techniques_constant(self):
-        from app.models.graph import EvaluationMode
+        from app.graph.graph_factory import EvaluationMode
 
         assert EvaluationMode.FULL_TECHNIQUES.value == "full_techniques"
 
     def test_evaluation_mode_is_string_enum(self):
-        from app.models.graph import EvaluationMode
+        from app.graph.graph_factory import EvaluationMode
 
-        assert isinstance(EvaluationMode.SIX_HATS.value, str)
+        assert isinstance(EvaluationMode.SIX_SOMMELIERS.value, str)
+        assert isinstance(EvaluationMode.GRAND_TASTING.value, str)
         assert isinstance(EvaluationMode.FULL_TECHNIQUES.value, str)
+
+    def test_old_six_hats_value_rejected(self):
+        """Test that old 'six_hats' value is rejected."""
+        from app.graph.graph_factory import EvaluationMode
+        import pytest
+
+        with pytest.raises(ValueError):
+            EvaluationMode("six_hats")

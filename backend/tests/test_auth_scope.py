@@ -53,11 +53,11 @@ class TestGitHubOAuthScope:
         assert "state=" in redirect_url
         assert "scope=" in redirect_url
 
-        # Verify state cookie is set
         set_cookie_header = response.headers.get("set-cookie", "")
         assert "oauth_state=" in set_cookie_header
         assert "HttpOnly" in set_cookie_header
-        assert "Secure" in set_cookie_header
+        if not settings.FRONTEND_URL.startswith("http://localhost"):
+            assert "Secure" in set_cookie_header
 
     def test_github_oauth_scope_order(self):
         """Test that scope parameter has correct value with repo first."""

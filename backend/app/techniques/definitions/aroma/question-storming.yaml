@@ -1,6 +1,5 @@
 id: question-storming
 name: Question Storming
-nameKo: 질문 스토밍
 category: aroma
 applicableHats:
 - white
@@ -8,52 +7,50 @@ applicableHats:
 evaluationDimensions:
 - A1
 - A2
-description: '답을 찾기 전에 좋은 질문을 먼저 찾는 기법.
+description: 'Technique to find good questions before finding answers.
 
-  "올바른 질문이 올바른 답을 이끈다"는
-
-  원리에 기반합니다.
+  Based on the principle that "the right question leads to the right answer".
 
   '
-promptTemplate: '## Question Storming 분석
+promptTemplate: '## Question Storming Analysis
 
 
-  이 프로젝트가 좋은 질문을 던지고 있는지 분석하세요.
+  Analyze if the project is asking good questions.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **질문의 질**: 프로젝트가 던지는 질문이 통찰력 있는가?
+  1. **Question Quality**: Are the questions insightful?
 
-  2. **질문의 다양성**: 다양한 관점의 질문이 있는가?
+  2. **Question Diversity**: Are there questions from various perspectives?
 
-  3. **질문의 깊이**: 표면적 질문을 넘어 깊은 질문이 있는가?
+  3. **Question Depth**: Are there deep questions beyond surface ones?
 
-  4. **미답 질문**: 아직 답하지 못한 중요한 질문을 인식하고 있는가?
+  4. **Unanswered Questions**: Does it recognize important unanswered questions?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 통찰력 있는 질문들로 문제의 본질을 파악
+  - 5 points: Insightful questions grasping the essence of the problem
 
-  - 4점: 다양하고 깊이 있는 질문들
+  - 4 points: Diverse and in-depth questions
 
-  - 3점: 적절한 질문들이 있음
+  - 3 points: Appropriate questions exist
 
-  - 2점: 질문이 피상적
+  - 2 points: Questions are superficial
 
-  - 1점: 질문 없이 바로 해결책으로 직행
+  - 1 points: Proceeded to solution without questions
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 통찰력 있는 질문으로 본질 파악
-    4: 다양하고 깊이 있는 질문
-    3: 적절한 질문들
-    2: 피상적 질문
-    1: 질문 없이 해결책 직행
+    5: Insightful questions, grasping essence
+    4: Diverse and deep questions
+    3: Appropriate questions
+    2: Superficial questions
+    1: No questions
 outputSchema:
   score: number
   keyQuestions: string[]

@@ -1,6 +1,5 @@
 id: technology-readiness-level
 name: Technology Readiness Level
-nameKo: 기술성숙도 (TRL)
 category: balance
 applicableHats:
 - white
@@ -9,62 +8,60 @@ evaluationDimensions:
 - B1
 - B2
 - C1
-description: 'NASA(1974)가 개발하고 ISO 16290:2013으로 국제 표준화된 기술 성숙도 평가 체계.
+description: 'Technology maturity assessment system developed by NASA (1974) and standardized as ISO 16290:2013.
 
-  TRL 1(기초 연구)부터 TRL 9(실제 운용)까지 9단계로
-
-  기술의 개발 단계와 준비 상태를 객관적으로 평가.
+  Objectively evaluates technology development stage and readiness from TRL 1 (Basic Principle) to TRL 9 (Flight Proven).
 
   '
-promptTemplate: '## Technology Readiness Level 분석
+promptTemplate: '## Technology Readiness Level Analysis
 
 
-  이 프로젝트의 핵심 기술이 어느 TRL 단계에 있는지 평가하세요.
+  Evaluate which TRL stage the project''s core technology is at.
 
 
-  ### TRL 9단계:
+  ### TRL 9 Stages:
 
-  - **TRL 1**: 기초 원리 관찰 및 보고
+  - **TRL 1**: Basic principles observed and reported
 
-  - **TRL 2**: 기술 개념 및 응용 공식화
+  - **TRL 2**: Technology concept and/or application formulated
 
-  - **TRL 3**: 핵심 기능의 분석적/실험적 개념 증명
+  - **TRL 3**: Analytical and experimental critical function and/or characteristic proof of concept
 
-  - **TRL 4**: 실험실 환경에서 컴포넌트 검증
+  - **TRL 4**: Component and/or breadboard validation in laboratory environment
 
-  - **TRL 5**: 관련 환경에서 컴포넌트 검증
+  - **TRL 5**: Component and/or breadboard validation in relevant environment
 
-  - **TRL 6**: 관련 환경에서 시스템/서브시스템 모델 시연
+  - **TRL 6**: System/subsystem model or prototype demonstration in a relevant environment
 
-  - **TRL 7**: 운영 환경에서 시스템 프로토타입 시연
+  - **TRL 7**: System prototype demonstration in an operational environment
 
-  - **TRL 8**: 실제 시스템 완성 및 인증
+  - **TRL 8**: Actual system completed and qualified through test and demonstration
 
-  - **TRL 9**: 운영 환경에서 실제 시스템 검증
+  - **TRL 9**: Actual system proven through successful mission operations
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: TRL 7-9, 프로토타입~실제 운용 단계
+  - 5 points: TRL 7-9, Prototype to Operational stage
 
-  - 4점: TRL 5-6, 관련 환경에서 검증
+  - 4 points: TRL 5-6, Validation in relevant environment
 
-  - 3점: TRL 3-4, 실험실 수준 검증
+  - 3 points: TRL 3-4, Lab level validation
 
-  - 2점: TRL 2, 개념 수준
+  - 2 points: TRL 2, Concept level
 
-  - 1점: TRL 1 또는 평가 불가
+  - 1 points: TRL 1 or Unable to evaluate
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: TRL 7-9, 프로토타입~운용
-    4: TRL 5-6, 관련 환경 검증
-    3: TRL 3-4, 실험실 검증
-    2: TRL 2, 개념 수준
-    1: TRL 1 또는 평가 불가
+    5: TRL 7-9, Prototype~Operational
+    4: TRL 5-6, Relevant env validation
+    3: TRL 3-4, Lab validation
+    2: TRL 2, Concept level
+    1: TRL 1 or Unable to evaluate
 outputSchema:
   score: number
   currentTRL: number
@@ -79,5 +76,5 @@ metadata:
   requiresWebSearch: false
   requiresRAG: false
   source: NASA (1974)
-  academicReference: ISO 16290:2013 국제 표준, EU Horizon 2020 필수 평가
+  academicReference: ISO 16290:2013 International Standard, EU Horizon 2020 essential evaluation
 requiredSources: readme_only

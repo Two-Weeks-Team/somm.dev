@@ -1,6 +1,5 @@
 id: future-self-interview
 name: Future Self Interview
-nameKo: 미래 자아 인터뷰
 category: vintage
 applicableHats:
 - yellow
@@ -8,52 +7,50 @@ applicableHats:
 evaluationDimensions:
 - D1
 - D3
-description: '성공한 미래의 자신을 상상하고
+description: 'Technique to imagine a successful future self and reflect on the present from that perspective.
 
-  그 관점에서 현재를 돌아보는 기법.
-
-  비전을 명확히 하고 역방향으로 계획을 세웁니다.
+  Clarifies vision and plans backwards.
 
   '
-promptTemplate: '## Future Self Interview 분석
+promptTemplate: '## Future Self Interview Analysis
 
 
-  프로젝트가 미래 성공 관점에서 현재를 설계했는지 분석하세요.
+  Analyze if the project designed the present from a future success perspective.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **성공 비전**: 성공한 미래를 구체적으로 그렸는가?
+  1. **Success Vision**: Is the successful future visualized concretely?
 
-  2. **역방향 계획**: 미래에서 현재로 역산했는가?
+  2. **Backward Planning**: Is there a backward calculation from future to present?
 
-  3. **마일스톤**: 중간 목표를 설정했는가?
+  3. **Milestones**: Are intermediate goals set?
 
-  4. **현재 행동**: 지금 해야 할 일을 명확히 했는가?
+  4. **Current Actions**: Are the things to do now clear?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 생생한 성공 비전, 역방향 계획, 명확한 마일스톤
+  - 5 points: Vivid success vision, backward planning, clear milestones
 
-  - 4점: 명확한 미래 비전과 계획
+  - 4 points: Clear future vision and plan
 
-  - 3점: 일부 미래 목표 설정
+  - 3 points: Some future goals set
 
-  - 2점: 막연한 미래 언급
+  - 2 points: Vague future reference
 
-  - 1점: 미래 비전 없음
+  - 1 points: No future vision
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 생생한 비전, 역방향 계획, 마일스톤
-    4: 명확한 비전과 계획
-    3: 일부 미래 목표
-    2: 막연한 미래
-    1: 미래 비전 없음
+    5: Vivid vision, backward planning, milestones
+    4: Clear vision and plan
+    3: Some future goals
+    2: Vague future
+    1: No future vision
 outputSchema:
   score: number
   successVision: string

@@ -14,9 +14,9 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
+from app.graph.graph_factory import EvaluationMode
 from app.models.graph import (
     GRAPH_SCHEMA_VERSION,
-    EvaluationMode,
     ReactFlowNode,
     ReactFlowEdge,
     ReactFlowGraph,
@@ -35,25 +35,34 @@ class TestEvaluationMode:
 
     def test_enum_values(self):
         """Test that EvaluationMode has correct canonical values."""
-        assert EvaluationMode.SIX_HATS.value == "six_hats"
+        assert EvaluationMode.SIX_SOMMELIERS.value == "six_sommeliers"
+        assert EvaluationMode.GRAND_TASTING.value == "grand_tasting"
         assert EvaluationMode.FULL_TECHNIQUES.value == "full_techniques"
 
     def test_enum_comparison(self):
         """Test enum value comparison."""
-        assert EvaluationMode.SIX_HATS == EvaluationMode("six_hats")
+        assert EvaluationMode.SIX_SOMMELIERS == EvaluationMode("six_sommeliers")
+        assert EvaluationMode.GRAND_TASTING == EvaluationMode("grand_tasting")
         assert EvaluationMode.FULL_TECHNIQUES == EvaluationMode("full_techniques")
 
     def test_enum_from_string(self):
         """Test creating enum from string values."""
-        mode1 = EvaluationMode("six_hats")
-        mode2 = EvaluationMode("full_techniques")
-        assert mode1 == EvaluationMode.SIX_HATS
-        assert mode2 == EvaluationMode.FULL_TECHNIQUES
+        mode1 = EvaluationMode("six_sommeliers")
+        mode2 = EvaluationMode("grand_tasting")
+        mode3 = EvaluationMode("full_techniques")
+        assert mode1 == EvaluationMode.SIX_SOMMELIERS
+        assert mode2 == EvaluationMode.GRAND_TASTING
+        assert mode3 == EvaluationMode.FULL_TECHNIQUES
 
     def test_invalid_enum_value(self):
         """Test that invalid enum values raise ValueError."""
         with pytest.raises(ValueError):
             EvaluationMode("invalid_mode")
+
+    def test_old_six_hats_value_rejected(self):
+        """Test that old 'six_hats' value is rejected (renamed to six_sommeliers)."""
+        with pytest.raises(ValueError):
+            EvaluationMode("six_hats")
 
 
 class TestReactFlowGraph:
@@ -111,13 +120,13 @@ class TestReactFlowGraph:
             target="node-2",
         )
         graph = ReactFlowGraph(
-            mode="six_hats",
+            mode="six_sommeliers",
             nodes=[node],
             edges=[edge],
             description="Test graph",
         )
         assert graph.graph_schema_version == GRAPH_SCHEMA_VERSION
-        assert graph.mode == "six_hats"
+        assert graph.mode == "six_sommeliers"
         assert len(graph.nodes) == 1
         assert len(graph.edges) == 1
         assert graph.description == "Test graph"
@@ -130,10 +139,10 @@ class TestReactFlowGraph:
 
         graph = ReactFlowGraph(**data)
         assert graph.graph_schema_version == 2
-        assert graph.mode == "six_hats"
+        assert graph.mode == "six_sommeliers"
         assert len(graph.nodes) == 3
         assert len(graph.edges) == 2
-        assert graph.description == "Test ReactFlow graph for six_hats mode"
+        assert graph.description == "Test ReactFlow graph for six_sommeliers mode"
 
     def test_reactflow_node_missing_id(self):
         """Test ReactFlowNode fails without id."""
@@ -306,14 +315,14 @@ class TestGraph3DPayload:
 
         payload = Graph3DPayload(
             evaluation_id="eval_123",
-            mode="six_hats",
+            mode="six_sommeliers",
             nodes=[node],
             edges=[edge],
             metadata=metadata,
         )
         assert payload.graph_schema_version == GRAPH_SCHEMA_VERSION
         assert payload.evaluation_id == "eval_123"
-        assert payload.mode == "six_hats"
+        assert payload.mode == "six_sommeliers"
 
     def test_payload_from_fixture(self):
         """Test loading valid Graph3DPayload from golden fixture."""
@@ -391,7 +400,7 @@ class TestGraph3DPayload:
 
         with pytest.raises(ValidationError):
             Graph3DPayload(
-                mode="six_hats",
+                mode="invalid_mode_for_test",
                 nodes=[node],
                 edges=[],
                 metadata=metadata,
@@ -414,7 +423,7 @@ class TestGraphSchemaVersion:
             data={},
         )
         graph = ReactFlowGraph(
-            mode="six_hats",
+            mode="six_sommeliers",
             nodes=[node],
             edges=[],
         )
@@ -449,9 +458,9 @@ class TestGraphSchemaVersion:
 
         payload = Graph3DPayload(
             evaluation_id="eval_123",
-            mode="six_hats",
+            mode="six_sommeliers",
             nodes=[node],
-            edges=[edge],
+            edges=[],
             metadata=metadata,
         )
         assert payload.graph_schema_version == 2
@@ -466,7 +475,7 @@ class TestGraphSchemaVersion:
         )
         graph = ReactFlowGraph(
             graph_schema_version=3,
-            mode="six_hats",
+            mode="six_sommeliers",
             nodes=[node],
             edges=[],
         )
@@ -496,7 +505,7 @@ class TestGraphSchemaVersion:
             Graph3DPayload(
                 graph_schema_version=3,
                 evaluation_id="eval_123",
-                mode="six_hats",
+                mode="six_sommeliers",
                 nodes=[node],
                 edges=[],
                 metadata=metadata,

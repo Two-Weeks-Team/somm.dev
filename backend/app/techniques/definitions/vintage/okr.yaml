@@ -1,6 +1,5 @@
 id: okr
 name: OKR
-nameKo: 목표 및 핵심 결과
 category: vintage
 applicableHats:
 - yellow
@@ -10,54 +9,52 @@ evaluationDimensions:
 - A1
 - C1
 - C4
-description: 'Andy Grove(Intel, 1970s)가 개발하고 John Doerr가 Google에 도입한 목표 관리 체계.
+description: 'Goal management system developed by Andy Grove (Intel, 1970s) and introduced to Google by John Doerr.
 
-  Objectives(목표)와 Key Results(핵심 결과)를 연결하여
-
-  조직의 방향성과 측정 가능한 성과 지표를 명확히 정의.
+  Clearly defines organizational direction and measurable performance indicators by connecting Objectives and Key Results.
 
   '
-promptTemplate: '## OKR 분석
+promptTemplate: '## OKR Analysis
 
 
-  이 프로젝트가 OKR 프레임워크로 목표와 성과를 정의했는지 평가하세요.
+  Evaluate if this project defined goals and performance using the OKR framework.
 
 
-  ### OKR 핵심 원칙:
+  ### OKR Core Principles:
 
-  1. **Objective (목표)**: 영감을 주는 질적 목표인가?
+  1. **Objective**: Is it an inspiring qualitative goal?
 
-  2. **Key Results (핵심 결과)**: 측정 가능한 정량적 지표인가?
+  2. **Key Results**: Are they measurable quantitative indicators?
 
-  3. **도전적 목표**: 70% 달성 가능한 stretch goal인가?
+  3. **Challenging Goal**: Is it a stretch goal achievable at 70%?
 
-  4. **정렬(Alignment)**: 팀/개인 OKR이 상위 목표와 연결되는가?
+  4. **Alignment**: Do team/individual OKRs connect to higher goals?
 
-  5. **투명성**: OKR이 공개되고 추적 가능한가?
+  5. **Transparency**: Are OKRs public and trackable?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 명확한 OKR 체계, 측정 가능, 정렬 완료
+  - 5 points: Clear OKR system, measurable, fully aligned
 
-  - 4점: 목표+핵심 결과 정의, 대부분 측정 가능
+  - 4 points: O+KR defined, mostly measurable
 
-  - 3점: 목표는 명확하나 KR이 모호
+  - 3 points: Clear objective but vague KRs
 
-  - 2점: 일반적인 목표만 존재
+  - 2 points: Only general goals exist
 
-  - 1점: 목표 정의 없음
+  - 1 points: No goal definition
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 완전한 OKR, 측정 가능, 정렬
-    4: O+KR 정의, 대부분 측정 가능
-    3: 목표 명확, KR 모호
-    2: 일반적 목표만
-    1: 목표 정의 없음
+    5: Complete OKR, measurable, aligned
+    4: O+KR defined, mostly measurable
+    3: Objective clear, KR vague
+    2: General goals only
+    1: No goal definition
 outputSchema:
   score: number
   objectives: string[]
@@ -72,5 +69,5 @@ metadata:
   requiresWebSearch: false
   requiresRAG: false
   source: Andy Grove, Intel (1970s) / John Doerr
-  academicReference: Google 성장 기여, 'Measure What Matters' (2018)
+  academicReference: Contributed to Google's growth, 'Measure What Matters' (2018)
 requiredSources: either

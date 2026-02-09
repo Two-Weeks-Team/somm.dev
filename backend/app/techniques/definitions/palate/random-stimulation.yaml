@@ -1,57 +1,54 @@
 id: random-stimulation
 name: Random Stimulation
-nameKo: 무작위 자극
 category: palate
 applicableHats:
 - green
 evaluationDimensions:
 - A3
-description: '무작위 단어, 이미지, 개념을 사용하여
+description: 'Technique using random words, images, or concepts to create unexpected connections.
 
-  예상치 못한 연결고리를 만드는 기법.
-
-  비선형적 아이디어 연결을 유도합니다.
+  Induces non-linear idea connections.
 
   '
-promptTemplate: '## Random Stimulation 분석
+promptTemplate: '## Random Stimulation Analysis
 
 
-  이 프로젝트에서 예상치 못한 연결이나 비선형적 발상이 있는지 분석하세요.
+  Analyze if there are unexpected connections or non-linear ideas in this project.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **예상치 못한 연결**: 논리적으로 연결되지 않는 요소들의 조합이 있는가?
+  1. **Unexpected Connections**: Are there combinations of elements that are not logically connected?
 
-  2. **비선형적 사고**: 점진적이지 않은 도약적 아이디어가 있는가?
+  2. **Non-linear Thinking**: Are there leap ideas that are not incremental?
 
-  3. **창의적 조합**: 일반적으로 연결되지 않는 것들을 연결했는가?
+  3. **Creative Combination**: Did it connect things that are not generally connected?
 
-  4. **serendipity**: 우연한 발견이나 영감의 흔적이 있는가?
+  4. **Serendipity**: Are there traces of accidental discovery or inspiration?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 매우 예상치 못한 연결로 혁신적 아이디어 창출
+  - 5 points: Innovative ideas created through very unexpected connections
 
-  - 4점: 비선형적 아이디어 연결이 명확함
+  - 4 points: Non-linear idea connections are clear
 
-  - 3점: 일부 예상치 못한 요소 포함
+  - 3 points: Contains some unexpected elements
 
-  - 2점: 대부분 논리적이고 예측 가능한 연결
+  - 2 points: Mostly logical and predictable connections
 
-  - 1점: 모든 연결이 명백하고 선형적
+  - 1 points: All connections are obvious and linear
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 예상치 못한 연결로 혁신적 아이디어
-    4: 비선형적 아이디어 연결 명확
-    3: 일부 예상치 못한 요소
-    2: 논리적이고 예측 가능한 연결
-    1: 모든 연결이 선형적
+    5: Innovative ideas via unexpected connections
+    4: Clear non-linear connections
+    3: Some unexpected elements
+    2: Logical/predictable connections
+    1: All linear connections
 outputSchema:
   score: number
   unexpectedConnections: string[]

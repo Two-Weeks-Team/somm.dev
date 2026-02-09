@@ -1,6 +1,5 @@
 id: gut-check
 name: Gut Check
-nameKo: 직감 체크
 category: finish
 applicableHats:
 - red
@@ -8,56 +7,54 @@ evaluationDimensions:
 - A1
 - A3
 - D3
-description: '논리적 분석을 배제하고 순수한 직관과 본능적 반응으로
+description: 'Technique to evaluate the project with pure intuition and instinct, excluding logical analysis.
 
-  프로젝트를 평가하는 기법. "뭔가 이상하다" 또는 "이건 된다"는
-
-  직감적 판단을 포착.
+  Captures gut feelings like "Something is wrong" or "This will work".
 
   '
-promptTemplate: '## Gut Check (직관적 느낌 확인)
+promptTemplate: '## Gut Check
 
 
-  논리적 분석 없이 순수한 직관으로 이 프로젝트를 평가하세요.
+  Evaluate this project with pure intuition without logical analysis.
 
-  "왜"보다 "어떤 느낌"인지에 집중하세요.
-
-
-  ### 분석 관점:
-
-  1. **본능적 반응**: 처음 봤을 때 "이건 된다" vs "뭔가 이상하다"?
-
-  2. **신뢰감**: 이 팀/프로젝트를 믿을 수 있는가?
-
-  3. **진정성**: 진심으로 문제를 해결하려는 느낌인가?
-
-  4. **완성도 느낌**: 대충 만든 것 같은가, 정성을 들인 것 같은가?
-
-  5. **성공 예감**: 이 프로젝트가 성공할 것 같은 느낌인가?
+  Focus on "how it feels" rather than "why".
 
 
-  ### 점수 기준:
+  ### Analysis Perspectives:
 
-  - 5점: "이건 무조건 된다"는 강한 긍정적 직감
+  1. **Instinctive Reaction**: "This will work" vs "Something is wrong" at first sight?
 
-  - 4점: "괜찮아 보인다"는 긍정적 느낌
+  2. **Trust**: Can you trust this team/project?
 
-  - 3점: 특별한 느낌 없음, 중립
+  3. **Authenticity**: Does it feel like they genuinely want to solve the problem?
 
-  - 2점: "뭔가 부족하다"는 불안한 느낌
+  4. **Polish**: Does it feel rough or polished?
 
-  - 1점: "이건 안 될 것 같다"는 부정적 직감
+  5. **Success Prediction**: Does it feel like it will succeed?
+
+
+  ### Scoring Criteria:
+
+  - 5 points: Strong positive gut feeling "This will definitely work"
+
+  - 4 points: Positive feeling "Looks good"
+
+  - 3 points: No special feeling, neutral
+
+  - 2 points: Anxious feeling "Something is missing"
+
+  - 1 points: Negative gut feeling "This won''t work"
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 강한 긍정적 직감
-    4: 긍정적 느낌
-    3: 중립적
-    2: 불안한 느낌
-    1: 부정적 직감
+    5: Strong positive gut feeling
+    4: Positive feeling
+    3: Neutral
+    2: Anxious feeling
+    1: Negative gut feeling
 outputSchema:
   score: number
   instinctiveReaction: string

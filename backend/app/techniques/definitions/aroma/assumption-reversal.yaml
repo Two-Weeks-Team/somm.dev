@@ -1,6 +1,5 @@
 id: assumption-reversal
 name: Assumption Reversal
-nameKo: 가정 뒤집기
 category: aroma
 applicableHats:
 - white
@@ -8,52 +7,50 @@ applicableHats:
 evaluationDimensions:
 - A1
 - A3
-description: '숨겨진 가정을 찾아내고
+description: 'Technique to find hidden assumptions and reverse them.
 
-  그 가정을 뒤집어 보는 기법.
-
-  당연하게 여기는 것들을 의심합니다.
+  Questions things taken for granted.
 
   '
-promptTemplate: '## Assumption Reversal 분석
+promptTemplate: '## Assumption Reversal Analysis
 
 
-  이 프로젝트가 숨겨진 가정을 발견하고 도전했는지 분석하세요.
+  Analyze if the project discovered and challenged hidden assumptions.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **가정 발견**: 프로젝트의 숨겨진 가정을 식별했는가?
+  1. **Assumption Discovery**: Have hidden assumptions of the project been identified?
 
-  2. **가정 명시화**: 암묵적 가정을 명시적으로 표현했는가?
+  2. **Assumption Explication**: Have implicit assumptions been expressed explicitly?
 
-  3. **가정 검증**: 각 가정의 타당성을 검토했는가?
+  3. **Assumption Verification**: Has the validity of each assumption been reviewed?
 
-  4. **가정 도전**: 가정을 뒤집어 새로운 관점을 얻었는가?
+  4. **Assumption Challenge**: Did reversing assumptions yield new perspectives?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 핵심 가정을 발견하고 뒤집어 새로운 통찰 획득
+  - 5 points: Discovered core assumptions and gained new insights by reversing them
 
-  - 4점: 주요 가정을 식별하고 검증
+  - 4 points: Identified and verified key assumptions
 
-  - 3점: 일부 가정을 인식
+  - 3 points: Recognized some assumptions
 
-  - 2점: 가정을 거의 의식하지 않음
+  - 2 points: Barely conscious of assumptions
 
-  - 1점: 가정에 대한 고려 없음
+  - 1 points: No consideration of assumptions
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 핵심 가정 발견 및 역전으로 새 통찰
-    4: 주요 가정 식별 및 검증
-    3: 일부 가정 인식
-    2: 가정을 거의 의식 안 함
-    1: 가정 고려 없음
+    5: Core assumptions reversed, new insight
+    4: Key assumptions identified/verified
+    3: Some assumptions recognized
+    2: Barely conscious
+    1: No consideration
 outputSchema:
   score: number
   assumptionsFound: string[]

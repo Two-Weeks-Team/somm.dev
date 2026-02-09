@@ -1,6 +1,5 @@
 id: indigenous-wisdom
 name: Indigenous Wisdom Integration
-nameKo: 토착 지혜
 category: cellar
 applicableHats:
 - blue
@@ -9,52 +8,50 @@ evaluationDimensions:
 - A3
 - C1
 - D1
-description: '다양한 문화권의 전통 지혜와 현대적 접근을
+description: 'Technique integrating traditional wisdom from various cultures with modern approaches.
 
-  통합하는 기법. 장기적 지속 가능성과
-
-  전체론적 관점을 추구합니다.
+  Pursues long-term sustainability and holistic perspectives.
 
   '
-promptTemplate: '## Indigenous Wisdom Integration 분석
+promptTemplate: '## Indigenous Wisdom Integration Analysis
 
 
-  프로젝트가 전통적 지혜와 지속 가능성을 고려했는지 분석하세요.
+  Analyze if the project considered traditional wisdom and sustainability.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **전체론적 시각**: 부분이 아닌 전체를 보았는가?
+  1. **Holistic View**: Did it see the whole rather than parts?
 
-  2. **장기 관점**: 7세대 후를 고려했는가?
+  2. **Long-term Perspective**: Did it consider 7 generations ahead?
 
-  3. **자연과 조화**: 자연/환경과의 조화를 고려했는가?
+  3. **Harmony with Nature**: Did it consider harmony with nature/environment?
 
-  4. **커뮤니티 영향**: 공동체에 미치는 영향을 고려했는가?
+  4. **Community Impact**: Did it consider impact on the community?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 전체론적, 장기적, 지속 가능한 관점 통합
+  - 5 points: Integrated holistic, long-term, sustainable perspectives
 
-  - 4점: 장기적 영향 고려
+  - 4 points: Long-term impact considered
 
-  - 3점: 일부 전체론적 시각
+  - 3 points: Some holistic views
 
-  - 2점: 단기 관점 중심
+  - 2 points: Short-term focused
 
-  - 1점: 전체론적 관점 없음
+  - 1 points: No holistic perspective
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 전체론적, 장기적, 지속 가능
-    4: 장기적 영향 고려
-    3: 일부 전체론적
-    2: 단기 관점
-    1: 전체론 없음
+    5: Holistic, long-term, sustainable
+    4: Long-term impact considered
+    3: Some holistic views
+    2: Short-term focused
+    1: No holistic perspective
 outputSchema:
   score: number
   holisticView: string

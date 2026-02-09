@@ -1,6 +1,5 @@
 id: resource-constraints
 name: Resource Constraints Analysis
-nameKo: 자원 제약
 category: balance
 applicableHats:
 - white
@@ -9,52 +8,50 @@ evaluationDimensions:
 - B1
 - B3
 - B4
-description: '시간, 예산, 인력, 기술 등 가용 자원을 분석하고
+description: 'A technique to analyze available resources (time, budget, manpower, technology) and evaluate feasibility within constraints.
 
-  제약 조건 내에서의 실현 가능성을 평가하는 기법.
-
-  현실적인 계획 수립의 기초가 됩니다.
+  Forms the basis for realistic planning.
 
   '
-promptTemplate: '## Resource Constraints Analysis 분석
+promptTemplate: '## Resource Constraints Analysis
 
 
-  프로젝트가 자원 제약을 현실적으로 고려했는지 분석하세요.
+  Analyze if the project has realistically considered resource constraints.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **시간 자원**: 개발 기간을 현실적으로 산정했는가?
+  1. **Time Resources**: Is the development timeline estimated realistically?
 
-  2. **인적 자원**: 팀 역량과 규모를 고려했는가?
+  2. **Human Resources**: Are team capabilities and scale considered?
 
-  3. **기술 자원**: 기술적 역량과 도구를 파악했는가?
+  3. **Technical Resources**: Are technical capabilities and tools identified?
 
-  4. **예산 자원**: 비용을 현실적으로 고려했는가?
+  4. **Budget Resources**: Are costs considered realistically?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 모든 자원 제약을 상세히 분석하고 현실적 계획 수립
+  - 5 points: Detailed analysis of all resource constraints and realistic planning
 
-  - 4점: 주요 자원 제약을 파악하고 대응
+  - 4 points: Key resource constraints identified and addressed
 
-  - 3점: 일부 제약 인식
+  - 3 points: Some constraints recognized
 
-  - 2점: 자원 제약 과소평가
+  - 2 points: Resource constraints underestimated
 
-  - 1점: 자원 제약 무시
+  - 1 points: Resource constraints ignored
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 모든 자원 제약 분석, 현실적 계획
-    4: 주요 제약 파악 및 대응
-    3: 일부 제약 인식
-    2: 제약 과소평가
-    1: 제약 무시
+    5: All constraints analyzed, realistic plan
+    4: Key constraints identified and addressed
+    3: Some constraints recognized
+    2: Constraints underestimated
+    1: Constraints ignored
 outputSchema:
   score: number
   timeConstraints: string

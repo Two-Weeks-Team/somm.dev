@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import List, Tuple
 
 import yaml
 
@@ -36,31 +36,3 @@ def load_techniques(
             )
 
     return techniques, errors
-
-
-def determine_available_inputs(repo_context: Dict) -> List[str]:
-    available = {"github"}
-    if (
-        repo_context.get("pdf_context")
-        or repo_context.get("pdf_text")
-        or repo_context.get("pdfs")
-    ):
-        available.add("pdf")
-    return sorted(available)
-
-
-def filter_techniques(
-    techniques: List[TechniqueDefinition], available_inputs: List[str]
-) -> List[TechniqueDefinition]:
-    available = set(available_inputs)
-    filtered: List[TechniqueDefinition] = []
-
-    for technique in techniques:
-        if technique.input_source == "both":
-            if {"github", "pdf"}.issubset(available):
-                filtered.append(technique)
-            continue
-        if technique.input_source in available:
-            filtered.append(technique)
-
-    return filtered

@@ -1,6 +1,5 @@
 id: fmea
 name: FMEA
-nameKo: 고장모드 영향분석
 category: body
 applicableHats:
 - black
@@ -9,58 +8,54 @@ evaluationDimensions:
 - B3
 - B4
 - C3
-description: 'US Military(1949)가 개발하고 NASA Apollo 프로그램에서 검증된 위험 분석 기법.
+description: 'Risk analysis technique developed by US Military (1949) and validated in NASA Apollo program.
 
-  ISO/IEC 60812 표준으로, 잠재적 고장 모드(Failure Mode)를 식별하고
-
-  심각도(Severity), 발생 가능성(Occurrence), 검출 가능성(Detection)을
-
-  평가하여 위험 우선순위(RPN)를 산출.
+  ISO/IEC 60812 standard. Identifies potential Failure Modes and calculates Risk Priority Number (RPN) by evaluating Severity, Occurrence, and Detection.
 
   '
-promptTemplate: '## FMEA 분석
+promptTemplate: '## FMEA Analysis
 
 
-  이 프로젝트가 FMEA 관점에서 잠재적 고장을 분석했는지 평가하세요.
+  Evaluate if the project analyzed potential failures from an FMEA perspective.
 
 
-  ### FMEA 핵심 요소:
+  ### FMEA Core Elements:
 
-  1. **고장 모드 식별**: 가능한 실패 방식을 열거했는가?
+  1. **Failure Mode ID**: Enumerated possible ways of failure?
 
-  2. **영향 분석**: 각 고장이 시스템에 미치는 영향?
+  2. **Impact Analysis**: Impact of each failure on the system?
 
-  3. **심각도(S)**: 고장 발생 시 피해의 심각성 (1-10)
+  3. **Severity (S)**: Severity of damage if failure occurs (1-10)
 
-  4. **발생도(O)**: 고장 발생 가능성 (1-10)
+  4. **Occurrence (O)**: Probability of failure occurrence (1-10)
 
-  5. **검출도(D)**: 고장을 사전에 발견할 수 있는 능력 (1-10)
+  5. **Detection (D)**: Ability to detect failure beforehand (1-10)
 
-  6. **RPN 계산**: S × O × D로 위험 우선순위 산출
+  6. **RPN Calculation**: Risk priority calculated as S × O × D
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 완전한 FMEA, RPN 계산, 개선 조치 수립
+  - 5 points: Complete FMEA, RPN calculation, improvement actions established
 
-  - 4점: 주요 고장 모드 분석, 대응책 마련
+  - 4 points: Key failure modes analyzed, countermeasures prepared
 
-  - 3점: 일부 고장 모드 식별 및 영향 분석
+  - 3 points: Some failure modes identified and impact analyzed
 
-  - 2점: 간략한 위험 요소 언급
+  - 2 points: Brief mention of risk factors
 
-  - 1점: 고장 분석 없음
+  - 1 points: No failure analysis
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 완전한 FMEA, RPN, 개선 조치
-    4: 주요 고장 분석, 대응책
-    3: 일부 고장 식별, 영향 분석
-    2: 간략한 위험 언급
-    1: 고장 분석 없음
+    5: Complete FMEA, RPN, actions
+    4: Key failures analyzed, countermeasures
+    3: Some failures identified
+    2: Brief risk mention
+    1: No failure analysis
 outputSchema:
   score: number
   failureModes: string[]
@@ -76,5 +71,5 @@ metadata:
   requiresWebSearch: false
   requiresRAG: false
   source: US Military (1949), NASA Apollo Program
-  academicReference: ISO/IEC 60812 국제 표준, 자동차/항공/의료 산업 필수
+  academicReference: ISO/IEC 60812 International Standard, essential for automotive/aerospace/medical industries
 requiredSources: either

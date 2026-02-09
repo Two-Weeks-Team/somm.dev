@@ -4,11 +4,11 @@ This module provides functions to build ReactFlow-compatible graph
 structures for visualization of the evaluation pipeline.
 """
 
+from app.graph.graph_factory import EvaluationMode
 from app.models.graph import (
     ReactFlowGraph,
     ReactFlowNode,
     ReactFlowEdge,
-    EvaluationMode,
 )
 
 # Sommelier node configurations
@@ -38,13 +38,13 @@ TECHNIQUE_GROUPS = {
 }
 
 
-def build_six_hats_topology() -> ReactFlowGraph:
-    """Build ReactFlow graph for six_hats mode.
+def build_six_sommeliers_topology() -> ReactFlowGraph:
+    """Build ReactFlow graph for six_sommeliers mode.
 
     Topology: Start -> 6 parallel agents -> Synthesis -> End
 
     Returns:
-        ReactFlowGraph with nodes and edges for the six_hats evaluation pipeline.
+        ReactFlowGraph with nodes and edges for the six_sommeliers evaluation pipeline.
     """
     nodes: list[ReactFlowNode] = []
     edges: list[ReactFlowEdge] = []
@@ -138,7 +138,7 @@ def build_six_hats_topology() -> ReactFlowGraph:
     )
 
     return ReactFlowGraph(
-        mode=EvaluationMode.SIX_HATS.value,
+        mode=EvaluationMode.SIX_SOMMELIERS.value,
         nodes=nodes,
         edges=edges,
         description="Six sommeliers evaluate in parallel, then Jean-Pierre synthesizes",

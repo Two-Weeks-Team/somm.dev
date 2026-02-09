@@ -1,6 +1,5 @@
 id: cross-pollination
 name: Cross-Pollination
-nameKo: 교차 수분
 category: palate
 applicableHats:
 - green
@@ -9,57 +8,54 @@ evaluationDimensions:
 - A3
 - B1
 - B2
-description: '다른 산업이나 분야의 아이디어를
+description: 'Technique to apply ideas from other industries or fields to the current problem.
 
-  현재 문제에 적용하는 기법.
-
-  IDEO에서 자주 활용하는 혁신 방법론.
+  Innovation methodology frequently used by IDEO.
 
   '
-promptTemplate: '## Cross-Pollination 분석
+promptTemplate: '## Cross-Pollination Analysis
 
 
-  이 프로젝트가 다른 분야에서 영감을 가져왔는지 분석하세요.
+  Analyze if this project brought inspiration from other fields.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **외부 영감**: 다른 산업/분야에서 가져온 아이디어는?
+  1. **External Inspiration**: Ideas taken from other industries/fields?
 
-  2. **적용 방식**: 다른 분야의 해결책을 어떻게 적용했는가?
+  2. **Application Method**: How were solutions from other fields applied?
 
-  3. **유사성 발견**: 다른 분야의 문제와 유사점을 발견했는가?
+  3. **Similarity Discovery**: Did it find similarities with problems in other fields?
 
-  4. **이전 가치**: 외부 아이디어가 얼마나 효과적으로 이전되었는가?
+  4. **Transfer Value**: How effectively was the external idea transferred?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 완전히 다른 산업의 솔루션을 효과적으로 적용
+  - 5 points: Effectively applied solutions from completely different industries
 
-  - 4점: 관련 없는 분야에서 명확한 영감
+  - 4 points: Clear inspiration from unrelated fields
 
-  - 3점: 인접 분야 참조
+  - 3 points: Referenced adjacent fields
 
-  - 2점: 동일 산업 내 벤치마킹
+  - 2 points: Benchmarking within the same industry
 
-  - 1점: 외부 참조 없음
+  - 1 points: No external reference
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 다른 산업 솔루션의 효과적 적용
-    4: 관련 없는 분야에서 명확한 영감
-    3: 인접 분야 참조
-    2: 동일 산업 내 벤치마킹
-    1: 외부 참조 없음
+    5: Effective application from different industry
+    4: Clear inspiration from unrelated fields
+    3: Adjacent field reference
+    2: Same industry benchmarking
+    1: No external reference
 outputSchema:
   score: number
   externalSources: string[]
   applicationMethod: string
-  similarityDiscovery: string
   transferValue: string
   reasoning: string
 metadata:
