@@ -9,6 +9,7 @@ from app.providers.llm import (
     resolve_byok,
     BYOKValidationError,
     PROVIDER_DEFAULTS,
+    _resolve_thinking_level,
 )
 
 
@@ -53,6 +54,7 @@ class TestProviderSelection:
         call_kwargs = mock_vertex.call_args.kwargs
         assert call_kwargs["api_key"] == "AQ.test-vertex-key"
         assert call_kwargs["vertexai"] is True
+        assert call_kwargs["thinking_level"] == "minimal"
 
     def test_build_llm_vertex_missing_key_raises(self):
         with patch("app.providers.llm.settings") as mock_settings:
@@ -93,6 +95,20 @@ class TestPerNodeModelConfig:
     def test_default_model_when_none(self):
         llm = build_llm("openai", "test-key", None, 0.3, 128)
         assert llm.model_name == PROVIDER_DEFAULTS["openai"]
+
+
+class TestThinkingLevel:
+    def test_flash_model_gets_minimal(self):
+        assert _resolve_thinking_level("gemini-3-flash-preview") == "minimal"
+
+    def test_pro_model_gets_low(self):
+        assert _resolve_thinking_level("gemini-3-pro-preview") == "low"
+
+    def test_non_gemini3_returns_none(self):
+        assert _resolve_thinking_level("gemini-2.5-flash") is None
+
+    def test_non_gemini_returns_none(self):
+        assert _resolve_thinking_level("gpt-4o-mini") is None
 
 
 class TestBYOKFallback:
