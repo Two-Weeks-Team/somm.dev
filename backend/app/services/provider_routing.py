@@ -59,4 +59,10 @@ def decide_provider(
     if _is_premium(user_doc):
         return ProviderDecision(provider="vertex", reason="premium")
 
+    # Block unauthorized vertex requests — only admin/premium may use vertex
+    if requested_provider and requested_provider.lower() == "vertex":
+        return ProviderDecision(
+            provider="gemini", reason="unauthorized_vertex_fallback"
+        )
+
     return ProviderDecision(provider=requested_provider or "gemini", reason="default")

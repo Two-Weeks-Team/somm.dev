@@ -1,5 +1,6 @@
 from unittest.mock import patch
 
+import pytest
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 from app.providers.llm import (
@@ -57,18 +58,12 @@ class TestProviderSelection:
     def test_build_llm_vertex_missing_key_raises(self):
         with patch("app.providers.llm.settings") as mock_settings:
             mock_settings.VERTEX_API_KEY = ""
-            try:
+            with pytest.raises(ValueError, match="VERTEX_API_KEY"):
                 build_llm("vertex", None, None, 0.1, 128)
-                assert False, "Should have raised ValueError"
-            except ValueError as e:
-                assert "VERTEX_API_KEY" in str(e)
 
     def test_build_llm_unsupported_provider_raises(self):
-        try:
+        with pytest.raises(ValueError, match="Unsupported provider"):
             build_llm("openai", "test-key", None, 0.1, 128)
-            assert False, "Should have raised ValueError"
-        except ValueError as e:
-            assert "Unsupported provider" in str(e)
 
     def test_build_llm_default_is_gemini(self):
         llm = build_llm(None, "test-key", None, 0.1, 128)

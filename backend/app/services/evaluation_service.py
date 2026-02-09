@@ -66,8 +66,14 @@ async def _prepare_repo_context(
 async def _get_user_doc(user_id: str | None) -> dict | None:
     if not user_id:
         return None
-    user_repo = UserRepository()
-    return await user_repo.get_by_id(user_id)
+    try:
+        user_repo = UserRepository()
+        return await user_repo.get_by_id(user_id)
+    except Exception:
+        logger.warning(
+            "Failed to fetch user doc for provider routing", extra={"user_id": user_id}
+        )
+        return None
 
 
 def _create_initial_state(
@@ -227,7 +233,9 @@ async def run_evaluation_pipeline(
         repo_url, api_key, github_token
     )
     user_doc = await _get_user_doc(user_id)
-    provider_decision = decide_provider(user_doc, provider, api_key)
+    provider_decision = decide_provider(
+        user_doc, provider, resolved_key if api_key else None
+    )
     state = _create_initial_state(
         repo_url, repo_context, criteria, user_id=user_id or ""
     )
@@ -493,7 +501,9 @@ async def run_evaluation_pipeline_with_events(
             repo_url, api_key, github_token
         )
         user_doc = await _get_user_doc(user_id)
-        provider_decision = decide_provider(user_doc, provider, api_key)
+        provider_decision = decide_provider(
+            user_doc, provider, resolved_key if api_key else None
+        )
         state = _create_initial_state(
             repo_url,
             repo_context,

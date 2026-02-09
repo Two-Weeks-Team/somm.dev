@@ -125,7 +125,7 @@ async def invoke_with_policy(
     Args:
         llm: The LangChain LLM instance
         messages: Messages to send to the LLM
-    provider: Provider name (gemini, vertex)
+        provider: Provider name (gemini, vertex)
         config: Retry configuration (defaults to RetryConfig())
         langchain_config: Optional config to pass to llm.ainvoke()
         on_retry: Optional callback(attempt, delay, message) for logging
