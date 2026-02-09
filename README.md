@@ -6,13 +6,28 @@ Somm.dev is a Multi-Agentic AI code evaluation platform that brings the expertis
 
 **Live:** https://www.somm.dev
 
+[![CI](https://github.com/Two-Weeks-Team/somm.dev/actions/workflows/ci.yml/badge.svg)](https://github.com/Two-Weeks-Team/somm.dev/actions/workflows/ci.yml)
+[![Deploy Frontend](https://github.com/Two-Weeks-Team/somm.dev/actions/workflows/deploy-frontend.yml/badge.svg)](https://github.com/Two-Weeks-Team/somm.dev/actions/workflows/deploy-frontend.yml)
+
+---
+
+## ✨ Features
+
+- **🆓 Free Public Evaluation** - Evaluate any public GitHub repository without login (5 evaluations/hour)
+- **🔐 GitHub OAuth** - Sign in with GitHub for unlimited evaluations and history
+- **🤖 Six AI Sommeliers** - Parallel multi-agent evaluation with specialized expertise
+- **📊 75 Evaluation Techniques** - Comprehensive code analysis across 8 categories
+- **📈 Real-time Progress** - SSE-based live streaming of evaluation progress
+- **🎨 Interactive Visualization** - ReactFlow-based graph visualization of evaluation pipeline
+- **🔑 BYOK Support** - Bring Your Own Key for Google/Vertex AI
+
 ---
 
 ## 🚀 Quick Start
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/somm.dev.git
+git clone https://github.com/Two-Weeks-Team/somm.dev.git
 cd somm.dev
 
 # Start backend
@@ -140,12 +155,14 @@ Somm.dev evaluates repositories on a **0-100 point scale**:
 
 ### Core Evaluation APIs
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/evaluate` | POST | Start code evaluation |
-| `/api/evaluate/{id}/stream` | GET | SSE stream for progress |
-| `/api/evaluate/{id}/result` | GET | Get evaluation results |
-| `/api/history` | GET | User evaluation history |
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/evaluate` | POST | Required | Start code evaluation (authenticated users) |
+| `/api/evaluate/public` | POST | None | Start free evaluation for public repos (rate limited) |
+| `/api/evaluate/{id}/stream` | GET | Optional | SSE stream for progress |
+| `/api/evaluate/{id}/result` | GET | Optional | Get evaluation results |
+| `/api/history` | GET | Required | User evaluation history |
+| `/api/quota/status` | GET | Required | Check user's evaluation quota |
 
 ### Techniques API
 
@@ -247,6 +264,6 @@ npm test
 
 ## 📝 License
 
-MIT © 2025 Somm.dev Team
+MIT © 2026 Somm.dev Team
 
 — The Somm.dev Team
