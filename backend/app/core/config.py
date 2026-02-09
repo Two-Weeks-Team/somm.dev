@@ -38,8 +38,6 @@ class Settings(BaseSettings):
 
     # LLM APIs
     GEMINI_API_KEY: str = ""
-    OPENAI_API_KEY: str = ""
-    ANTHROPIC_API_KEY: str = ""
 
     # Vertex AI Express (API key auth)
     VERTEX_API_KEY: str = ""

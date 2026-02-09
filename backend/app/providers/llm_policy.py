@@ -67,15 +67,11 @@ _semaphore_lock = asyncio.Lock()
 PROVIDER_CONCURRENCY_LIMITS = {
     "gemini": 3,
     "vertex": 3,
-    "openai": 10,
-    "anthropic": 5,
 }
 
 PROVIDER_RPM_LIMITS = {
     "gemini": 10,
     "vertex": 10,
-    "openai": 60,
-    "anthropic": 20,
 }
 
 
@@ -129,7 +125,7 @@ async def invoke_with_policy(
     Args:
         llm: The LangChain LLM instance
         messages: Messages to send to the LLM
-    provider: Provider name (gemini, vertex, openai, anthropic)
+    provider: Provider name (gemini, vertex)
         config: Retry configuration (defaults to RetryConfig())
         langchain_config: Optional config to pass to llm.ainvoke()
         on_retry: Optional callback(attempt, delay, message) for logging

@@ -63,7 +63,7 @@ class EvaluateRequest(BaseModel):
     )
     provider: str | None = Field(
         default=None,
-        description="LLM provider (gemini, vertex, openai, anthropic)",
+        description="LLM provider (gemini, vertex)",
     )
     model: str | None = Field(
         default=None,

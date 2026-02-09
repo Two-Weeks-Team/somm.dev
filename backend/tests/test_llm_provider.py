@@ -1,8 +1,6 @@
 from unittest.mock import patch
 
-from langchain_anthropic import ChatAnthropic
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_openai import ChatOpenAI
 
 from app.providers.llm import (
     build_llm,
@@ -65,13 +63,12 @@ class TestProviderSelection:
             except ValueError as e:
                 assert "VERTEX_API_KEY" in str(e)
 
-    def test_build_llm_openai_routing(self):
-        llm = build_llm("openai", "test-key", None, 0.1, 128)
-        assert isinstance(llm, ChatOpenAI)
-
-    def test_build_llm_anthropic_routing(self):
-        llm = build_llm("anthropic", "test-key", None, 0.1, 128)
-        assert isinstance(llm, ChatAnthropic)
+    def test_build_llm_unsupported_provider_raises(self):
+        try:
+            build_llm("openai", "test-key", None, 0.1, 128)
+            assert False, "Should have raised ValueError"
+        except ValueError as e:
+            assert "Unsupported provider" in str(e)
 
     def test_build_llm_default_is_gemini(self):
         llm = build_llm(None, "test-key", None, 0.1, 128)
@@ -83,18 +80,13 @@ class TestProviderSelection:
 
 
 class TestPerNodeModelConfig:
-    def test_custom_model_passed_to_provider(self):
-        llm = build_llm("openai", "test-key", "gpt-4-turbo", 0.5, 1024)
-        assert isinstance(llm, ChatOpenAI)
-        assert llm.model_name == "gpt-4-turbo"
-
-    def test_custom_temperature_applied(self):
-        llm = build_llm("openai", "test-key", None, 0.9, 128)
-        assert llm.temperature == 0.9
+    def test_custom_model_passed_to_gemini(self):
+        llm = build_llm("gemini", "test-key", "gemini-2.5-flash", 0.5, 1024)
+        assert isinstance(llm, ChatGoogleGenerativeAI)
 
     def test_default_model_when_none(self):
-        llm = build_llm("openai", "test-key", None, 0.3, 128)
-        assert llm.model_name == PROVIDER_DEFAULTS["openai"]
+        llm = build_llm("gemini", "test-key", None, 0.3, 128)
+        assert llm.model == PROVIDER_DEFAULTS["gemini"]
 
 
 class TestThinkingLevel:
@@ -124,10 +116,10 @@ class TestBYOKFallback:
 
     def test_model_fallback_enabled(self):
         llm = build_llm(
-            "openai", "test-key", "gpt-4-turbo", 0.3, 128, enable_fallback=True
+            "gemini", "test-key", "gemini-2.5-flash", 0.3, 128, enable_fallback=True
         )
         assert hasattr(llm, "fallbacks")
 
     def test_model_fallback_not_added_for_default_model(self):
-        llm = build_llm("openai", "test-key", None, 0.3, 128, enable_fallback=True)
+        llm = build_llm("gemini", "test-key", None, 0.3, 128, enable_fallback=True)
         assert not hasattr(llm, "fallbacks")
