@@ -5,6 +5,7 @@ from typing import Any, Dict, Optional
 from langchain_core.runnables import RunnableConfig
 
 from app.graph.state import EvaluationState
+from app.services.event_channel import create_sommelier_event, get_event_channel
 from app.services.repo_clone_service import clone_and_analyze
 
 logger = logging.getLogger(__name__)
@@ -14,8 +15,33 @@ async def code_analysis_enrich(
     state: EvaluationState, config: Optional[RunnableConfig] = None
 ) -> Dict[str, Any]:
     started_at = datetime.now(timezone.utc).isoformat()
+    evaluation_id = state.get("evaluation_id")
+    event_channel = get_event_channel()
+
+    if evaluation_id:
+        event_channel.emit_sync(
+            evaluation_id,
+            create_sommelier_event(
+                evaluation_id=evaluation_id,
+                sommelier="code_analysis",
+                event_type="enrichment_start",
+                progress_percent=0,
+                message="Code analysis starting...",
+            ),
+        )
 
     if existing := state.get("code_analysis"):
+        if evaluation_id:
+            event_channel.emit_sync(
+                evaluation_id,
+                create_sommelier_event(
+                    evaluation_id=evaluation_id,
+                    sommelier="code_analysis",
+                    event_type="enrichment_complete",
+                    progress_percent=100,
+                    message="Code analysis complete (cached)",
+                ),
+            )
         return {"code_analysis": existing}
 
     repo_url = state.get("repo_url", "")
@@ -25,6 +51,17 @@ async def code_analysis_enrich(
     github_token = state.get("github_token")
 
     if not repo_url:
+        if evaluation_id:
+            event_channel.emit_sync(
+                evaluation_id,
+                create_sommelier_event(
+                    evaluation_id=evaluation_id,
+                    sommelier="code_analysis",
+                    event_type="enrichment_complete",
+                    progress_percent=100,
+                    message="Code analysis skipped (no repo URL)",
+                ),
+            )
         return {
             "code_analysis": {
                 "status": "skipped",
@@ -61,6 +98,19 @@ async def code_analysis_enrich(
             "summary": clone_result.summary,
         }
 
+        if evaluation_id:
+            files_count = len(clone_result.main_files)
+            event_channel.emit_sync(
+                evaluation_id,
+                create_sommelier_event(
+                    evaluation_id=evaluation_id,
+                    sommelier="code_analysis",
+                    event_type="enrichment_complete",
+                    progress_percent=100,
+                    message=f"Code analysis complete ({files_count} files)",
+                ),
+            )
+
         result: Dict[str, Any] = {
             "code_analysis": code_analysis,
             "trace_metadata": {
@@ -80,6 +130,17 @@ async def code_analysis_enrich(
 
     except Exception as e:
         logger.exception("code_analysis_enrich failed")
+        if evaluation_id:
+            event_channel.emit_sync(
+                evaluation_id,
+                create_sommelier_event(
+                    evaluation_id=evaluation_id,
+                    sommelier="code_analysis",
+                    event_type="enrichment_error",
+                    progress_percent=100,
+                    message=f"Code analysis failed: {e}",
+                ),
+            )
         return {
             "code_analysis": {
                 "status": "error",
