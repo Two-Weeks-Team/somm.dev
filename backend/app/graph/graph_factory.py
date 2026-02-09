@@ -40,10 +40,12 @@ def _register_graphs():
 
     from app.graph.graph import create_evaluation_graph
     from app.graph.grand_tasting_graph import create_grand_tasting_graph
+    from app.graph.full_techniques_graph import create_full_techniques_graph
 
     _graph_builders = {
         EvaluationMode.SIX_SOMMELIERS.value: create_evaluation_graph,
         EvaluationMode.GRAND_TASTING.value: create_grand_tasting_graph,
+        EvaluationMode.FULL_TECHNIQUES.value: create_full_techniques_graph,
     }
 
 
