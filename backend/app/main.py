@@ -20,6 +20,7 @@ from app.api.routes import (
     admin,
     api_keys,
     techniques,
+    quota,
 )
 
 
@@ -66,6 +67,7 @@ app.include_router(admin.router, prefix=settings.API_V1_STR)
 app.include_router(api_keys.router, prefix=settings.API_V1_STR)
 
 app.include_router(techniques.router, prefix=settings.API_V1_STR)
+app.include_router(quota.router, prefix=settings.API_V1_STR)
 
 
 class HealthResponse(BaseModel):

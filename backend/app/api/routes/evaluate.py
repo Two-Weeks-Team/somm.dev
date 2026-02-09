@@ -33,6 +33,8 @@ from app.services.event_channel import (
     create_sommelier_event,
 )
 from app.services.task_registry import register_task
+from app.services.quota import check_quota
+from app.database.repositories.api_key import APIKeyRepository
 
 logger = logging.getLogger(__name__)
 
@@ -117,6 +119,28 @@ async def create_evaluation(
         f"[Evaluate] Request received: repo_url={request.repo_url}, "
         f"criteria={request.criteria}, evaluation_mode={request.evaluation_mode}, user={user.id}"
     )
+
+    has_byok = bool(request.api_key)
+    if not has_byok:
+        api_key_repo = APIKeyRepository()
+        user_keys = await api_key_repo.get_status(user.id)
+        has_byok = any(
+            k.get("provider") == "google" and k.get("encrypted_key") for k in user_keys
+        )
+
+    quota_result = await check_quota(
+        user_id=user.id,
+        role=user.role,
+        plan=user.plan,
+        evaluation_mode=request.evaluation_mode,
+        has_byok=has_byok,
+    )
+
+    if not quota_result.allowed:
+        error_msg = quota_result.reason
+        if quota_result.suggestion:
+            error_msg = f"{error_msg}. {quota_result.suggestion}"
+        raise CorkedError(error_msg)
 
     try:
         eval_id = await start_evaluation(
