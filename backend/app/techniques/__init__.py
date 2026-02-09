@@ -1,7 +1,5 @@
 from app.techniques.loader import (
     DEFAULT_TECHNIQUES_DIR,
-    determine_available_inputs,
-    filter_techniques,
     load_techniques,
 )
 from app.techniques.mappings import (
@@ -20,9 +18,11 @@ from app.techniques.registry import (
     TechniqueNotFoundError,
     TechniqueRegistry,
     TechniqueValidationError,
+    get_all_techniques,
     get_registry,
     get_technique,
     get_techniques_by_category,
+    has_readme_content,
     list_available_categories,
     list_techniques,
 )
@@ -35,8 +35,7 @@ __all__ = [
     "TechniqueNotFoundError",
     "TechniqueRegistry",
     "TechniqueValidationError",
-    "determine_available_inputs",
-    "filter_techniques",
+    "get_all_techniques",
     "get_category_summary",
     "get_p0_techniques",
     "get_primary_technique",
@@ -45,6 +44,7 @@ __all__ = [
     "get_technique_priority",
     "get_techniques_by_category",
     "get_techniques_for_category",
+    "has_readme_content",
     "list_all_mappings",
     "list_available_categories",
     "list_techniques",

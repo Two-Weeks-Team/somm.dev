@@ -1,58 +1,55 @@
 id: lateral-thinking
 name: Lateral Thinking
-nameKo: 수평적 사고
 category: palate
 applicableHats:
 - green
 evaluationDimensions:
 - A3
 - B2
-description: 'Edward de Bono가 개발한 창의적 문제 해결 방법.
+description: 'Creative problem-solving method developed by Edward de Bono.
 
-  논리적/수직적 사고 대신 측면에서 접근하여
-
-  새로운 패턴과 관점을 발견합니다.
+  Approaches from the side instead of logical/vertical thinking to discover new patterns and perspectives.
 
   '
-promptTemplate: '## Lateral Thinking 분석
+promptTemplate: '## Lateral Thinking Analysis
 
 
-  이 프로젝트가 문제에 측면에서 접근한 흔적을 분석하세요.
+  Analyze traces of approaching the problem from the side in this project.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **패턴 탈피**: 기존 사고 패턴에서 벗어난 접근이 있는가?
+  1. **Breaking Patterns**: Is there an approach that deviates from existing thinking patterns?
 
-  2. **대안적 관점**: 문제를 완전히 다른 각도에서 본 흔적은?
+  2. **Alternative Perspectives**: Are there traces of viewing the problem from a completely different angle?
 
-  3. **창의적 점프**: 논리적 단계를 건너뛴 창의적 도약이 있는가?
+  3. **Creative Jump**: Is there a creative leap skipping logical steps?
 
-  4. **새로운 패턴**: 기존에 없던 새로운 패턴을 만들었는가?
+  4. **New Patterns**: Did it create new patterns that didn''t exist before?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 완전히 새로운 패턴과 접근법 창출
+  - 5 points: Created completely new patterns and approaches
 
-  - 4점: 명확한 측면 접근으로 새로운 해결책 발견
+  - 4 points: Discovered new solutions with clear lateral approach
 
-  - 3점: 부분적으로 수평적 사고 적용
+  - 3 points: Partially applied lateral thinking
 
-  - 2점: 대부분 논리적/수직적 접근
+  - 2 points: Mostly logical/vertical approach
 
-  - 1점: 전통적인 순차적 사고만 사용
+  - 1 points: Used only traditional sequential thinking
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 완전히 새로운 패턴과 접근법
-    4: 명확한 측면 접근
-    3: 부분적 수평적 사고
-    2: 대부분 수직적 접근
-    1: 전통적 순차적 사고
+    5: Completely new patterns/approaches
+    4: Clear lateral approach
+    3: Partial lateral thinking
+    2: Mostly vertical approach
+    1: Traditional sequential thinking
 outputSchema:
   score: number
   patternBreaks: string[]

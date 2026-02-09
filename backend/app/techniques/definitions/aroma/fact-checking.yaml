@@ -1,6 +1,5 @@
 id: fact-checking
 name: Fact Checking
-nameKo: 팩트 체킹
 category: aroma
 applicableHats:
 - white
@@ -8,52 +7,52 @@ evaluationDimensions:
 - A1
 - A2
 - D1
-description: '프로젝트에서 주장하는 사실, 통계, 데이터의 정확성과
+description: 'Technique to verify the accuracy and reliability of facts, statistics, and data claimed in the project.
 
-  신뢰성을 검증하는 기법. 객관적 증거 기반 평가.
+  Objective evidence-based evaluation.
 
   '
-promptTemplate: '## Fact Checking (사실 검증)
+promptTemplate: '## Fact Checking Analysis
 
 
-  이 프로젝트에서 주장하는 사실들이 정확하고 신뢰할 수 있는지 검증하세요.
+  Verify if the facts claimed in this project are accurate and reliable.
 
 
-  ### 검증 관점:
+  ### Verification Perspectives:
 
-  1. **통계/수치 정확성**: 인용된 통계나 수치가 정확한가?
+  1. **Statistics/Numerical Accuracy**: Are quoted statistics or numbers accurate?
 
-  2. **출처 명시**: 주장의 근거가 명확히 제시되었는가?
+  2. **Source Specification**: Is the basis of the claim clearly presented?
 
-  3. **논리적 일관성**: 주장들 사이에 모순이 없는가?
+  3. **Logical Consistency**: Are there no contradictions between claims?
 
-  4. **과장 여부**: 과장되거나 오해의 소지가 있는 표현은 없는가?
+  4. **Exaggeration Check**: Are there exaggerated or misleading expressions?
 
-  5. **검증 가능성**: 주장들을 독립적으로 검증할 수 있는가?
+  5. **Verifiability**: Can the claims be independently verified?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 모든 주장이 출처와 함께 정확하게 제시됨
+  - 5 points: All claims presented accurately with sources
 
-  - 4점: 대부분 정확, 일부 출처 누락
+  - 4 points: Mostly accurate, some sources missing
 
-  - 3점: 기본적으로 정확하나 검증이 어려운 부분 있음
+  - 3 points: Basically accurate but difficult to verify some parts
 
-  - 2점: 일부 부정확하거나 과장된 주장 있음
+  - 2 points: Some inaccurate or exaggerated claims
 
-  - 1점: 주장의 근거가 불분명하거나 부정확함
+  - 1 points: Basis of claims unclear or inaccurate
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 모든 주장 정확, 출처 명시
-    4: 대부분 정확, 일부 출처 누락
-    3: 기본적 정확, 검증 어려움
-    2: 일부 부정확/과장
-    1: 근거 불분명/부정확
+    5: All claims accurate, sources cited
+    4: Mostly accurate, some sources missing
+    3: Basically accurate, verification hard
+    2: Some inaccurate/exaggerated
+    1: Basis unclear/inaccurate
 outputSchema:
   score: number
   statisticsAccuracy: string

@@ -1,58 +1,55 @@
 id: concept-blending
 name: Concept Blending
-nameKo: 개념 블렌딩
 category: palate
 applicableHats:
 - green
 evaluationDimensions:
 - A3
 - B1
-description: 'Fauconnier & Turner의 개념 혼합 이론.
+description: 'Concept Blending Theory by Fauconnier & Turner.
 
-  서로 다른 도메인의 개념들을 융합하여
-
-  새로운 창발적 의미를 생성합니다.
+  Fuses concepts from different domains to generate new emergent meanings.
 
   '
-promptTemplate: '## Concept Blending 분석
+promptTemplate: '## Concept Blending Analysis
 
 
-  이 프로젝트에서 서로 다른 개념들의 창의적 융합이 있는지 분석하세요.
+  Analyze if there is creative fusion of different concepts in this project.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **입력 공간 식별**: 어떤 도메인/개념들이 결합되었는가?
+  1. **Input Space Identification**: What domains/concepts were combined?
 
-  2. **총칭 공간**: 결합된 개념들의 공통 추상 구조는?
+  2. **Generic Space**: What is the common abstract structure of the combined concepts?
 
-  3. **혼합 공간**: 창발적 구조(emergent structure)가 생성되었는가?
+  3. **Blended Space**: Has an emergent structure been created?
 
-  4. **새로운 의미**: 입력 공간에 없던 새로운 의미가 생겼는가?
+  4. **New Meaning**: Has a new meaning not present in the input spaces emerged?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: "Land yacht"처럼 완전히 새로운 카테고리 창출
+  - 5 points: Creates a completely new category like "Land yacht"
 
-  - 4점: 2개 이상 도메인의 명확한 창발적 융합
+  - 4 points: Clear emergent fusion of 2+ domains
 
-  - 3점: 관련 분야 간 의미 있는 조합
+  - 3 points: Meaningful combination between related fields
 
-  - 2점: 동일 분야 내 기능 조합
+  - 2 points: Combination of functions within the same field
 
-  - 1점: 단일 개념 적용, 혼합 없음
+  - 1 points: Single concept applied, no blending
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 완전히 새로운 카테고리 창출
-    4: 2개+ 도메인의 창발적 융합
-    3: 관련 분야 간 의미 있는 조합
-    2: 동일 분야 내 기능 조합
-    1: 단일 개념 적용
+    5: Creates completely new category
+    4: Emergent fusion of 2+ domains
+    3: Meaningful combination of related fields
+    2: Function combination in same field
+    1: Single concept application
 outputSchema:
   score: number
   inputSpaces: string[]

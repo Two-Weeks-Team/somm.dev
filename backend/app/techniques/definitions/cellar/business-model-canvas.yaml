@@ -1,6 +1,5 @@
 id: business-model-canvas
 name: Business Model Canvas
-nameKo: 비즈니스 모델 캔버스
 category: cellar
 applicableHats:
 - blue
@@ -10,64 +9,60 @@ evaluationDimensions:
 - A3
 - A4
 - D1
-description: 'Alexander Osterwalder(2005)가 개발한 비즈니스 모델 시각화 도구.
+description: 'Business model visualization tool developed by Alexander Osterwalder (2005).
 
-  9가지 구성 요소(고객 세그먼트, 가치 제안, 채널, 고객 관계, 수익원,
-
-  핵심 자원, 핵심 활동, 핵심 파트너십, 비용 구조)로
-
-  비즈니스 모델을 한눈에 파악하고 설계.
+  Visualizes and designs business models with 9 building blocks: Customer Segments, Value Propositions, Channels, Customer Relationships, Revenue Streams, Key Resources, Key Activities, Key Partnerships, Cost Structure.
 
   '
-promptTemplate: '## Business Model Canvas 분석
+promptTemplate: '## Business Model Canvas Analysis
 
 
-  이 프로젝트가 BMC 9가지 요소를 명확히 정의했는지 평가하세요.
+  Evaluate if the project clearly defined the 9 BMC elements.
 
 
-  ### BMC 9가지 구성 요소:
+  ### BMC 9 Building Blocks:
 
-  1. **Customer Segments**: 누구를 위한 가치인가?
+  1. **Customer Segments**: Who are we creating value for?
 
-  2. **Value Propositions**: 어떤 가치를 제공하는가?
+  2. **Value Propositions**: What value do we deliver?
 
-  3. **Channels**: 어떻게 가치를 전달하는가?
+  3. **Channels**: How do we reach customers?
 
-  4. **Customer Relationships**: 고객과 어떤 관계를 맺는가?
+  4. **Customer Relationships**: What type of relationship do we establish?
 
-  5. **Revenue Streams**: 어떻게 수익을 창출하는가?
+  5. **Revenue Streams**: How do we generate revenue?
 
-  6. **Key Resources**: 핵심 자원은 무엇인가?
+  6. **Key Resources**: What key resources are required?
 
-  7. **Key Activities**: 핵심 활동은 무엇인가?
+  7. **Key Activities**: What key activities do we perform?
 
-  8. **Key Partnerships**: 핵심 파트너는 누구인가?
+  8. **Key Partnerships**: Who are our key partners?
 
-  9. **Cost Structure**: 비용 구조는 어떠한가?
+  9. **Cost Structure**: What are the important costs?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 9가지 요소 모두 명확, 요소 간 연계 설명
+  - 5 points: All 9 elements clear, connections explained
 
-  - 4점: 7-8가지 요소 정의, 핵심 요소 명확
+  - 4 points: 7-8 elements defined, key elements clear
 
-  - 3점: 5-6가지 요소 정의
+  - 3 points: 5-6 elements defined
 
-  - 2점: 3-4가지 요소만 언급
+  - 2 points: Only 3-4 elements mentioned
 
-  - 1점: 비즈니스 모델 불명확
+  - 1 points: Business model unclear
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 9가지 명확, 연계 설명
-    4: 7-8가지, 핵심 명확
-    3: 5-6가지 정의
-    2: 3-4가지만 언급
-    1: 비즈니스 모델 불명확
+    5: 9 elements clear, connections explained
+    4: 7-8 elements, key elements clear
+    3: 5-6 elements defined
+    2: 3-4 elements mentioned
+    1: Business model unclear
 outputSchema:
   score: number
   customerSegments: string
@@ -86,5 +81,5 @@ metadata:
   requiresWebSearch: false
   requiresRAG: false
   source: Alexander Osterwalder (2005)
-  academicReference: 스타트업 표준 도구, 'Business Model Generation' 베스트셀러
+  academicReference: Startup standard tool, 'Business Model Generation' bestseller
 requiredSources: either

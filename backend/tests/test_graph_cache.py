@@ -18,16 +18,18 @@ from app.services.cache_service import (
 
 class TestCacheKeyGeneration:
     def test_generate_cache_key_basic(self):
-        key = generate_cache_key("eval_abc123", "six_hats", "2d")
-        assert key == "eval_abc123:six_hats:2d:v2"
+        key = generate_cache_key("eval_abc123", "six_sommeliers", "2d")
+        assert key == "eval_abc123:six_sommeliers:2d:v2"
 
     def test_generate_cache_key_3d(self):
         key = generate_cache_key("eval_xyz789", "basic", "3d")
         assert key == "eval_xyz789:basic:3d:v2"
 
     def test_generate_cache_key_custom_version(self):
-        key = generate_cache_key("eval_abc123", "six_hats", "2d", schema_version=3)
-        assert key == "eval_abc123:six_hats:2d:v3"
+        key = generate_cache_key(
+            "eval_abc123", "six_sommeliers", "2d", schema_version=3
+        )
+        assert key == "eval_abc123:six_sommeliers:2d:v3"
 
     def test_generate_cache_key_stability(self):
         key1 = generate_cache_key("eval_abc", "mode1", "2d")

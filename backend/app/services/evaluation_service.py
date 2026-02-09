@@ -18,11 +18,7 @@ from app.database.repositories.result import ResultRepository
 from app.database.repositories.user import UserRepository
 from app.graph.state import EvaluationState
 from app.services.github_service import GitHubService, parse_github_url
-from app.techniques import (
-    determine_available_inputs,
-    filter_techniques,
-    load_techniques,
-)
+from app.techniques import load_techniques
 from app.providers.llm import resolve_byok
 from app.services.provider_routing import decide_provider
 
@@ -52,9 +48,8 @@ async def _prepare_repo_context(
     techniques, technique_errors = load_techniques()
     if technique_errors:
         logger.warning("Technique load errors", extra={"errors": technique_errors})
-    available_inputs = determine_available_inputs(repo_context)
-    filtered = filter_techniques(techniques, available_inputs)
-    repo_context["techniques"] = [tech.model_dump() for tech in filtered]
+    # Load all 75 techniques without source-based filtering
+    repo_context["techniques"] = [tech.model_dump() for tech in techniques]
 
     resolved_key, byok_error = resolve_byok(api_key)
     if byok_error:

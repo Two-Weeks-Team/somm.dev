@@ -1,6 +1,5 @@
 id: biomimicry
 name: Biomimicry
-nameKo: 생체모방
 category: palate
 applicableHats:
 - green
@@ -8,52 +7,50 @@ evaluationDimensions:
 - A3
 - B1
 - B2
-description: '자연의 디자인과 프로세스에서 영감을 얻어
+description: 'A technique to solve problems by getting inspiration from nature''s designs and processes.
 
-  문제를 해결하는 기법.
-
-  38억 년 진화의 지혜를 활용합니다.
+  Utilizes the wisdom of 3.8 billion years of evolution.
 
   '
-promptTemplate: '## Biomimicry 분석
+promptTemplate: '## Biomimicry Analysis
 
 
-  이 프로젝트가 자연에서 영감을 받았는지 분석하세요.
+  Analyze if the project was inspired by nature.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **자연 모방**: 자연의 디자인이나 프로세스를 모방했는가?
+  1. **Nature Mimicry**: Did it mimic nature''s designs or processes?
 
-  2. **생물학적 영감**: 생물의 특성에서 아이디어를 얻었는가?
+  2. **Biological Inspiration**: Did it get ideas from biological characteristics?
 
-  3. **생태계 원리**: 생태계의 원리(순환, 적응 등)를 적용했는가?
+  3. **Ecosystem Principles**: Did it apply ecosystem principles (circulation, adaptation, etc.)?
 
-  4. **지속가능성**: 자연의 지속가능한 방식을 참고했는가?
+  4. **Sustainability**: Did it reference nature''s sustainable methods?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 자연의 원리를 핵심 솔루션에 깊이 적용
+  - 5 points: Principles of nature deeply applied to core solution
 
-  - 4점: 명확한 생체모방 요소가 설계에 반영
+  - 4 points: Clear biomimicry elements reflected in design
 
-  - 3점: 부분적으로 자연에서 영감
+  - 3 points: Partially inspired by nature
 
-  - 2점: 자연 참조가 피상적
+  - 2 points: Nature reference is superficial
 
-  - 1점: 생체모방 요소 없음
+  - 1 points: No biomimicry elements
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 자연 원리를 핵심에 깊이 적용
-    4: 명확한 생체모방 요소 반영
-    3: 부분적 자연 영감
-    2: 피상적 자연 참조
-    1: 생체모방 요소 없음
+    5: Nature principles deeply applied
+    4: Clear biomimicry elements
+    3: Partially inspired by nature
+    2: Superficial nature reference
+    1: No biomimicry elements
 outputSchema:
   score: number
   natureInspiration: string[]

@@ -1,6 +1,5 @@
 id: first-principles-thinking
 name: First Principles Thinking
-nameKo: 제1원칙 사고
 category: palate
 applicableHats:
 - green
@@ -9,52 +8,50 @@ evaluationDimensions:
 - A3
 - B1
 - B2
-description: '기존의 가정과 관행을 근본적으로 분해하고,
+description: 'Thinking technique to fundamentally disassemble existing assumptions and practices and rebuild from basic principles.
 
-  기본 원리에서부터 새롭게 재구축하는 사고 기법.
-
-  Elon Musk가 SpaceX, Tesla에서 활용한 것으로 유명.
+  Famous for being used by Elon Musk at SpaceX and Tesla.
 
   '
-promptTemplate: '## First Principles Thinking 분석
+promptTemplate: '## First Principles Thinking Analysis
 
 
-  이 프로젝트가 기존 가정을 어떻게 도전하고 재구축했는지 분석하세요.
+  Analyze how this project challenged and rebuilt existing assumptions.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **기존 가정 식별**: 이 도메인에서 "당연하다고 여겨지는" 가정들은?
+  1. **Identify Existing Assumptions**: What are the assumptions taken for granted in this domain?
 
-  2. **도전 증거**: 팀이 이 가정들에 명시적으로 도전한 증거는?
+  2. **Evidence of Challenge**: Is there evidence the team explicitly challenged these assumptions?
 
-  3. **기본 요소 분해**: 문제를 기본 구성요소로 분해한 흔적은?
+  3. **Decomposition to Basics**: Are there traces of breaking the problem down to basic components?
 
-  4. **재구축 방식**: 기본 원리에서 새롭게 구축한 부분은?
+  4. **Reconstruction Method**: Which parts were newly built from basic principles?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 산업 패러다임 재정의 수준 (예: "배터리팩 가격을 원자재 기준으로 재계산")
+  - 5 points: Redefined industry paradigm (e.g., "Recalculated battery pack price based on raw materials")
 
-  - 4점: 2개 이상 핵심 가정에 도전하고 대안 제시
+  - 4 points: Challenged 2+ key assumptions and suggested alternatives
 
-  - 3점: 1개 핵심 가정에 도전
+  - 3 points: Challenged 1 key assumption
 
-  - 2점: 기존 접근에 미미한 변형
+  - 2 points: Minor variation to existing approach
 
-  - 1점: 기존 솔루션을 그대로 복제
+  - 1 points: Copied existing solutions as is
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 산업 패러다임 재정의 수준
-    4: 2개+ 핵심 가정 도전 및 대안 제시
-    3: 1개 핵심 가정 도전
-    2: 기존 접근에 미미한 변형
-    1: 기존 솔루션 복제
+    5: Redefined industry paradigm
+    4: Challenged 2+ key assumptions
+    3: Challenged 1 key assumption
+    2: Minor variation
+    1: Copied existing solution
 outputSchema:
   score: number
   assumptionsChallenged: string[]

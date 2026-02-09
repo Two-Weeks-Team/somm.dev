@@ -1,9 +1,15 @@
-"""Graph Factory for selecting evaluation mode graphs."""
+"""Graph Factory for selecting evaluation mode graphs.
 
-from enum import Enum
+This module provides graph builder registry and lookup functionality.
+EvaluationMode enum is defined in app.models.graph to avoid circular imports.
+"""
+
 from typing import Callable, Dict
 
 from langgraph.graph.state import CompiledStateGraph
+
+# Re-export EvaluationMode from models for backward compatibility
+from app.models.graph import EvaluationMode
 
 __all__ = [
     "EvaluationMode",
@@ -12,11 +18,6 @@ __all__ = [
     "list_available_modes",
     "is_valid_mode",
 ]
-
-
-class EvaluationMode(str, Enum):
-    SIX_SOMMELIERS = "six_sommeliers"
-    GRAND_TASTING = "grand_tasting"
 
 
 class InvalidEvaluationModeError(Exception):

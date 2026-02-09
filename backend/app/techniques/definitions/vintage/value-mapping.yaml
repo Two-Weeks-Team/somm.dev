@@ -1,65 +1,62 @@
 id: value-mapping
 name: Value Proposition Mapping
-nameKo: 가치 제안 매핑
 category: vintage
 applicableHats:
 - yellow
 evaluationDimensions:
 - A3
 - A4
-description: '프로젝트가 제공하는 가치와 고객의 니즈를 매핑하여
+description: 'Technique to analyze the fit of the value proposition by mapping the value provided by the project and customer needs.
 
-  가치 제안의 적합성을 분석하는 기법.
-
-  Alexander Osterwalder의 Value Proposition Canvas 기반.
+  Based on Alexander Osterwalder''s Value Proposition Canvas.
 
   '
-promptTemplate: '## Value Proposition Mapping (가치 제안 매핑)
+promptTemplate: '## Value Proposition Mapping
 
 
-  이 프로젝트의 가치 제안이 고객 니즈와 얼마나 잘 맞는지 분석하세요.
+  Analyze how well the project''s value proposition fits customer needs.
 
 
-  ### 고객 프로필 분석:
+  ### Customer Profile Analysis:
 
-  1. **고객의 할 일 (Jobs)**: 고객이 해결하려는 과제는?
+  1. **Customer Jobs**: What tasks are customers trying to solve?
 
-  2. **고통점 (Pains)**: 고객의 불편함과 장애물은?
+  2. **Pains**: What are the customer''s discomforts and obstacles?
 
-  3. **얻고자 하는 것 (Gains)**: 고객이 원하는 결과와 혜택은?
-
-
-  ### 가치 제안 분석:
-
-  1. **제품/서비스**: 어떤 솔루션을 제공하는가?
-
-  2. **고통 해소제**: 어떤 고통을 줄여주는가?
-
-  3. **이득 창출자**: 어떤 이득을 제공하는가?
+  3. **Gains**: What results and benefits do customers want?
 
 
-  ### 점수 기준:
+  ### Value Proposition Analysis:
 
-  - 5점: 고객 니즈와 가치 제안이 완벽히 일치
+  1. **Products/Services**: What solution is provided?
 
-  - 4점: 대부분의 니즈를 충족하는 가치 제안
+  2. **Pain Relievers**: What pains are alleviated?
 
-  - 3점: 일부 니즈만 충족
+  3. **Gain Creators**: What gains are provided?
 
-  - 2점: 가치 제안과 니즈 간 갭이 큼
 
-  - 1점: 가치 제안이 불명확하거나 니즈와 무관
+  ### Scoring Criteria:
+
+  - 5 points: Perfect match between customer needs and value proposition
+
+  - 4 points: Value proposition meeting most needs
+
+  - 3 points: Meets some needs
+
+  - 2 points: Large gap between value and needs
+
+  - 1 points: Value proposition unclear or irrelevant to needs
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 가치 제안과 니즈 완벽 일치
-    4: 대부분 니즈 충족
-    3: 일부 니즈 충족
-    2: 가치-니즈 간 갭 큼
-    1: 가치 제안 불명확
+    5: Perfect match value-needs
+    4: Meets most needs
+    3: Meets some needs
+    2: Large gap value-needs
+    1: Value proposition unclear
 outputSchema:
   score: number
   customerJobs: string[]

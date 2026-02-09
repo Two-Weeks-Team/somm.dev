@@ -1,6 +1,5 @@
 id: permission-giving
 name: Permission Giving
-nameKo: 허락 주기
 category: vintage
 applicableHats:
 - yellow
@@ -9,52 +8,50 @@ evaluationDimensions:
 - A3
 - C2
 - D3
-description: '스스로에게 "~해도 된다"라고 허락을 주어
+description: 'Technique to release self-limitation by giving permission to oneself saying "It''s okay to...".
 
-  자기 제한을 해제하는 기법.
-
-  내면의 비판자를 잠재우고 자유롭게 상상합니다.
+  Silences the inner critic and imagines freely.
 
   '
-promptTemplate: '## Permission Giving 분석
+promptTemplate: '## Permission Giving Analysis
 
 
-  프로젝트가 자기 제한을 극복하고 과감한 시도를 했는지 분석하세요.
+  Analyze if the project overcame self-limitations and made bold attempts.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **자기 제한 인식**: 스스로의 제한을 인식했는가?
+  1. **Self-limitation Awareness**: Were self-limitations recognized?
 
-  2. **허락 부여**: "~해도 된다"고 스스로 허락했는가?
+  2. **Giving Permission**: Did they give permission saying "It''s okay to..."?
 
-  3. **과감한 시도**: 평소 하지 않던 시도를 했는가?
+  3. **Bold Attempt**: Did they try things they wouldn''t normally do?
 
-  4. **제약 해제**: 불필요한 제약을 해제했는가?
+  4. **Constraint Release**: Were unnecessary constraints released?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 자기 제한 극복, 과감한 시도, 새로운 영역 개척
+  - 5 points: Overcame self-limitation, bold attempt, pioneered new area
 
-  - 4점: 의식적으로 제한 해제
+  - 4 points: Consciously released limitations
 
-  - 3점: 일부 새로운 시도
+  - 3 points: Some new attempts
 
-  - 2점: 안전지대 내에서만 활동
+  - 2 points: Activity within comfort zone
 
-  - 1점: 자기 제한 인식 없음
+  - 1 points: No awareness of self-limitation
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 제한 극복, 과감한 시도
-    4: 의식적 제한 해제
-    3: 일부 새로운 시도
-    2: 안전지대 내 활동
-    1: 제한 인식 없음
+    5: Overcame limitation, bold attempt
+    4: Conscious release
+    3: Some new attempts
+    2: Comfort zone activity
+    1: No limitation awareness
 outputSchema:
   score: number
   selfLimitations: string[]

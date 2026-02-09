@@ -1,6 +1,5 @@
 id: meta-analysis
 name: Meta-analysis
-nameKo: 메타 분석
 category: cellar
 applicableHats:
 - blue
@@ -9,52 +8,50 @@ evaluationDimensions:
 - A1
 - B2
 - D1
-description: '여러 분석 결과를 종합하여
+description: 'Technique to synthesize multiple analysis results to derive higher-level patterns and insights.
 
-  상위 수준의 패턴과 인사이트를 도출하는 기법.
-
-  개별 분석을 넘어 전체적 그림을 봅니다.
+  Looks at the big picture beyond individual analyses.
 
   '
-promptTemplate: '## Meta-analysis 분석
+promptTemplate: '## Meta-analysis
 
 
-  프로젝트가 다양한 분석을 종합하여 메타 인사이트를 도출했는지 분석하세요.
+  Analyze if the project derived meta-insights by synthesizing various analyses.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **다중 분석**: 여러 관점에서 분석했는가?
+  1. **Multiple Analyses**: Was it analyzed from multiple perspectives?
 
-  2. **패턴 발견**: 분석들에서 공통 패턴을 발견했는가?
+  2. **Pattern Discovery**: Were common patterns found in analyses?
 
-  3. **상충점 해결**: 상충되는 발견들을 어떻게 처리했는가?
+  3. **Conflict Resolution**: How were conflicting findings handled?
 
-  4. **종합 인사이트**: 상위 수준의 통찰을 도출했는가?
+  4. **Comprehensive Insight**: Were higher-level insights derived?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 다중 분석 종합, 상위 패턴 발견, 통합 인사이트
+  - 5 points: Multiple analyses synthesized, high-level patterns found, integrated insight
 
-  - 4점: 분석 결과 종합 및 패턴 도출
+  - 4 points: Analysis results synthesized and patterns derived
 
-  - 3점: 일부 분석 종합
+  - 3 points: Some analyses synthesized
 
-  - 2점: 개별 분석 나열
+  - 2 points: Individual analyses listed
 
-  - 1점: 종합 없음
+  - 1 points: No synthesis
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 다중 분석, 상위 패턴, 통합 인사이트
-    4: 분석 종합 및 패턴
-    3: 일부 분석 종합
-    2: 개별 분석 나열
-    1: 종합 없음
+    5: Multiple analyses synthesized, patterns, insight
+    4: Synthesized and patterns derived
+    3: Some synthesis
+    2: Individual analyses listed
+    1: No synthesis
 outputSchema:
   score: number
   analysesPerformed: string[]
