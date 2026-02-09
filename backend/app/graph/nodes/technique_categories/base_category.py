@@ -45,7 +45,6 @@ class BaseCategoryNode(ABC):
         sem: asyncio.Semaphore,
         technique_id: str,
         state: Dict[str, Any],
-        config: Optional[RunnableConfig],
     ) -> Dict[str, Any]:
         async with sem:
             try:
@@ -119,7 +118,7 @@ class BaseCategoryNode(ABC):
         sem = asyncio.Semaphore(settings.MAX_CONCURRENT_TECHNIQUES)
 
         tasks = [
-            self._execute_technique_with_limit(sem, tid, dict(state), config)
+            self._execute_technique_with_limit(sem, tid, dict(state))
             for tid in technique_ids
         ]
 
@@ -176,9 +175,8 @@ class BaseCategoryNode(ABC):
         aggregated = self.router.aggregate_results(successful_results)
 
         all_failed_techniques = (
-            list(aggregated.failed_techniques) if aggregated.failed_techniques else []
+            list(aggregated.failed_techniques or []) + failed_techniques
         )
-        all_failed_techniques.extend(failed_techniques)
 
         if evaluation_id:
             event_channel.emit_sync(
