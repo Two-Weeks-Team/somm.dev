@@ -7,9 +7,11 @@ import { EvaluationForm } from '../../components/EvaluationForm';
 import { api } from '../../lib/api';
 import { CriteriaType, EvaluationMode } from '../../types';
 import { Sparkles } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 export default function EvaluatePage() {
   const router = useRouter();
+  const { isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -18,7 +20,14 @@ export default function EvaluatePage() {
     setError(null);
 
     try {
-      const { id } = await api.startEvaluation(repoUrl, criteria, evaluationMode);
+      let id;
+      if (isAuthenticated) {
+        const result = await api.startEvaluation(repoUrl, criteria, evaluationMode);
+        id = result.id;
+      } else {
+        const result = await api.startPublicEvaluation(repoUrl);
+        id = result.id;
+      }
       router.push(`/progress/${id}?mode=${evaluationMode}`);
     } catch (err) {
       console.error('Evaluation failed:', err);
