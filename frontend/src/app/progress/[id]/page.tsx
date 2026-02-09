@@ -37,10 +37,7 @@ export default function ProgressPage() {
   const mode: EvaluationMode = modeParam === 'grand_tasting' ? 'grand_tasting' : 
                                modeParam === 'full_techniques' ? 'full_techniques' : 'six_sommeliers';
   
-  if (mode === 'full_techniques') {
-    return <FullTechniquesProgress evaluationId={id} />;
-  }
-
+  // All hooks MUST be called before any conditional returns (Rules of Hooks)
   const { completedSommeliers, errors, isComplete, progress, status, connectionStatus, retryInfo } = useEvaluationStream(id);
 
   const evaluators = useMemo(() => {
@@ -65,6 +62,11 @@ export default function ProgressPage() {
     const remaining = Math.ceil((100 - progress) / 50);
     return Math.max(1, remaining);
   }, [progress]);
+
+  // Conditional return AFTER all hooks
+  if (mode === 'full_techniques') {
+    return <FullTechniquesProgress evaluationId={id} />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-[#FDFBF7] via-[#FAF4E8] to-[#F5EED8] py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">

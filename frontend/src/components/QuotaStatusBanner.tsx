@@ -102,7 +102,7 @@ export const QuotaStatusBanner: React.FC<QuotaStatusBannerProps> = ({ evaluation
           <div className="flex-1">
             <h4 className="font-medium text-red-900">Daily limit reached</h4>
             <p className="mt-1 text-sm text-red-700">
-              You've used all your free evaluations for today. Register your own API key for unlimited access.
+              You have used all your free evaluations for today. Register your own API key for unlimited access.
             </p>
             <Link 
               href="/settings/api-keys"
@@ -127,7 +127,7 @@ export const QuotaStatusBanner: React.FC<QuotaStatusBannerProps> = ({ evaluation
             </div>
             <div>
               <p className="text-sm font-medium text-[#722F37]">
-                Today's free evaluations: <span className="font-bold">{quota.remaining}/{quota.daily_limit}</span>
+                Free evaluations today: <span className="font-bold">{quota.remaining}/{quota.daily_limit}</span>
               </p>
               <p className="text-xs text-[#722F37]/70">
                 Resets at midnight UTC
