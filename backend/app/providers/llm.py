@@ -13,7 +13,11 @@ from app.core.config import settings
 DEFAULT_TEMPERATURE = 0.7
 DEFAULT_MAX_OUTPUT_TOKENS = 2048
 DEFAULT_REQUEST_TIMEOUT = 60
-GEMINI3_THINKING_BUDGET = 1024
+
+GEMINI3_THINKING_LEVELS = {
+    "flash": "minimal",
+    "pro": "low",
+}
 
 
 @dataclass
@@ -55,6 +59,16 @@ def resolve_byok(
             provider=provider,
         )
     return api_key, None
+
+
+def _resolve_thinking_level(model_name: str) -> Optional[str]:
+    """Flash→minimal, Pro→low. Pro doesn't support minimal/medium."""
+    name = model_name.lower()
+    if "gemini-3" not in name:
+        return None
+    if "-pro" in name:
+        return GEMINI3_THINKING_LEVELS["pro"]
+    return GEMINI3_THINKING_LEVELS["flash"]
 
 
 PROVIDER_DEFAULTS = {
@@ -106,8 +120,9 @@ def build_llm(
             "google_api_key": resolved_key or settings.GEMINI_API_KEY,
             "timeout": DEFAULT_REQUEST_TIMEOUT,
         }
-        if "gemini-3" in resolved_model.lower():
-            gemini_kwargs["thinking_budget"] = GEMINI3_THINKING_BUDGET
+        thinking_level = _resolve_thinking_level(resolved_model)
+        if thinking_level:
+            gemini_kwargs["thinking_level"] = thinking_level
         llm = ChatGoogleGenerativeAI(**gemini_kwargs)
     elif provider_key == "vertex":
         resolved_model = model or PROVIDER_DEFAULTS["vertex"]
@@ -122,8 +137,9 @@ def build_llm(
             "api_key": settings.VERTEX_API_KEY,
             "vertexai": True,
         }
-        if "gemini-3" in resolved_model.lower():
-            vertex_kwargs["thinking_budget"] = GEMINI3_THINKING_BUDGET
+        thinking_level = _resolve_thinking_level(resolved_model)
+        if thinking_level:
+            vertex_kwargs["thinking_level"] = thinking_level
         llm = ChatGoogleGenerativeAI(**vertex_kwargs)
     elif provider_key == "openai":
         llm = ChatOpenAI(
