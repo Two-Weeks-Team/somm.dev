@@ -6,6 +6,7 @@ from langchain_core.runnables import RunnableConfig
 
 from app.core.config import settings
 from app.graph.state import EvaluationState
+from app.services.event_channel import create_sommelier_event, get_event_channel
 
 logger = logging.getLogger(__name__)
 
@@ -23,11 +24,47 @@ async def web_search_enrich(
     state: EvaluationState, config: Optional[RunnableConfig] = None
 ) -> Dict[str, Any]:
     started_at = datetime.now(timezone.utc).isoformat()
+    evaluation_id = state.get("evaluation_id")
+    event_channel = get_event_channel()
+
+    if evaluation_id:
+        event_channel.emit_sync(
+            evaluation_id,
+            create_sommelier_event(
+                evaluation_id=evaluation_id,
+                sommelier="web_search",
+                event_type="enrichment_start",
+                progress_percent=0,
+                message="Web search enrichment starting...",
+            ),
+        )
 
     if existing := state.get("web_search_context"):
+        if evaluation_id:
+            event_channel.emit_sync(
+                evaluation_id,
+                create_sommelier_event(
+                    evaluation_id=evaluation_id,
+                    sommelier="web_search",
+                    event_type="enrichment_complete",
+                    progress_percent=100,
+                    message="Web search enrichment complete (cached)",
+                ),
+            )
         return {"web_search_context": existing}
 
     if not settings.VERTEX_API_KEY:
+        if evaluation_id:
+            event_channel.emit_sync(
+                evaluation_id,
+                create_sommelier_event(
+                    evaluation_id=evaluation_id,
+                    sommelier="web_search",
+                    event_type="enrichment_complete",
+                    progress_percent=100,
+                    message="Web search skipped (no API key)",
+                ),
+            )
         return {
             "web_search_context": {
                 "query": "",
@@ -85,6 +122,18 @@ async def web_search_enrich(
                             }
                         )
 
+        if evaluation_id:
+            event_channel.emit_sync(
+                evaluation_id,
+                create_sommelier_event(
+                    evaluation_id=evaluation_id,
+                    sommelier="web_search",
+                    event_type="enrichment_complete",
+                    progress_percent=100,
+                    message=f"Web search complete ({len(sources)} sources)",
+                ),
+            )
+
         return {
             "web_search_context": {
                 "query": query,
@@ -103,6 +152,17 @@ async def web_search_enrich(
 
     except Exception as e:
         logger.warning(f"Web search grounding failed: {e}")
+        if evaluation_id:
+            event_channel.emit_sync(
+                evaluation_id,
+                create_sommelier_event(
+                    evaluation_id=evaluation_id,
+                    sommelier="web_search",
+                    event_type="enrichment_error",
+                    progress_percent=100,
+                    message=f"Web search failed: {e}",
+                ),
+            )
         return {
             "web_search_context": {
                 "query": query,
