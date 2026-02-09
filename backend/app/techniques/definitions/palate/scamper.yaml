@@ -46,7 +46,7 @@ promptTemplate: '## SCAMPER Analysis
 
   - 2 points: 1 SCAMPER element partially applied
 
-  - 1 points: No SCAMPER elements applied (Existing method as is)
+  - 1 point: No SCAMPER elements applied (Existing method as is)
 
   '
 scoring:

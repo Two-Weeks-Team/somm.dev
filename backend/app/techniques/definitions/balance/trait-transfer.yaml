@@ -40,7 +40,7 @@ promptTemplate: '## Trait Transfer Analysis
 
   - 2 points: Superficial benchmarking
 
-  - 1 points: No trait transfer
+  - 1 point: No trait transfer
 
   '
 scoring:

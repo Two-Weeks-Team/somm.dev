@@ -13,7 +13,7 @@ from datetime import datetime
 from enum import Enum
 from typing import List
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class RatingTier(str, Enum):
@@ -96,15 +96,14 @@ class FinalEvaluation(BaseModel):
 class ResultInDB(BaseModel):
     """Model for result data stored in the database."""
 
+    model_config = ConfigDict(populate_by_name=True)
+
     id: str = Field(..., alias="_id", description="MongoDB document ID")
     evaluation_id: str = Field(..., description="Reference to the evaluation")
     final_evaluation: FinalEvaluation = Field(
         ..., description="Final evaluation results"
     )
     created_at: datetime = Field(..., description="Result creation timestamp")
-
-    class Config:
-        populate_by_name = True
 
 
 class ResultResponse(BaseModel):

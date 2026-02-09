@@ -42,7 +42,7 @@ promptTemplate: '## Persona Journey Mapping Analysis
 
   - 2 points: Target user mentioned only
 
-  - 1 points: No user definition
+  - 1 point: No user definition
 
   '
 scoring:

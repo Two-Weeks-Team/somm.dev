@@ -40,7 +40,7 @@ promptTemplate: '## Chaos Engineering Analysis
 
   - 2 points: Failure response unclear
 
-  - 1 points: No consideration of failure/recovery
+  - 1 point: No consideration of failure/recovery
 
   '
 scoring:

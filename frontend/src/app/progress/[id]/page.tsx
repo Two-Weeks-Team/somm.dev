@@ -4,7 +4,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { useEvaluationStream } from '../../../hooks/useEvaluationStream';
-import { Sparkles, CheckCircle2, Loader2, AlertTriangle, XCircle, ArrowLeft, WifiOff, Clock, GitBranch } from 'lucide-react';
+import { Sparkles, CheckCircle2, Loader2, AlertTriangle, XCircle, ArrowLeft, WifiOff, Clock } from 'lucide-react';
 import { EvaluationMode } from '../../../types';
 
 const SIX_SOMMELIERS = [

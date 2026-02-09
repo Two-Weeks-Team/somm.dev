@@ -44,7 +44,7 @@ promptTemplate: '## FMEA Analysis
 
   - 2 points: Brief mention of risk factors
 
-  - 1 points: No failure analysis
+  - 1 point: No failure analysis
 
   '
 scoring:

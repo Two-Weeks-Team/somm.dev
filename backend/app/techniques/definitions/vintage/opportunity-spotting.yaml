@@ -41,7 +41,7 @@ promptTemplate: '## Opportunity Spotting Analysis
 
   - 2 points: Opportunity unclear or market is small
 
-  - 1 points: No market opportunity analysis
+  - 1 point: No market opportunity analysis
 
   '
 scoring:

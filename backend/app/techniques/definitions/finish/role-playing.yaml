@@ -40,7 +40,7 @@ promptTemplate: '## Role Playing Analysis
 
   - 2 points: Superficial user mention
 
-  - 1 points: No user perspective
+  - 1 point: No user perspective
 
   '
 scoring:

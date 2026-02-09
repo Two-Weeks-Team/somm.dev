@@ -39,7 +39,7 @@ promptTemplate: '## Morphological Analysis
 
   - 2 points: Considered only some dimensions
 
-  - 1 points: Single dimension approach
+  - 1 point: Single dimension approach
 
   '
 scoring:

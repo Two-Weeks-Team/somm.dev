@@ -40,7 +40,7 @@ promptTemplate: '## Resource Constraints Analysis
 
   - 2 points: Resource constraints underestimated
 
-  - 1 points: Resource constraints ignored
+  - 1 point: Resource constraints ignored
 
   '
 scoring:

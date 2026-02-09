@@ -43,7 +43,7 @@ promptTemplate: '## Kano Model Analysis
 
   - 2 points: Feature listing only, no classification
 
-  - 1 points: Priorities not considered
+  - 1 point: Priorities not considered
 
   '
 scoring:

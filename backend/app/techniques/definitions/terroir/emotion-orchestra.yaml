@@ -39,7 +39,7 @@ promptTemplate: '## Emotion Orchestra Analysis
 
   - 2 points: Flat emotion
 
-  - 1 points: No consideration of emotion
+  - 1 point: No consideration of emotion
 
   '
 scoring:

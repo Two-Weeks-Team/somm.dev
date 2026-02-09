@@ -41,7 +41,7 @@ promptTemplate: '## Strength Analysis
 
   - 2 points: Strengths exist but sustainability questionable
 
-  - 1 points: No special strengths
+  - 1 point: No special strengths
 
   '
 scoring:

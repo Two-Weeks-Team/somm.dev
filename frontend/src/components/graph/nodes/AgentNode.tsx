@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Handle, Position, NodeProps, Node } from '@xyflow/react';
 import { ReactFlowNodeData } from '@/types/graph';
-import { User, CheckCircle, XCircle, Clock, Loader2 } from 'lucide-react';
+import { CheckCircle, XCircle, Clock, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { getSommelierTheme } from '@/lib/sommeliers';
 import { cn } from '@/lib/utils';

@@ -11,7 +11,7 @@ description: 'Technique to prioritize risks by classifying them into a 2D matrix
 
   '
 promptTemplate: "## Risk Matrix Analysis\n\nEvaluate the risks of this project by classifying them by likelihood and impact.\n\n### Risk Matrix:\n```\n            │ Impact Low  │ Impact Med  │ Impact High\n────────────┼─────────────┼─────────────┼─────────────\nProb High   │   Caution   │   Warning   │   Danger\nProb Med    │   Observe   │   Caution   │   Warning\nProb Low    │   Accept    │   Observe   │   Caution\n```\n\n### Analysis Perspectives:\n1. **Technical Risks**: Implementation failure, performance issues, security vulnerabilities\n2. **Business Risks**: Market changes, competition, revenue model\n3. **Operational Risks**: Scalability, maintenance, team capability\n4. **External Risks**: Regulations, legal issues, dependencies\n\n### Scoring Criteria:\n- 5 points: All key risks identified + Mitigation plans established\n- 4 points: Most risks identified + Some mitigation plans\n- 3 points: Key risks recognized, mitigation plans insufficient\n- 2 points: Partial risk recognition\n\
-  - 1 points: No risk analysis\n"
+  - 1 point: No risk analysis\n"
 scoring:
   min: 1
   max: 5

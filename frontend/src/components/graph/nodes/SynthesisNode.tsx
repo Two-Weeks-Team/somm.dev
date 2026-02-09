@@ -1,7 +1,7 @@
 import React, { memo } from 'react';
 import { Handle, Position, NodeProps, Node } from '@xyflow/react';
 import { ReactFlowNodeData } from '@/types/graph';
-import { Star, Award } from 'lucide-react';
+import { Star } from 'lucide-react';
 import Image from 'next/image';
 import { cn } from '@/lib/utils';
 

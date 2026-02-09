@@ -696,7 +696,7 @@ export default function Home() {
           </div>
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-[#722F37]/10">
             <div className="space-y-4">
-              {scoringTiers.map((tier, index) => {
+              {scoringTiers.map((tier) => {
                 const Icon = tier.icon;
                 const isCorked = (tier as { isCorked?: boolean }).isCorked;
                 return (

@@ -39,7 +39,7 @@ promptTemplate: '## Drunk History Retelling Analysis
 
   - 2 points: Still complex
 
-  - 1 points: Cannot simplify
+  - 1 point: Cannot simplify
 
   '
 scoring:

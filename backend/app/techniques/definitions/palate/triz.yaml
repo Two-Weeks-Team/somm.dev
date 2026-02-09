@@ -42,7 +42,7 @@ promptTemplate: '## TRIZ Analysis
 
   - 2 points: Implicit contradiction resolution attempt
 
-  - 1 points: TRIZ concepts not applied
+  - 1 point: TRIZ concepts not applied
 
   '
 scoring:

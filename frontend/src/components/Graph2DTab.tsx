@@ -48,8 +48,8 @@ export function Graph2DTab({ evaluationId }: Graph2DTabProps) {
   const [maxStep, setMaxStep] = useState(0);
   const [mode, setMode] = useState<GraphEvaluationMode | string>('six_hats');
   const [selectedNode, setSelectedNode] = useState<SelectedNode | null>(null);
-  const isMobile = useMediaQuery('(max-width: 768px)');
-  const nodeContainerRef = useRef<HTMLDivElement>(null);
+  const _isMobile = useMediaQuery('(max-width: 768px)');
+  const _nodeContainerRef = useRef<HTMLDivElement>(null);
 
   const {
     currentStep,

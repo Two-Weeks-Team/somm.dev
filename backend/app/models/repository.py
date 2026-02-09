@@ -6,10 +6,10 @@ This module contains all Pydantic models related to GitHub repositories:
 - RepositoryListResponse: Response model for repository list endpoint
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field, field_serializer
 
 
 class RepositoryOwner(BaseModel):
@@ -58,12 +58,13 @@ class RepositoryCache(RepositoryBase):
 
     user_id: str = Field(..., description="MongoDB user ID who owns this cache entry")
     cached_at: datetime = Field(
-        default_factory=datetime.utcnow,
+        default_factory=lambda: datetime.now(timezone.utc),
         description="Timestamp when this cache entry was created",
     )
 
-    class Config:
-        json_encoders = {datetime: lambda v: v.isoformat()}
+    @field_serializer("cached_at")
+    def serialize_datetime(self, value: datetime) -> str:
+        return value.isoformat()
 
 
 class RepositoryListResponse(BaseModel):

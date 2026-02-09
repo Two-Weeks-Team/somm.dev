@@ -39,7 +39,7 @@ promptTemplate: '## Decision Tree Mapping Analysis
 
   - 2 points: Decision process unclear
 
-  - 1 points: No decision analysis
+  - 1 point: No decision analysis
 
   '
 scoring:
