@@ -328,3 +328,43 @@ class GitHubService:
             "file_tree": file_tree,
             "readme": readme,
         }
+
+
+async def verify_public_repo(repo_url: str) -> bool:
+    """Verify that a repository is publicly accessible via GitHub API.
+
+    Makes an unauthenticated request to the GitHub API to check if the
+    repository exists and is public. Private repositories will return 404
+    or 403 when accessed without authentication.
+
+    Args:
+        repo_url: The GitHub repository URL to verify.
+
+    Returns:
+        True if the repository is public and accessible.
+
+    Raises:
+        CorkedError: If the repository is not found, is private, or rate limited.
+    """
+    try:
+        owner, repo = parse_github_url(repo_url)
+    except CorkedError:
+        raise CorkedError("Invalid GitHub repository URL")
+
+    url = f"{GITHUB_API_BASE}/repos/{owner}/{repo}"
+
+    async with httpx.AsyncClient() as client:
+        response = await client.get(url, timeout=10.0)
+
+    if response.status_code == 200:
+        return True
+    elif response.status_code == 404:
+        raise CorkedError(
+            "Repository not found or is private. Please login to evaluate private repositories."
+        )
+    elif response.status_code == 403:
+        raise CorkedError(
+            "Repository not found or is private. Please login to evaluate private repositories."
+        )
+    else:
+        raise CorkedError(f"GitHub API error: {response.status_code} - {response.text}")

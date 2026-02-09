@@ -19,7 +19,7 @@ interface EvaluationFormProps {
 type TabType = 'repos' | 'url';
 
 export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoading = false, error = null }) => {
-  const [activeTab, setActiveTab] = useState<TabType>('repos');
+  const [activeTab, setActiveTab] = useState<TabType>('url');
   const [repoUrl, setRepoUrl] = useState('');
   const [criteria, setCriteria] = useState<CriteriaType>('basic');
   const [evaluationMode, setEvaluationMode] = useState<EvaluationMode>('six_sommeliers');
@@ -85,14 +85,16 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
     return null;
   };
 
+  const canSubmitAnonymously = !isAuthenticated && 
+    activeTab === 'url' && 
+    validation.status === 'valid' && 
+    evaluationMode === 'six_sommeliers';
+
+  const canSubmit = isAuthenticated || canSubmitAnonymously;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setValidationError(null);
-
-    if (!isAuthenticated) {
-      setValidationError("Please login to submit an evaluation.");
-      return;
-    }
 
     const error = validateUrl(repoUrl);
     if (error) {
@@ -100,7 +102,17 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
       return;
     }
 
-    await onSubmit(repoUrl, criteria, evaluationMode);
+    if (canSubmitAnonymously) {
+      try {
+        await onSubmit(repoUrl, criteria, evaluationMode);
+      } catch (err) {
+        setValidationError(err instanceof Error ? err.message : 'Evaluation failed');
+      }
+    } else if (isAuthenticated) {
+      await onSubmit(repoUrl, criteria, evaluationMode);
+    } else {
+      setValidationError("Please login to submit an evaluation.");
+    }
   };
 
   const handleOAuthLogin = () => {
@@ -176,10 +188,27 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
         </div>
       ) : (
         <div className="space-y-4">
-          {!isAuthenticated && (
-            <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
-              Login is required to submit a repository URL.
-            </div>
+          {!isAuthenticated && activeTab === 'url' && (
+            <>
+              {validation.status === 'valid' && evaluationMode === 'six_sommeliers' ? (
+                <div className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-700 flex items-center gap-2">
+                  <CheckCircle className="w-4 h-4" />
+                  Free evaluation available for public repositories
+                </div>
+              ) : validation.status === 'private' ? (
+                <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                  Login required to evaluate private repositories.
+                </div>
+              ) : evaluationMode !== 'six_sommeliers' ? (
+                <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                  Login required for Grand Tasting mode.
+                </div>
+              ) : (
+                <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+                  Login to access all features.
+                </div>
+              )}
+            </>
           )}
           <label htmlFor="repoUrl" className="block text-lg font-semibold text-[#722F37]">
             Repository URL
@@ -256,11 +285,11 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
 
       <CriteriaSelector value={criteria} onChange={setCriteria} />
 
-      <EvaluationModeSelector value={evaluationMode} onChange={setEvaluationMode} />
+      <EvaluationModeSelector value={evaluationMode} onChange={setEvaluationMode} isAuthenticated={isAuthenticated} />
 
       <button
         type="submit"
-        disabled={isLoading || !repoUrl || !isAuthenticated}
+        disabled={isLoading || !repoUrl || !canSubmit}
         className="w-full flex items-center justify-center gap-2 py-4 px-6 border border-transparent rounded-xl shadow-lg text-lg font-semibold text-white bg-gradient-to-r from-[#722F37] to-[#5A252C] hover:from-[#5A252C] hover:to-[#4A1F24] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#722F37] disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 group"
       >
         {isLoading ? (
