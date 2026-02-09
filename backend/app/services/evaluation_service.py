@@ -24,6 +24,19 @@ from app.services.provider_routing import decide_provider
 
 logger = logging.getLogger(__name__)
 
+# Module-level constant for full_techniques mode tasting note categories
+# Maps category key -> (display_name, role, expected_technique_count)
+TASTING_NOTE_CONFIG = {
+    "aroma": ("Aroma Notes", "Problem Analysis", 11),
+    "palate": ("Palate Notes", "Innovation", 13),
+    "body": ("Body Notes", "Risk Analysis", 7),
+    "finish": ("Finish Notes", "User-Centricity", 7),
+    "balance": ("Balance Notes", "Feasibility", 8),
+    "vintage": ("Vintage Notes", "Opportunity", 8),
+    "terroir": ("Terroir Notes", "Presentation", 6),
+    "cellar": ("Cellar Notes", "Synthesis", 15),
+}
+
 
 async def _get_stored_key(
     user_id: str, provider: str = "google"
@@ -351,7 +364,7 @@ async def save_evaluation_results(
         from app.techniques.router import TechniqueRouter
 
         normalized_score = evaluation_data.get("normalized_score", 0)
-        overall_score = int(normalized_score)
+        overall_score = round(normalized_score)
         rating_tier = get_rating_tier(overall_score)
         quality_gate = evaluation_data.get("quality_gate", "")
         coverage = evaluation_data.get("coverage_rate", 0)
@@ -361,17 +374,6 @@ async def save_evaluation_results(
             f"Quality Gate: {quality_gate}. "
             f"Coverage: {coverage * 100:.1f}%."
         )
-
-        TASTING_NOTE_CONFIG = {
-            "aroma": ("Aroma Notes", "Problem Analysis", 11),
-            "palate": ("Palate Notes", "Innovation", 13),
-            "body": ("Body Notes", "Risk Analysis", 7),
-            "finish": ("Finish Notes", "User-Centricity", 7),
-            "balance": ("Balance Notes", "Feasibility", 8),
-            "vintage": ("Vintage Notes", "Opportunity", 8),
-            "terroir": ("Terroir Notes", "Presentation", 6),
-            "cellar": ("Cellar Notes", "Synthesis", 15),
-        }
 
         trace_metadata = evaluation_data.get("trace_metadata", {})
         techniques_used = set(evaluation_data.get("techniques_used", []))
@@ -386,7 +388,7 @@ async def save_evaluation_results(
             failed_list = cat_trace.get("failed_techniques", [])
 
             success_rate = (succeeded / total * 100) if total > 0 else 0
-            scaled_score = int(success_rate)
+            scaled_score = min(max(int(success_rate), 0), 100)
 
             cat_summary = (
                 f"{name} ({role}): {succeeded}/{total} techniques succeeded. "
