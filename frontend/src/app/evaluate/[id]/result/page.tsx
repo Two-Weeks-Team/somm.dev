@@ -445,7 +445,7 @@ export default function ResultPage() {
       try {
         const data = await api.getEvaluationResult(id);
         setResult(data);
-    } catch {
+    } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load results');
       } finally {
         setLoading(false);
