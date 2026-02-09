@@ -87,7 +87,11 @@ def _determine_mode(evaluation: dict[str, Any]) -> EvaluationMode:
         EvaluationMode (six_sommeliers, grand_tasting, or full_techniques).
     """
     # Check for explicit evaluation_mode first, then fall back to mode
-    mode = evaluation.get("evaluation_mode") or evaluation.get("mode")
+    # Use "six_sommeliers" as default for backward compatibility
+    mode = evaluation.get("evaluation_mode")
+    if mode is None:
+        mode = evaluation.get("mode", "six_sommeliers")
+
     if mode == EvaluationMode.FULL_TECHNIQUES.value:
         return EvaluationMode.FULL_TECHNIQUES
     if mode == EvaluationMode.GRAND_TASTING.value:

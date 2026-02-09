@@ -75,6 +75,14 @@ class Settings(BaseSettings):
     RAG_TOP_K: int = 4
     RAG_EMBEDDING_MODEL: str = "gemini-embedding-001"
 
+    # Technique Execution Settings
+    MAX_CONCURRENT_TECHNIQUES: int = 5
+    TECHNIQUE_TIMEOUT_SECONDS: int = 60
+
+    # Technique Cache Settings
+    TECHNIQUE_CACHE_TTL_HOURS: int = 24
+    TECHNIQUE_CACHE_ENABLED: bool = True
+
     # Server settings
     PORT: int = 8000
     DEBUG: bool = False
