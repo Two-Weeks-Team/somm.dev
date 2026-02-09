@@ -22,7 +22,11 @@ def _get_genai_client():
     if _genai_client is None:
         from google import genai
 
-        _genai_client = genai.Client(api_key=settings.VERTEX_API_KEY)
+        _genai_client = genai.Client(
+            api_key=settings.VERTEX_API_KEY,
+            vertexai=True,
+            project=settings.GOOGLE_CLOUD_PROJECT or None,
+        )
     return _genai_client
 
 
