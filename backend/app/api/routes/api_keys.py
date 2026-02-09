@@ -14,7 +14,7 @@ from pydantic import BaseModel
 from app.api.deps import get_current_user, User
 from app.database.repositories.api_key import APIKeyRepository
 from app.services.encryption import EncryptionService
-from app.services.key_validator import validate_gemini_key
+from app.services.key_validator import validate_api_key
 
 logger = logging.getLogger(__name__)
 router = APIRouter(prefix="/api/keys", tags=["API Keys"])
@@ -80,7 +80,7 @@ async def register_key(
     Raises:
         HTTPException: If the key is invalid.
     """
-    validation = await validate_gemini_key(request.api_key)
+    validation = await validate_api_key(request.api_key, request.provider)
     if not validation.valid:
         raise HTTPException(
             status_code=400, detail=f"Invalid API key: {validation.error}"
@@ -166,7 +166,7 @@ async def validate_key(
     Returns:
         Validation response with status and available models.
     """
-    result = await validate_gemini_key(request.api_key)
+    result = await validate_api_key(request.api_key, request.provider)
     return ValidateKeyResponse(
         valid=result.valid,
         error=result.error,
@@ -199,7 +199,7 @@ async def refresh_key(provider: str, user: User = Depends(get_current_user)):
 
     enc = EncryptionService()
     decrypted = enc.decrypt(doc["encrypted_key"])
-    validation = await validate_gemini_key(decrypted)
+    validation = await validate_api_key(decrypted, provider)
     if not validation.valid:
         raise HTTPException(
             status_code=400, detail=f"Key no longer valid: {validation.error}"

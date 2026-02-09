@@ -247,29 +247,13 @@ def get_context_budget(provider: str, model: str | None = None) -> int:
     model_budgets = {
         "gemini-3-pro-preview": 32000,
         "gemini-3-flash-preview": 32000,
-        "gemini-2.5-pro": 32000,
-        "gemini-2.5-flash": 32000,
-        "gemini-2.0-flash": 32000,
-        "gemini-1.5-pro": 32000,
-        "gemini-1.5-flash": 32000,
-        "gpt-4o": 32000,
-        "gpt-4o-mini": 32000,
-        "gpt-4-turbo": 32000,
-        "o1": 64000,
-        "o3-mini": 64000,
-        "claude-opus-4-5-20251101": 64000,
-        "claude-opus-4-20250514": 64000,
-        "claude-sonnet-4-5-20250929": 64000,
-        "claude-sonnet-4-20250514": 64000,
-        "claude-3-opus-20240229": 32000,
-        "claude-3-5-sonnet-20241022": 32000,
     }
 
     if model and model in model_budgets:
         return model_budgets[model]
 
     provider_defaults = {
-        "gemini": 32000,
+        "google": 32000,
         "vertex": 32000,
     }
 

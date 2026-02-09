@@ -51,7 +51,10 @@ def decide_provider(
     api_key: str | None,
 ) -> ProviderDecision:
     if api_key:
-        return ProviderDecision(provider="gemini", reason="byok")
+        provider = (requested_provider or "google").lower()
+        if provider not in ("google", "vertex"):
+            provider = "google"
+        return ProviderDecision(provider=provider, reason="byok")
 
     if _is_admin(user_doc):
         return ProviderDecision(provider="vertex", reason="admin")
@@ -59,10 +62,4 @@ def decide_provider(
     if _is_premium(user_doc):
         return ProviderDecision(provider="vertex", reason="premium")
 
-    # Block unauthorized vertex requests — only admin/premium may use vertex
-    if requested_provider and requested_provider.lower() == "vertex":
-        return ProviderDecision(
-            provider="gemini", reason="unauthorized_vertex_fallback"
-        )
-
-    return ProviderDecision(provider=requested_provider or "gemini", reason="default")
+    return ProviderDecision(provider="vertex", reason="default")
