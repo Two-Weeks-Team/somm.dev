@@ -193,6 +193,10 @@ export const api = {
       'Balance Notes': 'Feasibility',
       'Vintage Notes': 'Opportunity',
       'Terroir Notes': 'Presentation',
+      'Problem Definition': 'BMAD Category A',
+      'Technical Design': 'BMAD Category B',
+      'Implementation': 'BMAD Category C',
+      'Documentation': 'BMAD Category D',
     };
 
     const sommelierOutputs = response.final_evaluation?.sommelier_outputs || [];
