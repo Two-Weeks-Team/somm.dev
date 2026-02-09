@@ -78,13 +78,13 @@ class TestFilterByCategory:
         for technique in data:
             assert technique["category"] == "palate"
 
-    def test_filter_by_invalid_category_returns_empty(self):
-        """Test filtering by non-existent category returns empty list."""
+    def test_filter_by_invalid_category_returns_400(self):
+        """Test filtering by invalid category returns 400 Bad Request."""
         response = client.get("/api/techniques?category=nonexistent")
 
-        assert response.status_code == 200
+        assert response.status_code == 400
         data = response.json()
-        assert data == []
+        assert "Invalid category" in data["detail"]
 
 
 class TestFilterByMode:
@@ -149,6 +149,13 @@ class TestFilterByHat:
 
         for technique in data:
             assert "red" in technique["applicable_hats"]
+
+    def test_filter_by_invalid_hat_returns_400(self):
+        """Test GET /api/techniques?hat=invalid returns 400 error."""
+        response = client.get("/api/techniques?hat=invalid_hat")
+
+        assert response.status_code == 400
+        assert "Invalid hat" in response.json()["detail"]
 
 
 class TestGetTechniqueDetail:

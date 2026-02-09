@@ -43,7 +43,6 @@ class CodeGraderAgent:
         "A2",
         "A3",
         "A4",
-        "B2",
         "B3",
         "B4",
         "C3",

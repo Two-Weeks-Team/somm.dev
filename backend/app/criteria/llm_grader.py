@@ -5,6 +5,7 @@ using an LLM with structured output. It handles context assembly, prompt
 formatting, response validation, and usage tracking.
 """
 
+import asyncio
 import json
 from typing import Any, Optional
 
@@ -119,7 +120,8 @@ class LLMGrader:
                 response.usage_metadata if hasattr(response, "usage_metadata") else {}
             )
         elif hasattr(llm, "invoke"):
-            response = llm.invoke(prompt)
+            # Wrap blocking call with asyncio.to_thread to avoid blocking event loop
+            response = await asyncio.to_thread(llm.invoke, prompt)
             content = (
                 response.content if hasattr(response, "content") else str(response)
             )
@@ -127,7 +129,8 @@ class LLMGrader:
                 response.usage_metadata if hasattr(response, "usage_metadata") else {}
             )
         else:
-            response = llm(prompt)
+            # Wrap callable with asyncio.to_thread for blocking fallback
+            response = await asyncio.to_thread(llm, prompt)
             content = response if isinstance(response, str) else str(response)
             usage = {}
 
