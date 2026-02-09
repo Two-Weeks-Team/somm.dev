@@ -23,9 +23,8 @@ def _get_genai_client():
         from google import genai
 
         _genai_client = genai.Client(
-            api_key=settings.VERTEX_API_KEY,
             vertexai=True,
-            project=settings.GOOGLE_CLOUD_PROJECT or None,
+            api_key=settings.VERTEX_API_KEY,
         )
     return _genai_client
 
