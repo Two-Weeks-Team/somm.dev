@@ -6,6 +6,31 @@ from operator import add
 from app.models.graph import TraceEvent, ItemScore, ExcludedTechnique, AgentContribution
 
 
+def merge_hat_contributions(
+    current: Optional[Dict[str, object]], incoming: Optional[Dict[str, object]]
+) -> Dict[str, object]:
+    """Merge hat contributions with deep merge of lists."""
+    current = current or {}
+    incoming = incoming or {}
+    result = dict(current)
+    for hat, data in incoming.items():
+        if hat not in result:
+            result[hat] = data
+        else:
+            existing = result[hat]
+            if isinstance(existing, dict) and isinstance(data, dict):
+                merged = dict(existing)
+                for k, v in data.items():
+                    if isinstance(v, list) and isinstance(merged.get(k), list):
+                        merged[k] = sorted(set(merged[k]) | set(v))
+                    else:
+                        merged[k] = v
+                result[hat] = merged
+            else:
+                result[hat] = data
+    return result
+
+
 def merge_dicts(
     current: Optional[Dict[str, object]], incoming: Optional[Dict[str, object]]
 ) -> Dict[str, object]:
@@ -224,3 +249,18 @@ class EvaluationState(TypedDict):
     evaluated_count: NotRequired[int]
     unevaluated_count: NotRequired[int]
     coverage_rate: NotRequired[float]
+
+    # Full techniques evaluation fields
+    evaluation_mode: NotRequired[str]
+    github_url: NotRequired[Optional[str]]
+    github_analysis: NotRequired[Optional[dict]]
+    user_api_key: NotRequired[Optional[str]]
+    api_key_source: NotRequired[Optional[str]]
+    hat_contributions: NotRequired[Annotated[dict, merge_hat_contributions]]
+    total_score: NotRequired[float]
+    quality_gate: NotRequired[str]
+    category_scores: NotRequired[dict[str, float]]
+    strengths: NotRequired[list[str]]
+    improvements: NotRequired[list[dict[str, str]]]
+    evaluated_items: NotRequired[list[str]]
+    excluded_items: NotRequired[list[str]]

@@ -26,6 +26,10 @@ class UserBase(BaseModel):
     preferences: Optional[Dict[str, Any]] = Field(
         default=None, description="User preferences"
     )
+    role: str = Field(default="user", description="User role: user, admin")
+    plan: str = Field(
+        default="free", description="Subscription plan: free, premium, pro"
+    )
 
 
 class UserCreate(UserBase):
