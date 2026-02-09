@@ -29,11 +29,12 @@ class TestEvaluationMode:
 
 
 class TestListAvailableModes:
-    def test_returns_both_modes(self):
+    def test_returns_all_modes(self):
         modes = list_available_modes()
         assert "six_sommeliers" in modes
         assert "grand_tasting" in modes
-        assert len(modes) == 2
+        assert "full_techniques" in modes
+        assert len(modes) == 3
 
 
 class TestIsValidMode:
