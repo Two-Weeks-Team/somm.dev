@@ -44,7 +44,6 @@ function formatFeedback(text: string): React.ReactNode[] {
 
 export function SommelierCard({
   id,
-  name: _name,
   score,
   feedback,
   recommendations,

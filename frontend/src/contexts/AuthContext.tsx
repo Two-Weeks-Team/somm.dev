@@ -50,10 +50,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const isAuthenticated = !!user && !!token;
 
+  const logout = useCallback(() => {
+    localStorage.removeItem(TOKEN_KEY);
+    setToken(null);
+    setUser(null);
+    setError(null);
+    setShowReAuthModal(false);
+  }, []);
+
   const onAuthError = useCallback(() => {
     logout();
     setShowReAuthModal(true);
-  }, []);
+  }, [logout]);
 
   const closeReAuthModal = useCallback(() => {
     setShowReAuthModal(false);
@@ -122,14 +130,6 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       throw err;
     }
   }, [validateToken]);
-
-  const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
-    setToken(null);
-    setUser(null);
-    setError(null);
-    setShowReAuthModal(false);
-  }, []);
 
   const refreshToken = async () => {
     try {

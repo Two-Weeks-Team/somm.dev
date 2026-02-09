@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo } from 'react';
+import React from 'react';
 import Image from 'next/image';
 import { Wine, Sparkles, Crown, Quote, Trophy, Medal, Award, Star } from 'lucide-react';
 import { EvaluationResult } from '../types';
@@ -27,7 +27,6 @@ function ScoreBreakdownChart({ results }: { results: EvaluationResult['results']
           const theme = getSommelierTheme(somm.id);
           const barWidth = (somm.score / 100) * 100;
           const isMax = somm.score === maxScore;
-          const _isMin = somm.score === minScore;
 
           return (
             <div key={somm.id} className="flex items-center gap-3">
@@ -174,13 +173,6 @@ function HeroSection({ result, tier }: { result: EvaluationResult; tier: ReturnT
 
 export function TastingNotesTab({ result }: TastingNotesTabProps) {
   const tier = getScoreTier(result.totalScore || 0);
-  const _radarData = useMemo(() => {
-    return result.results.map((somm) => ({
-      label: somm.name.split(' ')[0],
-      value: somm.score,
-      maxValue: 100,
-    }));
-  }, [result.results]);
 
   return (
     <div className="animate-fadeIn space-y-8">

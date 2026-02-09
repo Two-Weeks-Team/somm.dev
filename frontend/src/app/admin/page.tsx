@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { Shield, Users, Crown, Loader2, AlertCircle, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -162,7 +163,7 @@ export default function AdminPage() {
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-3">
                     {user.avatar_url ? (
-                      <img src={user.avatar_url} alt="" className="w-9 h-9 rounded-full" />
+                      <Image src={user.avatar_url} alt="" width={36} height={36} className="w-9 h-9 rounded-full" />
                     ) : (
                       <div className="w-9 h-9 rounded-full bg-[#722F37]/10 flex items-center justify-center">
                         <Users size={16} className="text-[#722F37]" />

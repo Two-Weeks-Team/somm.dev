@@ -66,6 +66,38 @@ class TechniqueRouter:
 
         return sorted(technique_ids)
 
+    async def execute_single_technique(
+        self,
+        technique_id: str,
+        state: dict,
+    ) -> TechniqueResult:
+        """Execute a single technique by ID. Returns TechniqueResult."""
+        registry = get_registry()
+        definition = registry.get_technique(technique_id)
+
+        if not definition:
+            logger.warning(f"Technique {technique_id} not found in registry")
+            return TechniqueResult(
+                technique_id=technique_id,
+                success=False,
+                error=f"Technique {technique_id} not found in registry",
+            )
+
+        try:
+            technique = self._create_technique(definition)
+            items = TECHNIQUE_TO_ITEMS.get(technique_id, [])
+            primary_item = items[0] if items else "A1"
+            result = await technique.evaluate(state, primary_item)
+            return result
+
+        except Exception as e:
+            logger.error(f"Technique {technique_id} execution failed: {e}")
+            return TechniqueResult(
+                technique_id=technique_id,
+                success=False,
+                error=str(e),
+            )
+
     async def execute_techniques(
         self,
         technique_ids: List[str],

@@ -31,6 +31,16 @@ export interface ValidateKeyResponse {
   models_available: string[];
 }
 
+export interface QuotaStatus {
+  plan: string;
+  role: string;
+  has_byok: boolean;
+  daily_limit: number;
+  used_today: number;
+  remaining: number;
+  is_unlimited: boolean;
+}
+
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.somm.dev';
 const TOKEN_STORAGE_KEY = 'somm_auth_token';
 
@@ -271,5 +281,9 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ provider, api_key: apiKey }),
     });
+  },
+
+  getQuotaStatus: async (): Promise<QuotaStatus> => {
+    return fetchWithConfig('/api/quota/status');
   },
 };
