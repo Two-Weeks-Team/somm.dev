@@ -1,6 +1,5 @@
 id: zombie-apocalypse
 name: Zombie Apocalypse Scenario
-nameKo: 좀비 아포칼립스 시나리오
 category: body
 applicableHats:
 - black
@@ -8,52 +7,50 @@ applicableHats:
 evaluationDimensions:
 - B3
 - B4
-description: '극단적인 재난 시나리오를 상상하여
+description: 'Technique to test system survivability and resilience by imagining extreme disaster scenarios.
 
-  시스템의 생존력과 복원력을 테스트하는 기법.
-
-  극한 상황에서도 작동하는 설계를 추구합니다.
+  Pursues design that works even in extreme situations.
 
   '
-promptTemplate: '## Zombie Apocalypse Scenario 분석
+promptTemplate: '## Zombie Apocalypse Scenario Analysis
 
 
-  프로젝트가 극단적 시나리오에서의 생존을 고려했는지 분석하세요.
+  Analyze if the project considered survival in extreme scenarios.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **극단 시나리오**: 최악의 상황을 상상해 보았는가?
+  1. **Extreme Scenarios**: Did they imagine worst-case scenarios?
 
-  2. **핵심 기능**: 극한 상황에서도 유지해야 할 핵심은?
+  2. **Core Functions**: What are the core things to maintain in extreme situations?
 
-  3. **생존 모드**: 최소한의 자원으로 작동하는 모드가 있는가?
+  3. **Survival Mode**: Is there a mode that works with minimal resources?
 
-  4. **복원 계획**: 재난 후 복구 계획이 있는가?
+  4. **Recovery Plan**: Is there a post-disaster recovery plan?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 극단 시나리오 분석, 생존 모드, 복구 계획 존재
+  - 5 points: Extreme scenario analysis, survival mode, recovery plan exist
 
-  - 4점: 주요 극단 상황 대비
+  - 4 points: Prepared for major extreme situations
 
-  - 3점: 일부 극한 상황 고려
+  - 3 points: Some extreme situations considered
 
-  - 2점: 정상 상황만 고려
+  - 2 points: Only normal situations considered
 
-  - 1점: 극단 시나리오 무시
+  - 1 point: Extreme scenarios ignored
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 극단 분석, 생존 모드, 복구 계획
-    4: 주요 극단 상황 대비
-    3: 일부 극한 고려
-    2: 정상 상황만
-    1: 극단 무시
+    5: Extreme analysis, survival mode, plan
+    4: Major extreme prep
+    3: Some extreme considered
+    2: Normal only
+    1: Extreme ignored
 outputSchema:
   score: number
   extremeScenarios: string[]

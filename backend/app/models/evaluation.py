@@ -13,7 +13,7 @@ from datetime import datetime
 from enum import Enum
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class EvaluationStatus(str, Enum):
@@ -79,6 +79,8 @@ class EvaluationInDB(EvaluationCreate):
     This model extends EvaluationCreate with database-specific fields.
     """
 
+    model_config = ConfigDict(populate_by_name=True)
+
     id: str = Field(..., alias="_id", description="MongoDB document ID")
     status: EvaluationStatus = Field(
         default=EvaluationStatus.pending, description="Evaluation status"
@@ -88,9 +90,6 @@ class EvaluationInDB(EvaluationCreate):
     error_message: Optional[str] = Field(
         default=None, description="Error message if failed"
     )
-
-    class Config:
-        populate_by_name = True
 
 
 class EvaluationResponse(BaseModel):

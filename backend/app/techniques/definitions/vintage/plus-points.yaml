@@ -1,6 +1,5 @@
 id: plus-points
 name: Plus Points Analysis
-nameKo: 플러스 포인트
 category: vintage
 applicableHats:
 - yellow
@@ -8,54 +7,54 @@ evaluationDimensions:
 - A3
 - A4
 - C1
-description: '프로젝트의 긍정적인 측면과 강점을 체계적으로 식별하는 기법.
+description: 'Technique to systematically identify positive aspects and strengths of the project.
 
-  비판 이전에 가치 있는 부분을 먼저 인정하고 발굴.
+  Acknowledges and excavates valuable parts before criticism.
 
   '
-promptTemplate: '## Plus Points Analysis (플러스 포인트 분석)
+promptTemplate: '## Plus Points Analysis
 
 
-  이 프로젝트의 긍정적인 측면과 강점을 찾으세요.
+  Find the positive aspects and strengths of this project.
 
-  비판적 시각은 배제하고, 오직 좋은 점만 집중적으로 분석하세요.
-
-
-  ### 분석 관점:
-
-  1. **핵심 강점**: 이 프로젝트의 가장 큰 강점은?
-
-  2. **독창성**: 다른 프로젝트와 차별화되는 긍정적 요소는?
-
-  3. **실행력**: 팀이 잘 해낸 부분은?
-
-  4. **가치 제공**: 사용자에게 제공하는 명확한 가치는?
-
-  5. **기술적 장점**: 기술적으로 잘 구현된 부분은?
+  Exclude critical views and focus exclusively on good points.
 
 
-  ### 점수 기준:
+  ### Analysis Perspectives:
 
-  - 5점: 5개 이상의 명확한 강점, 차별화된 가치
+  1. **Core Strength**: What is the greatest strength of this project?
 
-  - 4점: 3-4개의 강점, 좋은 실행력
+  2. **Originality**: What positive elements differentiate it from other projects?
 
-  - 3점: 2개의 강점, 평균적 수준
+  3. **Execution**: What did the team do well?
 
-  - 2점: 1개의 강점, 미흡한 부분이 많음
+  4. **Value Provision**: What clear value does it provide to users?
 
-  - 1점: 명확한 강점을 찾기 어려움
+  5. **Technical Merit**: What parts are technically well implemented?
+
+
+  ### Scoring Criteria:
+
+  - 5 points: 5+ clear strengths, differentiated value
+
+  - 4 points: 3-4 strengths, good execution
+
+  - 3 points: 2 strengths, average level
+
+  - 2 points: 1 strength, many insufficient parts
+
+  - 1 point: Difficult to find clear strengths
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 5개+ 명확한 강점, 차별화된 가치
-    4: 3-4개 강점, 좋은 실행력
-    3: 2개 강점, 평균 수준
-    2: 1개 강점
-    1: 명확한 강점 없음
+    5: 5+ clear strengths, differentiated value
+    4: 3-4 strengths, good execution
+    3: 2 strengths, average level
+    2: 1 strength
+    1: No clear strengths
 outputSchema:
   score: number
   coreStrengths: string[]

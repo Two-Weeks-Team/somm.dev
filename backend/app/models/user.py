@@ -10,7 +10,7 @@ This module contains all Pydantic models related to users:
 from datetime import datetime
 from typing import Any, Dict, Optional
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 
 class UserBase(BaseModel):
@@ -44,6 +44,8 @@ class UserInDB(UserBase):
     This model extends UserBase with database-specific fields like id and timestamps.
     """
 
+    model_config = ConfigDict(populate_by_name=True)
+
     id: str = Field(..., alias="_id", description="MongoDB document ID")
     hashed_password: Optional[str] = Field(
         default=None, description="Hashed password for future authentication"
@@ -55,9 +57,6 @@ class UserInDB(UserBase):
         default=None, description="Timestamp when the GitHub token was last updated"
     )
     created_at: datetime = Field(..., description="User creation timestamp")
-
-    class Config:
-        populate_by_name = True
 
 
 class UserResponse(UserBase):

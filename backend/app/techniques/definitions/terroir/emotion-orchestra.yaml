@@ -1,6 +1,5 @@
 id: emotion-orchestra
 name: Emotion Orchestra
-nameKo: 감정 오케스트라
 category: terroir
 applicableHats:
 - red
@@ -8,52 +7,50 @@ evaluationDimensions:
 - C2
 - D2
 - D3
-description: '프레젠테이션의 감정 흐름을 오케스트라처럼
+description: 'Technique to orchestrate the emotional flow of a presentation like an orchestra.
 
-  조율하는 기법. 긴장, 이완, 클라이맥스를
-
-  의도적으로 설계합니다.
+  Intentionally designs tension, relaxation, and climax.
 
   '
-promptTemplate: '## Emotion Orchestra 분석
+promptTemplate: '## Emotion Orchestra Analysis
 
 
-  프로젝트 발표가 감정 흐름을 효과적으로 설계했는지 분석하세요.
+  Analyze if the project presentation effectively designed emotional flow.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **감정 곡선**: 발표의 감정 흐름이 설계되었는가?
+  1. **Emotional Curve**: Is the emotional flow of the presentation designed?
 
-  2. **긴장과 이완**: 긴장-이완의 리듬이 있는가?
+  2. **Tension and Relaxation**: Is there a rhythm of tension-relaxation?
 
-  3. **클라이맥스**: 감정의 정점이 있는가?
+  3. **Climax**: Is there an emotional peak?
 
-  4. **여운**: 끝맺음의 감정적 여운이 있는가?
+  4. **Aftertaste**: Is there an emotional lingering effect at the end?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 완벽한 감정 곡선, 강렬한 클라이맥스, 깊은 여운
+  - 5 points: Perfect emotional curve, intense climax, deep aftertaste
 
-  - 4점: 효과적인 감정 흐름 설계
+  - 4 points: Effective emotional flow design
 
-  - 3점: 일부 감정 변화
+  - 3 points: Some emotional changes
 
-  - 2점: 평탄한 감정
+  - 2 points: Flat emotion
 
-  - 1점: 감정 고려 없음
+  - 1 point: No consideration of emotion
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 완벽한 곡선, 클라이맥스, 여운
-    4: 효과적 감정 흐름
-    3: 일부 감정 변화
-    2: 평탄한 감정
-    1: 감정 무고려
+    5: Perfect curve, climax, aftertaste
+    4: Effective emotional flow
+    3: Some emotional changes
+    2: Flat emotion
+    1: No emotion consideration
 outputSchema:
   score: number
   emotionalCurve: string

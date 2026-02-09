@@ -4,10 +4,7 @@ import React, { useMemo } from 'react';
 import Image from 'next/image';
 import { Wine, Sparkles, Crown, Quote, Trophy, Medal, Award, Star } from 'lucide-react';
 import { EvaluationResult } from '../types';
-import { ScoreGauge } from './ScoreGauge';
 import { SommelierCard } from './SommelierCard';
-import { ScoreCircle } from './ScoreCircle';
-import { RadarChart } from './RadarChart';
 import { getScoreTier, getSommelierTheme } from '../lib/sommeliers';
 
 interface TastingNotesTabProps {
@@ -30,7 +27,7 @@ function ScoreBreakdownChart({ results }: { results: EvaluationResult['results']
           const theme = getSommelierTheme(somm.id);
           const barWidth = (somm.score / 100) * 100;
           const isMax = somm.score === maxScore;
-          const isMin = somm.score === minScore;
+          const _isMin = somm.score === minScore;
 
           return (
             <div key={somm.id} className="flex items-center gap-3">
@@ -177,7 +174,7 @@ function HeroSection({ result, tier }: { result: EvaluationResult; tier: ReturnT
 
 export function TastingNotesTab({ result }: TastingNotesTabProps) {
   const tier = getScoreTier(result.totalScore || 0);
-  const radarData = useMemo(() => {
+  const _radarData = useMemo(() => {
     return result.results.map((somm) => ({
       label: somm.name.split(' ')[0],
       value: somm.score,

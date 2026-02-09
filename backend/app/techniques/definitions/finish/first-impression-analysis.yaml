@@ -1,62 +1,59 @@
 id: first-impression-analysis
 name: First Impression Analysis
-nameKo: 첫인상 분석
 category: finish
 applicableHats:
 - red
 evaluationDimensions:
 - A3
 - D3
-description: '제출물을 처음 접했을 때의 직관적인 반응과 감정을 분석하는 기법.
+description: 'Technique to analyze intuitive reactions and emotions when first encountering the submission.
 
-  논리적 분석 이전에 느껴지는 감성적 인상을 평가하여
-
-  사용자 경험의 첫인상 품질을 측정.
+  Measures the quality of the first impression of UX by evaluating emotional impressions felt before logical analysis.
 
   '
-promptTemplate: '## First Impression Analysis (첫인상 분석)
+promptTemplate: '## First Impression Analysis
 
 
-  이 프로젝트의 첫인상을 직관적으로 평가하세요.
+  Evaluate the first impression of this project intuitively.
 
-  논리적 분석보다 감정적/직관적 반응에 집중하세요.
-
-
-  ### 분석 관점:
-
-  1. **시각적 첫인상**: 처음 봤을 때 어떤 느낌인가?
-
-  2. **감정적 반응**: 흥미, 호기심, 신뢰, 불안 등 어떤 감정이 드는가?
-
-  3. **기억성**: 무엇이 가장 먼저 기억에 남는가?
-
-  4. **직관적 이해도**: 설명 없이도 무엇인지 파악되는가?
-
-  5. **사용 욕구**: 써보고 싶은 마음이 드는가?
+  Focus on emotional/intuitive reactions rather than logical analysis.
 
 
-  ### 점수 기준:
+  ### Analysis Perspectives:
 
-  - 5점: 강렬하고 긍정적인 첫인상, 즉시 사용하고 싶음
+  1. **Visual First Impression**: What is the feeling at first sight?
 
-  - 4점: 긍정적 첫인상, 흥미로움
+  2. **Emotional Reaction**: What emotions arise (interest, curiosity, trust, anxiety)?
 
-  - 3점: 중립적 첫인상, 특별한 감정 없음
+  3. **Memorability**: What remains in memory first?
 
-  - 2점: 다소 부정적, 복잡하거나 혼란스러움
+  4. **Intuitive Understanding**: Is it understood without explanation?
 
-  - 1점: 부정적 첫인상, 관심이 생기지 않음
+  5. **Desire to Use**: Do you feel like using it?
+
+
+  ### Scoring Criteria:
+
+  - 5 points: Strong and positive first impression, want to use immediately
+
+  - 4 points: Positive first impression, interesting
+
+  - 3 points: Neutral first impression, no special emotion
+
+  - 2 points: Somewhat negative, complex or confusing
+
+  - 1 point: Negative first impression, no interest generated
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 강렬하고 긍정적인 첫인상
-    4: 긍정적, 흥미로운 첫인상
-    3: 중립적 첫인상
-    2: 다소 부정적/혼란스러운 첫인상
-    1: 부정적 첫인상
+    5: Strong/positive first impression
+    4: Positive, interesting
+    3: Neutral
+    2: Somewhat negative/confusing
+    1: Negative, no interest
 outputSchema:
   score: number
   visualImpression: string

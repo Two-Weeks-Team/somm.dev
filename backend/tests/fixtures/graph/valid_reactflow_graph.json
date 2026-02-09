@@ -1,6 +1,6 @@
 {
   "graph_schema_version": 2,
-  "mode": "six_hats",
+  "mode": "six_sommeliers",
   "nodes": [
     {
       "id": "start-1",
@@ -36,6 +36,6 @@
       "animated": false
     }
   ],
-  "description": "Test ReactFlow graph for six_hats mode",
+  "description": "Test ReactFlow graph for six_sommeliers mode",
   "meta": {"test": true, "version": "1.0"}
 }

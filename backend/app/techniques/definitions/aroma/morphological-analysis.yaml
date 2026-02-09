@@ -1,6 +1,5 @@
 id: morphological-analysis
 name: Morphological Analysis
-nameKo: 형태학적 분석
 category: aroma
 applicableHats:
 - white
@@ -8,52 +7,50 @@ evaluationDimensions:
 - A1
 - B2
 - B3
-description: 'Fritz Zwicky가 개발한 체계적 문제 분석 기법.
+description: 'Systematic problem analysis technique developed by Fritz Zwicky.
 
-  문제의 모든 차원과 가능한 값들을 나열하고
-
-  조합을 탐색하여 해결책을 찾습니다.
+  Lists all dimensions of a problem and possible values, then explores combinations to find solutions.
 
   '
-promptTemplate: '## Morphological Analysis 분석
+promptTemplate: '## Morphological Analysis
 
 
-  이 프로젝트가 문제의 모든 차원을 체계적으로 탐색했는지 분석하세요.
+  Analyze if the project systematically explored all dimensions of the problem.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **차원 식별**: 문제의 핵심 파라미터들을 식별했는가?
+  1. **Dimension Identification**: Identified key parameters of the problem?
 
-  2. **값 탐색**: 각 파라미터의 가능한 값들을 열거했는가?
+  2. **Value Exploration**: Listed possible values for each parameter?
 
-  3. **조합 분석**: 파라미터 조합을 체계적으로 탐색했는가?
+  3. **Combination Analysis**: Systematically explored parameter combinations?
 
-  4. **커버리지**: 가능한 해결 공간을 충분히 탐색했는가?
+  4. **Coverage**: Sufficiently explored the possible solution space?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 모든 핵심 파라미터 × 값 조합을 체계적으로 탐색
+  - 5 points: Systematically explored all key parameter x value combinations
 
-  - 4점: 대부분의 파라미터를 고려
+  - 4 points: Considered most parameters
 
-  - 3점: 주요 파라미터 식별
+  - 3 points: Identified key parameters
 
-  - 2점: 일부 차원만 고려
+  - 2 points: Considered only some dimensions
 
-  - 1점: 단일 차원 접근
+  - 1 point: Single dimension approach
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 모든 파라미터 × 값 조합 체계적 탐색
-    4: 대부분의 파라미터 고려
-    3: 주요 파라미터 식별
-    2: 일부 차원만 고려
-    1: 단일 차원 접근
+    5: Systematic exploration of all combinations
+    4: Considered most parameters
+    3: Identified key parameters
+    2: Considered some dimensions
+    1: Single dimension approach
 outputSchema:
   score: number
   parametersIdentified: string[]

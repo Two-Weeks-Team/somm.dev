@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Image from 'next/image';
 import { ChevronDown, ChevronUp, Info } from 'lucide-react';
 import { GraphEvaluationMode } from '@/types/graph';
-import { SIX_HATS_COLORS, FULL_TECHNIQUES_COLORS } from '@/lib/graphColors';
+import { FULL_TECHNIQUES_COLORS } from '@/lib/graphColors';
 import { SOMMELIER_THEMES } from '@/lib/sommeliers';
 
 interface GraphLegendProps {

@@ -1,6 +1,5 @@
 id: risk-matrix
 name: Risk Matrix Analysis
-nameKo: 위험 매트릭스
 category: body
 applicableHats:
 - black
@@ -8,28 +7,20 @@ evaluationDimensions:
 - B3
 - B4
 - C3
-description: '리스크를 발생 가능성(Likelihood)과 영향도(Impact)의
-
-  2차원 매트릭스로 분류하여 우선순위를 결정하는 기법.
+description: 'Technique to prioritize risks by classifying them into a 2D matrix of Likelihood and Impact.
 
   '
-promptTemplate: "## Risk Matrix Analysis (리스크 매트릭스 분석)\n\n이 프로젝트의 리스크를 발생 가능성과 영향도로\
-  \ 분류하여 평가하세요.\n\n### 리스크 매트릭스:\n```\n            │ 영향도 낮음 │ 영향도 중간 │ 영향도 높음\n────────────┼────────────┼────────────┼────────────\n\
-  가능성 높음 │   주의     │   경고     │   위험\n가능성 중간 │   관찰     │   주의     │   경고\n가능성 낮음\
-  \ │   수용     │   관찰     │   주의\n```\n\n### 분석 관점:\n1. **기술적 리스크**: 구현 실패, 성능 문제,\
-  \ 보안 취약점\n2. **비즈니스 리스크**: 시장 변화, 경쟁, 수익 모델\n3. **운영 리스크**: 확장성, 유지보수, 팀 역량\n4.\
-  \ **외부 리스크**: 규제, 법적 문제, 의존성\n\n### 점수 기준:\n- 5점: 모든 주요 리스크 식별 + 대응 계획 수립\n- 4점:\
-  \ 대부분 리스크 식별 + 일부 대응 계획\n- 3점: 주요 리스크 인식, 대응 계획 미흡\n- 2점: 리스크 인식이 부분적\n- 1점: 리스크\
-  \ 분석 없음\n"
+promptTemplate: "## Risk Matrix Analysis\n\nEvaluate the risks of this project by classifying them by likelihood and impact.\n\n### Risk Matrix:\n```\n            │ Impact Low  │ Impact Med  │ Impact High\n────────────┼─────────────┼─────────────┼─────────────\nProb High   │   Caution   │   Warning   │   Danger\nProb Med    │   Observe   │   Caution   │   Warning\nProb Low    │   Accept    │   Observe   │   Caution\n```\n\n### Analysis Perspectives:\n1. **Technical Risks**: Implementation failure, performance issues, security vulnerabilities\n2. **Business Risks**: Market changes, competition, revenue model\n3. **Operational Risks**: Scalability, maintenance, team capability\n4. **External Risks**: Regulations, legal issues, dependencies\n\n### Scoring Criteria:\n- 5 points: All key risks identified + Mitigation plans established\n- 4 points: Most risks identified + Some mitigation plans\n- 3 points: Key risks recognized, mitigation plans insufficient\n- 2 points: Partial risk recognition\n\
+  - 1 point: No risk analysis\n"
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 전체 리스크 식별 + 대응 계획
-    4: 대부분 식별 + 일부 대응
-    3: 주요 리스크 인식, 대응 미흡
-    2: 부분적 리스크 인식
-    1: 리스크 분석 없음
+    5: All key risks identified + Plans
+    4: Most risks identified + Some plans
+    3: Key risks recognized, plans weak
+    2: Partial risk recognition
+    1: No risk analysis
 outputSchema:
   score: number
   technicalRisks: object[]

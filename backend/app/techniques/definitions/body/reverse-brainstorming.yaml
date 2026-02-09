@@ -1,6 +1,5 @@
 id: reverse-brainstorming
 name: Reverse Brainstorming
-nameKo: 역브레인스토밍
 category: body
 applicableHats:
 - black
@@ -9,52 +8,50 @@ evaluationDimensions:
 - B3
 - B4
 - C3
-description: '"어떻게 하면 실패할 수 있을까?"라고 역으로 질문하여
+description: 'Technique to discover potential problems by asking "How could this fail?".
 
-  잠재적 문제점을 발견하는 기법.
-
-  부정적 시나리오를 통해 위험을 사전에 식별합니다.
+  Identifies risks in advance through negative scenarios.
 
   '
-promptTemplate: '## Reverse Brainstorming 분석
+promptTemplate: '## Reverse Brainstorming Analysis
 
 
-  프로젝트가 역발상을 통해 위험을 식별했는지 분석하세요.
+  Analyze if the project identified risks through reverse thinking.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **실패 시나리오**: "어떻게 하면 실패할까?"를 고려했는가?
+  1. **Failure Scenarios**: Did they consider "How could it fail?"?
 
-  2. **역전 발상**: 문제를 뒤집어 생각했는가?
+  2. **Reverse Thinking**: Did they think about the problem in reverse?
 
-  3. **위험 발견**: 역발상에서 위험 요소를 도출했는가?
+  3. **Risk Discovery**: Did they derive risk factors from reverse thinking?
 
-  4. **예방 조치**: 발견된 위험에 대한 대응책이 있는가?
+  4. **Preventive Measures**: Are there countermeasures for discovered risks?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 체계적 역발상, 다양한 실패 시나리오, 예방책 수립
+  - 5 points: Systematic reverse thinking, various failure scenarios, preventive measures
 
-  - 4점: 주요 실패 가능성 식별 및 대응
+  - 4 points: Key failure possibilities identified and addressed
 
-  - 3점: 일부 부정적 시나리오 고려
+  - 3 points: Some negative scenarios considered
 
-  - 2점: 피상적 위험 언급
+  - 2 points: Superficial risk mention
 
-  - 1점: 역발상 없음
+  - 1 point: No reverse thinking
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 체계적 역발상, 예방책 수립
-    4: 주요 실패 식별 및 대응
-    3: 일부 부정 시나리오
-    2: 피상적 위험
-    1: 역발상 없음
+    5: Systematic reverse thinking, measures
+    4: Key failure identified
+    3: Some negative scenarios
+    2: Superficial risk
+    1: No reverse thinking
 outputSchema:
   score: number
   failureScenarios: string[]

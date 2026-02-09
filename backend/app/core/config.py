@@ -1,7 +1,7 @@
 """Application settings and configuration"""
 
 import secrets
-from pydantic_settings import BaseSettings
+from pydantic_settings import BaseSettings, SettingsConfigDict
 from typing import List
 
 
@@ -14,6 +14,12 @@ class Settings(BaseSettings):
     Security Note: JWT_SECRET_KEY MUST be set via environment variable in production.
     The default random value is only for development convenience.
     """
+
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        case_sensitive=True,
+    )
 
     APP_NAME: str = "Somm.dev API"
     API_V1_STR: str = "/api"
@@ -38,6 +44,7 @@ class Settings(BaseSettings):
 
     # LLM APIs
     GEMINI_API_KEY: str = ""
+    OPENAI_API_KEY: str = ""
 
     # Vertex AI Express (API key auth)
     VERTEX_API_KEY: str = ""
@@ -78,11 +85,6 @@ class Settings(BaseSettings):
         if self.FRONTEND_URL.startswith("https://www."):
             origins.append(self.FRONTEND_URL.replace("https://www.", "https://", 1))
         return origins
-
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
-        case_sensitive = True
 
 
 settings = Settings()

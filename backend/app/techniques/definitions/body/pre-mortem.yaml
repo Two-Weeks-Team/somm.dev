@@ -1,6 +1,5 @@
 id: pre-mortem
 name: Pre-mortem Analysis
-nameKo: 사전 부검
 category: body
 applicableHats:
 - black
@@ -9,52 +8,50 @@ evaluationDimensions:
 - B3
 - B4
 - C3
-description: 'Gary Klein이 개발한 기법으로,
+description: 'Technique developed by Gary Klein.
 
-  프로젝트가 실패했다고 가정하고
-
-  "왜 실패했을까?"를 역추적하여 위험을 발견합니다.
+  Assumes the project has failed and back-tracks "Why did it fail?" to discover risks.
 
   '
-promptTemplate: '## Pre-mortem Analysis 분석
+promptTemplate: '## Pre-mortem Analysis
 
 
-  프로젝트가 사전 부검 분석을 수행했는지 분석하세요.
+  Analyze if the project performed a Pre-mortem analysis.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **실패 가정**: "프로젝트가 실패했다"고 가정했는가?
+  1. **Failure Assumption**: Did they assume "The project failed"?
 
-  2. **원인 역추적**: 실패 원인을 역으로 추적했는가?
+  2. **Cause Backtracking**: Did they trace back the causes of failure?
 
-  3. **조기 경고**: 실패 조짐이 될 수 있는 신호를 식별했는가?
+  3. **Early Warning**: Did they identify signals that could be signs of failure?
 
-  4. **예방 전략**: 식별된 위험에 대한 예방책이 있는가?
+  4. **Prevention Strategy**: Are there preventive measures for identified risks?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 완전한 사전 부검, 조기 경고 시스템, 예방 전략
+  - 5 points: Complete pre-mortem, early warning system, prevention strategy
 
-  - 4점: 주요 실패 원인 분석 및 대응
+  - 4 points: Analysis of key failure causes and response
 
-  - 3점: 일부 실패 가능성 고려
+  - 3 points: Considered some failure possibilities
 
-  - 2점: 간략한 위험 언급
+  - 2 points: Brief mention of risks
 
-  - 1점: 사전 부검 없음
+  - 1 point: No pre-mortem
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 완전한 사전 부검, 예방 전략
-    4: 주요 실패 원인 분석
-    3: 일부 실패 고려
-    2: 간략한 위험 언급
-    1: 사전 부검 없음
+    5: Complete pre-mortem, prevention strategy
+    4: Key failure causes analyzed
+    3: Some failure possibilities
+    2: Brief risk mention
+    1: No pre-mortem
 outputSchema:
   score: number
   assumedFailure: string

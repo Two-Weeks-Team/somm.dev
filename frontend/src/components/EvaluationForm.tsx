@@ -5,7 +5,7 @@ import { EvaluationModeSelector } from './EvaluationModeSelector';
 import { RepositoryPicker } from './RepositoryPicker';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRepoValidation } from '@/hooks/useRepoValidation';
-import { api, Repository, AuthError } from '@/lib/api';
+import { api, Repository } from '@/lib/api';
 import { Search, Loader2, AlertCircle, Github, CheckCircle, Lock, XCircle, ArrowRight } from 'lucide-react';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "https://api.somm.dev";

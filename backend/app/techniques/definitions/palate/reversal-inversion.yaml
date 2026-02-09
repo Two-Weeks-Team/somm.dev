@@ -1,6 +1,5 @@
 id: reversal-inversion
 name: Reversal Inversion
-nameKo: 반전/역전
 category: palate
 applicableHats:
 - green
@@ -8,52 +7,50 @@ applicableHats:
 evaluationDimensions:
 - A3
 - B2
-description: '문제나 상황을 뒤집어서 바라보는 기법.
+description: 'Technique to look at a problem or situation in reverse.
 
-  "반대로 하면 어떻게 될까?"를 질문하여
-
-  새로운 관점과 해결책을 발견합니다.
+  Discovers new perspectives and solutions by asking "What if we do the opposite?".
 
   '
-promptTemplate: '## Reversal Inversion 분석
+promptTemplate: '## Reversal Inversion Analysis
 
 
-  이 프로젝트가 문제를 역전시켜 바라본 흔적을 분석하세요.
+  Analyze traces of viewing the problem in reverse in this project.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **관점 역전**: 문제를 반대 방향에서 접근한 증거는?
+  1. **Perspective Reversal**: Is there evidence of approaching the problem from the opposite direction?
 
-  2. **역발상 적용**: "만약 반대로 한다면?"이라는 질문을 한 흔적은?
+  2. **Applying Reverse Thinking**: Are there traces of asking "What if we do the opposite?"?
 
-  3. **반직관적 해결**: 일반적인 상식과 다른 접근법이 있는가?
+  3. **Counter-intuitive Solution**: Is there an approach different from general common sense?
 
-  4. **새로운 인사이트**: 역전을 통해 발견한 새로운 통찰은?
+  4. **New Insights**: What new insights were discovered through reversal?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 문제의 완전한 역전으로 획기적 돌파구 발견
+  - 5 points: Breakthrough discovery through complete reversal of the problem
 
-  - 4점: 주요 가정의 역전 시도와 새로운 해결책 제시
+  - 4 points: Attempted reversal of key assumptions and suggested new solutions
 
-  - 3점: 부분적 관점 전환
+  - 3 points: Partial perspective shift
 
-  - 2점: 전통적 접근 유지
+  - 2 points: Maintained traditional approach
 
-  - 1점: 역발상 흔적 없음
+  - 1 point: No trace of reverse thinking
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 완전한 역전으로 획기적 돌파구
-    4: 주요 가정 역전 및 새 해결책
-    3: 부분적 관점 전환
-    2: 전통적 접근 유지
-    1: 역발상 없음
+    5: Breakthrough via complete reversal
+    4: Reversed key assumptions, new solution
+    3: Partial perspective shift
+    2: Traditional approach
+    1: No reverse thinking
 outputSchema:
   score: number
   reversalEvidence: string[]

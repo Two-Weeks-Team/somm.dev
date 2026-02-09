@@ -1,6 +1,5 @@
 id: devil-advocate
 name: Devil's Advocate
-nameKo: 악마의 옹호자
 category: body
 applicableHats:
 - black
@@ -8,52 +7,50 @@ evaluationDimensions:
 - A3
 - B3
 - C3
-description: '의도적으로 반대 입장에서 비판하는 역할을 맡아
+description: 'Technique to intentionally take an opposing position to criticize and find weaknesses in ideas.
 
-  아이디어의 약점을 찾아내는 기법.
-
-  건설적 비판을 통해 아이디어를 강화합니다.
+  Strengthens ideas through constructive criticism.
 
   '
-promptTemplate: '## Devil''s Advocate 분석
+promptTemplate: '## Devil''s Advocate Analysis
 
 
-  프로젝트가 악마의 옹호자 역할을 통해 검증했는지 분석하세요.
+  Analyze if the project validated through the Devil''s Advocate role.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **비판적 검토**: 의도적으로 반대 입장에서 검토했는가?
+  1. **Critical Review**: Did they intentionally review from an opposing position?
 
-  2. **약점 발굴**: 아이디어의 약점을 적극적으로 찾았는가?
+  2. **Weakness Discovery**: Did they actively find weaknesses in the idea?
 
-  3. **반론 대응**: 발견된 약점에 대한 반박을 준비했는가?
+  3. **Counterargument Response**: Did they prepare rebuttals for discovered weaknesses?
 
-  4. **아이디어 강화**: 비판을 통해 아이디어가 강화되었는가?
+  4. **Idea Strengthening**: Was the idea strengthened through criticism?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 체계적 비판, 모든 약점 대응, 아이디어 강화
+  - 5 points: Systematic criticism, response to all weaknesses, idea strengthened
 
-  - 4점: 주요 약점 식별 및 대응 준비
+  - 4 points: Key weaknesses identified and response prepared
 
-  - 3점: 일부 비판적 검토
+  - 3 points: Some critical review
 
-  - 2점: 피상적 검토
+  - 2 points: Superficial review
 
-  - 1점: 비판적 검토 없음
+  - 1 point: No critical review
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 체계적 비판, 아이디어 강화
-    4: 주요 약점 대응
-    3: 일부 비판적 검토
-    2: 피상적 검토
-    1: 비판 없음
+    5: Systematic criticism, idea strengthened
+    4: Key weaknesses response
+    3: Some critical review
+    2: Superficial review
+    1: No critical review
 outputSchema:
   score: number
   critiquesRaised: string[]

@@ -1,6 +1,5 @@
 id: opportunity-spotting
 name: Opportunity Spotting
-nameKo: 기회 발견
 category: vintage
 applicableHats:
 - yellow
@@ -8,52 +7,52 @@ evaluationDimensions:
 - A4
 - B1
 - B3
-description: '프로젝트가 포착한 시장 기회와 성장 잠재력을 분석하는 기법.
+description: 'Technique to analyze market opportunities and growth potential captured by the project.
 
-  현재 상태뿐 아니라 미래 확장 가능성과 새로운 기회를 식별.
+  Identifies future expansion possibilities and new opportunities as well as current status.
 
   '
-promptTemplate: '## Opportunity Spotting (기회 발견 분석)
+promptTemplate: '## Opportunity Spotting Analysis
 
 
-  이 프로젝트가 어떤 기회를 포착했고, 어떤 잠재력이 있는지 분석하세요.
+  Analyze what opportunities this project has captured and what potential it has.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **시장 기회**: 어떤 시장 기회를 포착했는가?
+  1. **Market Opportunity**: What market opportunity was captured?
 
-  2. **타이밍**: 지금이 이 솔루션을 위한 적절한 시기인가?
+  2. **Timing**: Is now the right time for this solution?
 
-  3. **확장 가능성**: 초기 시장을 넘어 확장할 수 있는가?
+  3. **Scalability**: Can it expand beyond the initial market?
 
-  4. **네트워크 효과**: 사용자가 늘수록 가치가 증가하는가?
+  4. **Network Effects**: Does value increase as users increase?
 
-  5. **진입 장벽**: 경쟁자 대비 방어 가능한 위치인가?
+  5. **Barriers to Entry**: Is the position defensible against competitors?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 명확한 시장 기회 + 높은 확장성 + 강한 방어력
+  - 5 points: Clear market opportunity + High scalability + Strong defense
 
-  - 4점: 좋은 시장 기회 + 확장 가능성 있음
+  - 4 points: Good market opportunity + Scalability exists
 
-  - 3점: 시장 기회는 있으나 제한적
+  - 3 points: Market opportunity exists but limited
 
-  - 2점: 기회가 불명확하거나 시장이 작음
+  - 2 points: Opportunity unclear or market is small
 
-  - 1점: 시장 기회 분석 없음
+  - 1 point: No market opportunity analysis
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 명확한 기회 + 높은 확장성 + 방어력
-    4: 좋은 기회 + 확장 가능성
-    3: 기회 있으나 제한적
-    2: 불명확한 기회
-    1: 기회 분석 없음
+    5: Clear opportunity + High scalability + Defense
+    4: Good opportunity + Scalability
+    3: Opportunity exists but limited
+    2: Unclear opportunity
+    1: No opportunity analysis
 outputSchema:
   score: number
   marketOpportunity: string

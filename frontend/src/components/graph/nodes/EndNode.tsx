@@ -3,7 +3,7 @@ import { Handle, Position, NodeProps, Node } from '@xyflow/react';
 import { ReactFlowNodeData } from '@/types/graph';
 import { Trophy } from 'lucide-react';
 
-const EndNode = ({ data }: NodeProps<Node<ReactFlowNodeData>>) => {
+const EndNode = ({ data: _data }: NodeProps<Node<ReactFlowNodeData>>) => {
   return (
     <div className="flex flex-col items-center justify-center">
       <Handle

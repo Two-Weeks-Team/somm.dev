@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useSyncExternalStore } from 'react';
 
 export function isWebGLAvailable(): boolean {
   if (typeof window === 'undefined') return false;
@@ -14,12 +14,25 @@ export function isWebGLAvailable(): boolean {
   }
 }
 
+// Cache the result since WebGL support doesn't change
+let cachedSupport: boolean | null = null;
+
+function getWebGLSnapshot(): boolean {
+  if (cachedSupport === null) {
+    cachedSupport = isWebGLAvailable();
+  }
+  return cachedSupport;
+}
+
+function getServerSnapshot(): boolean {
+  return false; // SSR fallback
+}
+
+function subscribe(): () => void {
+  // WebGL support doesn't change, so no-op subscription
+  return () => {};
+}
+
 export function useWebGLSupport(): boolean {
-  const [supported, setSupported] = useState(false);
-  
-  useEffect(() => {
-    setSupported(isWebGLAvailable());
-  }, []);
-  
-  return supported;
+  return useSyncExternalStore(subscribe, getWebGLSnapshot, getServerSnapshot);
 }

@@ -1,6 +1,5 @@
 id: inner-child-conference
 name: Inner Child Conference
-nameKo: 내면 아이 회의
 category: finish
 applicableHats:
 - red
@@ -9,52 +8,50 @@ evaluationDimensions:
 - A3
 - C2
 - D3
-description: '어린이의 순수한 호기심과 상상력으로 문제를 바라보는 기법.
+description: 'Technique to view problems with a child''s pure curiosity and imagination.
 
-  "왜?"라는 질문을 끊임없이 던지며
-
-  창의적이고 자유로운 발상을 합니다.
+  Constantly asking "Why?" and thinking creatively and freely.
 
   '
-promptTemplate: '## Inner Child Conference 분석
+promptTemplate: '## Inner Child Conference Analysis
 
 
-  프로젝트가 순수한 호기심과 상상력을 발휘했는지 분석하세요.
+  Analyze if the project exercised pure curiosity and imagination.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **순수한 호기심**: "왜?"라는 근본적 질문을 던졌는가?
+  1. **Pure Curiosity**: Did it ask fundamental questions like "Why?"?
 
-  2. **상상력**: 제약 없는 상상을 했는가?
+  2. **Imagination**: Did it imagine without constraints?
 
-  3. **유희성**: 재미있고 놀이 같은 접근이 있었는가?
+  3. **Playfulness**: Was there a fun, play-like approach?
 
-  4. **직관적 단순함**: 복잡함을 단순하게 풀었는가?
+  4. **Intuitive Simplicity**: Did it solve complexity simply?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 순수한 호기심으로 혁신적 발상, 유희적 접근
+  - 5 points: Innovative ideas via pure curiosity, playful approach
 
-  - 4점: 자유로운 상상력 발휘
+  - 4 points: Free imagination exercised
 
-  - 3점: 일부 창의적 시도
+  - 3 points: Some creative attempts
 
-  - 2점: 대부분 관습적 사고
+  - 2 points: Mostly conventional thinking
 
-  - 1점: 순수한 호기심/상상력 없음
+  - 1 point: No pure curiosity/imagination
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 순수 호기심, 혁신 발상, 유희적
-    4: 자유로운 상상력
-    3: 일부 창의적 시도
-    2: 관습적 사고
-    1: 호기심/상상력 없음
+    5: Pure curiosity, innovative, playful
+    4: Free imagination
+    3: Some creative attempts
+    2: Conventional thinking
+    1: No curiosity/imagination
 outputSchema:
   score: number
   curiousQuestions: string[]

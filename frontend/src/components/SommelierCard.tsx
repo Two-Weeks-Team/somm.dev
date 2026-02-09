@@ -1,10 +1,9 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import { ChevronDown, ChevronUp, Lightbulb } from 'lucide-react';
 import { getSommelierTheme } from '../lib/sommeliers';
-import { ScoreGauge } from './ScoreGauge';
 
 interface SommelierCardProps {
   id: string;
@@ -45,7 +44,7 @@ function formatFeedback(text: string): React.ReactNode[] {
 
 export function SommelierCard({
   id,
-  name,
+  name: _name,
   score,
   feedback,
   recommendations,

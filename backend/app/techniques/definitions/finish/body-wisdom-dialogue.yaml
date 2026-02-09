@@ -1,58 +1,55 @@
 id: body-wisdom-dialogue
 name: Body Wisdom Dialogue
-nameKo: 몸의 지혜 대화
 category: finish
 applicableHats:
 - red
 evaluationDimensions:
 - C2
 - D3
-description: '신체적 감각과 본능적 반응을 활용하는 기법.
+description: 'Technique utilizing physical sensations and instinctive reactions.
 
-  머리로만 생각하지 않고 몸의 반응을 통해
-
-  직관적 통찰을 얻습니다.
+  Gains intuitive insights through body reactions rather than just thinking with the head.
 
   '
-promptTemplate: '## Body Wisdom Dialogue 분석
+promptTemplate: '## Body Wisdom Dialogue Analysis
 
 
-  프로젝트가 신체적/감각적 경험을 고려했는지 분석하세요.
+  Analyze if the project considered physical/sensory experiences.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **감각적 경험**: 시각, 청각, 촉각 등 감각을 고려했는가?
+  1. **Sensory Experience**: Did it consider senses like sight, hearing, touch?
 
-  2. **신체적 편안함**: 물리적 편안함/불편함을 고려했는가?
+  2. **Physical Comfort**: Did it consider physical comfort/discomfort?
 
-  3. **본능적 반응**: 직관적인 호불호를 탐색했는가?
+  3. **Instinctive Reaction**: Did it explore intuitive likes/dislikes?
 
-  4. **체화된 인지**: 몸으로 느끼는 경험을 반영했는가?
+  4. **Embodied Cognition**: Did it reflect experiences felt with the body?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 다감각적 경험 설계, 신체적 반응 깊이 고려
+  - 5 points: Multi-sensory experience design, physical reactions deeply considered
 
-  - 4점: 주요 감각적 경험 고려
+  - 4 points: Key sensory experiences considered
 
-  - 3점: 일부 신체적 측면 고려
+  - 3 points: Some physical aspects considered
 
-  - 2점: 피상적 언급
+  - 2 points: Superficial mention
 
-  - 1점: 신체/감각 경험 무시
+  - 1 point: Physical/sensory experience ignored
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 다감각 설계, 신체 반응 고려
-    4: 주요 감각 경험 고려
-    3: 일부 신체적 측면
-    2: 피상적 언급
-    1: 신체/감각 무시
+    5: Multi-sensory design, physical reaction
+    4: Key sensory experiences
+    3: Some physical aspects
+    2: Superficial mention
+    1: Physical/sensory ignored
 outputSchema:
   score: number
   sensoryConsiderations: string[]
@@ -65,4 +62,4 @@ metadata:
   requiresWebSearch: false
   requiresRAG: false
   source: Somatic Psychology / Embodied Design
-  requiredSources: either
+requiredSources: either

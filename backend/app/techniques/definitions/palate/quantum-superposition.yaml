@@ -1,6 +1,5 @@
 id: quantum-superposition
 name: Quantum Superposition Thinking
-nameKo: 양자 중첩
 category: palate
 applicableHats:
 - green
@@ -8,54 +7,54 @@ applicableHats:
 evaluationDimensions:
 - A3
 - B4
-description: '양자역학의 중첩 원리에서 영감을 받은 창의적 사고 기법.
+description: 'Creative thinking technique inspired by the superposition principle of quantum mechanics.
 
-  상반되는 가능성들을 동시에 유지하며 최적의 해결책을 탐색.
+  Maintains conflicting possibilities simultaneously to search for the optimal solution.
 
-  "이것 또는 저것"이 아닌 "이것과 저것 동시에"를 고려.
+  Considers "Both This and That" instead of "Either This or That".
 
   '
-promptTemplate: '## Quantum Superposition Thinking (양자 중첩 사고)
+promptTemplate: '## Quantum Superposition Thinking Analysis
 
 
-  이 프로젝트가 상반되는 가능성들을 어떻게 다루는지 분석하세요.
+  Analyze how this project handles conflicting possibilities.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **이분법 탈피**: 양자택일 대신 "둘 다"를 선택했는가?
+  1. **Escaping Dichotomy**: Did it choose "Both" instead of "Either/Or"?
 
-  2. **모순 통합**: 상충되는 요구사항을 어떻게 해결했는가?
+  2. **Integrating Contradictions**: How were conflicting requirements resolved?
 
-  3. **다중 경로**: 여러 가능성을 열어두었는가?
+  3. **Multiple Paths**: Were multiple possibilities kept open?
 
-  4. **유연성**: 상황에 따라 적응할 수 있는 구조인가?
+  4. **Flexibility**: Is the structure adaptable to situations?
 
-  5. **패러독스 활용**: 역설적 상황을 기회로 활용했는가?
+  5. **Utilizing Paradox**: Was a paradoxical situation used as an opportunity?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 다중 가능성을 동시에 유지하며 유연하게 대응
+  - 5 points: Simultaneously maintains multiple possibilities with flexible response
 
-  - 4점: 일부 영역에서 다중 가능성 고려
+  - 4 points: Considers multiple possibilities in some areas
 
-  - 3점: 2-3개 대안을 검토
+  - 3 points: Reviews 2-3 alternatives
 
-  - 2점: 단일 경로에 집중, 대안 제한적
+  - 2 points: Focuses on a single path, limited alternatives
 
-  - 1점: 이분법적 사고, 유연성 없음
+  - 1 point: Dichotomous thinking, no flexibility
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 다중 가능성 동시 유지, 유연한 대응
-    4: 일부 영역에서 다중 가능성
-    3: 2-3개 대안 검토
-    2: 단일 경로 집중
-    1: 이분법적 사고
+    5: Multiple possibilities, flexible response
+    4: Multiple possibilities in some areas
+    3: Reviews 2-3 alternatives
+    2: Single path focus
+    1: Dichotomous thinking
 outputSchema:
   score: number
   dichotomyEscape: string

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useCallback, useState, useMemo } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import {
   ReactFlow,
   Controls,
@@ -31,7 +31,7 @@ interface InteractiveGraphViewProps {
   onNodeClick?: (nodeId: string, nodeData: ReactFlowNodeData) => void;
 }
 
-interface SelectedNode {
+interface _SelectedNode {
   id: string;
   type: string;
   data: ReactFlowNodeData;
@@ -48,8 +48,8 @@ export function InteractiveGraphView({
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [mode, setMode] = useState<GraphEvaluationMode | string>('six_hats');
-  const [maxStep, setMaxStep] = useState(0);
+  const [_mode, setMode] = useState<GraphEvaluationMode | string>('six_hats');
+  const [_maxStep, setMaxStep] = useState(0);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
