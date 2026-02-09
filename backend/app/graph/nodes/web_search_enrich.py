@@ -13,9 +13,7 @@ logger = logging.getLogger(__name__)
 def _get_genai_client():
     from google import genai
 
-    # Always use Gemini API (not Vertex AI) - Vertex AI requires OAuth2, not API keys
-    api_key = settings.GEMINI_API_KEY or settings.VERTEX_API_KEY
-    return genai.Client(api_key=api_key)
+    return genai.Client(api_key=settings.VERTEX_API_KEY)
 
 
 async def web_search_enrich(
@@ -26,8 +24,7 @@ async def web_search_enrich(
     if existing := state.get("web_search_context"):
         return {"web_search_context": existing}
 
-    api_key = settings.VERTEX_API_KEY or settings.GEMINI_API_KEY
-    if not api_key:
+    if not settings.VERTEX_API_KEY:
         return {
             "web_search_context": {
                 "query": "",

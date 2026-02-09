@@ -22,9 +22,7 @@ def _get_genai_client():
     if _genai_client is None:
         from google import genai
 
-        # Always use Gemini API (not Vertex AI) - Vertex AI requires OAuth2, not API keys
-        api_key = settings.GEMINI_API_KEY or settings.VERTEX_API_KEY
-        _genai_client = genai.Client(api_key=api_key)
+        _genai_client = genai.Client(api_key=settings.VERTEX_API_KEY)
     return _genai_client
 
 
@@ -107,8 +105,7 @@ async def rag_enrich(
     repo_context = state.get("repo_context", {})
     query = _create_query(state)
 
-    api_key = settings.VERTEX_API_KEY or settings.GEMINI_API_KEY
-    if not api_key:
+    if not settings.VERTEX_API_KEY:
         return {
             "rag_context": {
                 "query": query,
