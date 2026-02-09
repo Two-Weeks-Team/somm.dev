@@ -1,6 +1,5 @@
 id: yes-and-building
 name: Yes, And Building
-nameKo: 예스-앤드 빌딩
 category: vintage
 applicableHats:
 - yellow
@@ -9,52 +8,50 @@ evaluationDimensions:
 - A3
 - D2
 - D3
-description: '즉흥연기에서 유래한 "Yes, and..." 기법.
+description: '"Yes, and..." technique derived from improv theater.
 
-  아이디어를 부정하지 않고 수용한 후
-
-  그 위에 더 쌓아 올립니다.
+  Accepts ideas without denial and builds upon them.
 
   '
-promptTemplate: '## Yes, And Building 분석
+promptTemplate: '## Yes, And Building Analysis
 
 
-  프로젝트가 아이디어를 긍정적으로 발전시켰는지 분석하세요.
+  Analyze if the project developed ideas positively.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **수용 태도**: 아이디어를 부정 없이 수용했는가?
+  1. **Acceptance Attitude**: Were ideas accepted without denial?
 
-  2. **추가 발전**: 기존 아이디어에 무언가를 더했는가?
+  2. **Additional Development**: Was something added to existing ideas?
 
-  3. **협력적 구축**: 팀원들의 아이디어를 쌓아 올렸는가?
+  3. **Collaborative Building**: Did they build upon team members'' ideas?
 
-  4. **시너지**: 결합으로 새로운 가치가 창출되었는가?
+  4. **Synergy**: Was new value created through combination?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 활발한 Yes-And, 아이디어 시너지, 창의적 결합
+  - 5 points: Active Yes-And, idea synergy, creative combination
 
-  - 4점: 아이디어 수용 및 발전
+  - 4 points: Idea acceptance and development
 
-  - 3점: 일부 협력적 발전
+  - 3 points: Some collaborative development
 
-  - 2점: 주로 개별 작업
+  - 2 points: Mostly individual work
 
-  - 1점: 아이디어 부정/차단
+  - 1 point: Idea denial/blocking
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 활발한 Yes-And, 시너지
-    4: 아이디어 수용 및 발전
-    3: 일부 협력적 발전
-    2: 주로 개별 작업
-    1: 아이디어 부정
+    5: Active Yes-And, synergy
+    4: Idea acceptance/development
+    3: Some collaborative development
+    2: Mostly individual work
+    1: Idea denial
 outputSchema:
   score: number
   ideasAccepted: string[]

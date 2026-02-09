@@ -1,6 +1,5 @@
 id: swot-analysis
 name: SWOT Analysis
-nameKo: SWOT 분석
 category: body
 applicableHats:
 - white
@@ -10,63 +9,61 @@ evaluationDimensions:
 - A4
 - B3
 - B4
-description: 'Albert Humphrey(Stanford Research Institute)가 체계화한 전략 분석 도구.
+description: 'Strategic analysis tool systematized by Albert Humphrey (Stanford Research Institute).
 
-  Strengths(강점), Weaknesses(약점), Opportunities(기회), Threats(위협)의
-
-  내부/외부 요인을 분석하여 전략적 의사결정을 지원.
+  Supports strategic decision making by analyzing internal/external factors of Strengths, Weaknesses, Opportunities, and Threats.
 
   '
-promptTemplate: '## SWOT 분석
+promptTemplate: '## SWOT Analysis
 
 
-  이 프로젝트가 SWOT 4가지 요소를 체계적으로 분석했는지 평가하세요.
+  Evaluate if the project systematically analyzed the 4 elements of SWOT.
 
 
-  ### SWOT 4가지 요소:
+  ### SWOT 4 Elements:
 
-  1. **Strengths (강점)**: 경쟁 우위가 되는 내부 역량?
+  1. **Strengths**: Internal capabilities that become competitive advantages?
 
-  2. **Weaknesses (약점)**: 개선이 필요한 내부 한계?
+  2. **Weaknesses**: Internal limitations that need improvement?
 
-  3. **Opportunities (기회)**: 활용 가능한 외부 환경?
+  3. **Opportunities**: External environment that can be leveraged?
 
-  4. **Threats (위협)**: 대비해야 할 외부 리스크?
-
-
-  ### 전략 도출:
-
-  - SO전략: 강점으로 기회 활용
-
-  - WO전략: 약점 보완하며 기회 포착
-
-  - ST전략: 강점으로 위협 대응
-
-  - WT전략: 약점과 위협 최소화
+  4. **Threats**: External risks to prepare for?
 
 
-  ### 점수 기준:
+  ### Strategy Derivation:
 
-  - 5점: 4가지 요소 심층 분석, TOWS 전략 도출
+  - SO Strategy: Use strengths to leverage opportunities
 
-  - 4점: 4가지 요소 분석, 대응 전략 수립
+  - WO Strategy: Overcome weaknesses to capture opportunities
 
-  - 3점: 강점/약점 또는 기회/위협 분석
+  - ST Strategy: Use strengths to counter threats
 
-  - 2점: 일부 요소만 간략히 언급
+  - WT Strategy: Minimize weaknesses and threats
 
-  - 1점: SWOT 분석 없음
+
+  ### Scoring Criteria:
+
+  - 5 points: In-depth analysis of 4 elements, TOWS strategy derived
+
+  - 4 points: Analysis of 4 elements, response strategy established
+
+  - 3 points: Analysis of Strengths/Weaknesses or Opportunities/Threats
+
+  - 2 points: Brief mention of some elements
+
+  - 1 point: No SWOT analysis
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 4요소 심층분석, TOWS 전략
-    4: 4요소 분석, 대응 전략
-    3: 내부 또는 외부 분석
-    2: 일부 요소만 언급
-    1: SWOT 분석 없음
+    5: Deep 4 element analysis, TOWS strategy
+    4: 4 element analysis, response strategy
+    3: Internal or External analysis
+    2: Some elements mentioned
+    1: No SWOT analysis
 outputSchema:
   score: number
   strengths: string[]
@@ -81,5 +78,5 @@ metadata:
   requiresWebSearch: false
   requiresRAG: false
   source: Albert Humphrey, Stanford Research Institute (1960s)
-  academicReference: 전 산업 채택, MBA 필수 프레임워크
+  academicReference: Adopted across all industries, MBA essential framework
 requiredSources: either

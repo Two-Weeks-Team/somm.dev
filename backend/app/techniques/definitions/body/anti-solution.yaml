@@ -1,6 +1,5 @@
 id: anti-solution
 name: Anti-Solution Design
-nameKo: 반(反)해결책
 category: body
 applicableHats:
 - black
@@ -9,52 +8,50 @@ evaluationDimensions:
 - A3
 - B3
 - C3
-description: '"최악의 솔루션"을 먼저 설계해보고
+description: 'Technique to design the "worst solution" first and then reverse it to derive a good solution.
 
-  그것을 뒤집어 좋은 솔루션을 도출하는 기법.
-
-  무엇을 피해야 하는지 명확히 합니다.
+  Clarifies what should be avoided.
 
   '
-promptTemplate: '## Anti-Solution Design 분석
+promptTemplate: '## Anti-Solution Design Analysis
 
 
-  프로젝트가 안티-솔루션 사고를 활용했는지 분석하세요.
+  Analyze if the project utilized anti-solution thinking.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **최악 설계**: "최악의 솔루션"을 상상해 보았는가?
+  1. **Worst Design**: Did they imagine the "worst solution"?
 
-  2. **피해야 할 것**: 무엇을 피해야 하는지 명확히 했는가?
+  2. **What to Avoid**: Did they clarify what to avoid?
 
-  3. **역전 활용**: 최악에서 최선을 도출했는가?
+  3. **Reverse Utilization**: Did they derive the best from the worst?
 
-  4. **경계선 정의**: 하지 말아야 할 것의 경계를 정했는가?
+  4. **Defining Boundaries**: Did they set boundaries for what not to do?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 안티-솔루션 설계 후 역전으로 최선 도출
+  - 5 points: Derived best solution by reversing anti-solution design
 
-  - 4점: 피해야 할 것을 명확히 정의
+  - 4 points: Clearly defined what to avoid
 
-  - 3점: 일부 안티패턴 인식
+  - 3 points: Recognized some anti-patterns
 
-  - 2점: 부정적 사례 언급만
+  - 2 points: Mentioned negative examples only
 
-  - 1점: 안티-솔루션 사고 없음
+  - 1 point: No anti-solution thinking
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 안티-솔루션 역전으로 최선 도출
-    4: 피해야 할 것 명확 정의
-    3: 일부 안티패턴 인식
-    2: 부정 사례 언급만
-    1: 안티-솔루션 없음
+    5: Reversed anti-solution to find best
+    4: Defined what to avoid
+    3: Recognized some anti-patterns
+    2: Negative examples only
+    1: No anti-solution thinking
 outputSchema:
   score: number
   worstSolution: string
@@ -68,4 +65,4 @@ metadata:
   requiresWebSearch: false
   requiresRAG: false
   source: Creative Problem Solving
-  requiredSources: either
+requiredSources: either

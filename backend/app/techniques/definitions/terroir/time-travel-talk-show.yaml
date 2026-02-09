@@ -1,6 +1,5 @@
 id: time-travel-talk-show
 name: Time Travel Talk Show
-nameKo: 시간여행 토크쇼
 category: terroir
 applicableHats:
 - green
@@ -8,52 +7,50 @@ applicableHats:
 evaluationDimensions:
 - D2
 - D3
-description: '미래의 시점에서 현재 프로젝트를 소개하는
+description: 'Technique to imagine a fictional talk show introducing the current project from a future perspective.
 
-  가상의 토크쇼를 상상하는 기법.
-
-  성공 후의 관점에서 스토리를 구성합니다.
+  Constructs a story from the perspective of success.
 
   '
-promptTemplate: '## Time Travel Talk Show 분석
+promptTemplate: '## Time Travel Talk Show Analysis
 
 
-  프로젝트가 미래 성공 관점에서 스토리를 구성했는지 분석하세요.
+  Analyze if the project constructed a story from a future success perspective.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **미래 시점**: 성공한 미래 시점을 설정했는가?
+  1. **Future Viewpoint**: Is a successful future viewpoint established?
 
-  2. **성공 스토리**: 어떻게 성공했는지 서술했는가?
+  2. **Success Story**: Is it described how it succeeded?
 
-  3. **임팩트**: 만들어낸 변화를 설명했는가?
+  3. **Impact**: Is the created change explained?
 
-  4. **여정 회고**: 여정의 핵심 순간들을 담았는가?
+  4. **Journey Retrospective**: Does it contain key moments of the journey?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 생생한 미래 스토리, 임팩트 명확, 설득력 있는 여정
+  - 5 points: Vivid future story, clear impact, persuasive journey
 
-  - 4점: 명확한 성공 비전과 스토리
+  - 4 points: Clear success vision and story
 
-  - 3점: 일부 미래 전망
+  - 3 points: Some future outlook
 
-  - 2점: 막연한 미래 언급
+  - 2 points: Vague future reference
 
-  - 1점: 미래 시점 없음
+  - 1 point: No future viewpoint
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 생생한 미래, 임팩트, 설득력
-    4: 명확한 성공 비전
-    3: 일부 미래 전망
-    2: 막연한 미래
-    1: 미래 시점 없음
+    5: Vivid future, clear impact, persuasive
+    4: Clear success vision
+    3: Some future outlook
+    2: Vague future
+    1: No future viewpoint
 outputSchema:
   score: number
   futureTimeline: string

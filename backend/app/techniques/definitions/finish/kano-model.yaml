@@ -1,6 +1,5 @@
 id: kano-model
 name: Kano Model
-nameKo: 카노 모델
 category: finish
 applicableHats:
 - red
@@ -10,56 +9,52 @@ evaluationDimensions:
 - A2
 - A3
 - B1
-description: 'Dr. Noriaki Kano(Tokyo University, 1984)가 개발한 고객 만족도 분류 모델.
+description: 'Customer satisfaction classification model developed by Dr. Noriaki Kano (Tokyo University, 1984).
 
-  제품 기능을 필수 요소(Must-be), 성능 요소(One-dimensional),
-
-  매력 요소(Attractive), 무관심(Indifferent), 역효과(Reverse)로 분류하여
-
-  우선순위를 결정하는 품질 관리 프레임워크.
+  Quality management framework classifying product features into Must-be, One-dimensional, Attractive, Indifferent, and Reverse to determine priorities.
 
   '
-promptTemplate: '## Kano Model 분석
+promptTemplate: '## Kano Model Analysis
 
 
-  이 프로젝트가 카노 모델 관점에서 기능을 분류하고 우선순위를 정했는지 분석하세요.
+  Analyze if this project classified features and set priorities from the Kano Model perspective.
 
 
-  ### Kano 5가지 품질 요소:
+  ### Kano 5 Quality Elements:
 
-  1. **Must-be (당연품질)**: 없으면 불만, 있어도 만족 증가 없음
+  1. **Must-be**: Dissatisfied if absent, no satisfaction increase if present
 
-  2. **One-dimensional (일원품질)**: 많을수록 만족 증가
+  2. **One-dimensional**: Satisfaction increases as functionality increases
 
-  3. **Attractive (매력품질)**: 없어도 불만 없음, 있으면 크게 만족
+  3. **Attractive**: No dissatisfaction if absent, great satisfaction if present
 
-  4. **Indifferent (무관심)**: 있든 없든 상관없는 기능
+  4. **Indifferent**: Feature that doesn''t matter either way
 
-  5. **Reverse (역품질)**: 있으면 오히려 불만족
+  5. **Reverse**: Dissatisfaction if present
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 5가지 분류 명확, 우선순위 최적화, 매력품질 강점
+  - 5 points: 5 classifications clear, priority optimized, strong Attractive quality
 
-  - 4점: 3-4가지 분류, 필수품질 충족, 매력품질 보유
+  - 4 points: 3-4 classifications, Must-be met, Attractive quality present
 
-  - 3점: 필수품질과 일원품질 구분
+  - 3 points: Distinguished Must-be and One-dimensional
 
-  - 2점: 기능 나열만, 분류 없음
+  - 2 points: Feature listing only, no classification
 
-  - 1점: 기능 우선순위 미고려
+  - 1 point: Priorities not considered
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 5가지 분류, 우선순위 최적화
-    4: 3-4가지 분류, 매력품질 보유
-    3: 필수품질+일원품질 구분
-    2: 기능 나열만
-    1: 우선순위 미고려
+    5: 5 classifications, priority optimized
+    4: 3-4 classifications, Attractive present
+    3: Must-be + One-dimensional
+    2: Listing only
+    1: Priorities not considered
 outputSchema:
   score: number
   mustBeFeatures: string[]
@@ -75,5 +70,5 @@ metadata:
   requiresWebSearch: false
   requiresRAG: false
   source: Dr. Noriaki Kano, Tokyo University (1984)
-  academicReference: ISO 표준 참조, 글로벌 QFD 적용
+  academicReference: ISO standard reference, Global QFD application
 requiredSources: both

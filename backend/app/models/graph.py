@@ -38,12 +38,17 @@ GRAPH_SCHEMA_VERSION = 2
 class EvaluationMode(str, Enum):
     """Canonical evaluation modes with machine IDs.
 
+    This is the single source of truth for evaluation modes.
+    Imported and re-exported by app.graph.graph_factory for backward compatibility.
+
     Attributes:
-        SIX_HATS: Six Hats mode - 6 parallel agents, ~90s duration
+        SIX_SOMMELIERS: Six Sommeliers mode - 6 parallel agents, ~90s duration
+        GRAND_TASTING: Grand Tasting mode - comprehensive evaluation
         FULL_TECHNIQUES: Full Techniques mode - 75 techniques in 8 groups, ~3min duration
     """
 
-    SIX_HATS = "six_hats"
+    SIX_SOMMELIERS = "six_sommeliers"
+    GRAND_TASTING = "grand_tasting"
     FULL_TECHNIQUES = "full_techniques"
 
 
@@ -106,7 +111,7 @@ class ReactFlowGraph(BaseModel):
 
     Attributes:
         graph_schema_version: Schema version for backward compatibility (default: 2)
-        mode: Evaluation mode - "six_hats" | "full_techniques"
+        mode: Evaluation mode - "six_sommeliers" | "grand_tasting" | "full_techniques"
         nodes: List of ReactFlowNode objects
         edges: List of ReactFlowEdge objects
         description: Optional graph description
@@ -123,7 +128,8 @@ class ReactFlowGraph(BaseModel):
         description="Schema version for backward compatibility and cache invalidation",
     )
     mode: EvaluationMode = Field(
-        ..., description='Evaluation mode: "six_hats" | "full_techniques"'
+        ...,
+        description='Evaluation mode: "six_sommeliers" | "grand_tasting" | "full_techniques"',
     )
     nodes: list[ReactFlowNode] = Field(..., description="List of graph nodes")
     edges: list[ReactFlowEdge] = Field(..., description="List of graph edges")
@@ -200,7 +206,7 @@ class Graph3DNode(BaseModel):
         position: 3D coordinates
         color: Optional color for the node
         step_number: Animation step number for sequencing
-        hat_type: Optional hat type for Six Hats mode
+        hat_type: Optional hat type for Six Sommeliers mode
         technique_id: Optional technique identifier
         category: Optional category classification
         item_count: Optional count of items
@@ -322,7 +328,7 @@ class Graph3DPayload(BaseModel):
     Attributes:
         graph_schema_version: Schema version for backward compatibility (default: 2)
         evaluation_id: Reference to the evaluation
-        mode: Evaluation mode - "six_hats" | "full_techniques"
+        mode: Evaluation mode - "six_sommeliers" | "grand_tasting" | "full_techniques"
         nodes: List of Graph3DNode objects
         edges: List of Graph3DEdge objects (bundled)
         edges_raw: Optional list of edges before bundling
@@ -347,7 +353,7 @@ class Graph3DPayload(BaseModel):
     evaluation_id: str = Field(..., description="Reference to the evaluation")
     mode: str = Field(
         ...,
-        description="Evaluation mode (e.g., basic, hackathon, six_hats, full_techniques)",
+        description="Evaluation mode (e.g., six_sommeliers, grand_tasting, full_techniques)",
     )
     nodes: list[Graph3DNode] = Field(..., description="List of graph nodes")
     edges: list[Graph3DEdge] = Field(..., description="List of graph edges (bundled)")
@@ -539,7 +545,10 @@ class AgentContribution(BaseModel):
 class ModeResponse(BaseModel):
     """Response model for the evaluation mode endpoint."""
 
-    mode: str = Field(..., description="Evaluation mode (six_hats or full_techniques)")
+    mode: str = Field(
+        ...,
+        description="Evaluation mode (six_sommeliers, grand_tasting, or full_techniques)",
+    )
     evaluation_id: str = Field(..., description="The evaluation ID")
 
 

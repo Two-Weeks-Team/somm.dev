@@ -1,6 +1,5 @@
 id: metaphor-mapping
 name: Metaphor Mapping
-nameKo: 은유 매핑
 category: terroir
 applicableHats:
 - green
@@ -9,52 +8,50 @@ evaluationDimensions:
 - A3
 - D2
 - D3
-description: '복잡한 개념을 친숙한 은유로 설명하는 기법.
+description: 'Technique to explain complex concepts with familiar metaphors.
 
-  추상적인 아이디어를 구체적이고
-
-  이해하기 쉬운 비유로 표현합니다.
+  Expresses abstract ideas with concrete and easy-to-understand analogies.
 
   '
-promptTemplate: '## Metaphor Mapping 분석
+promptTemplate: '## Metaphor Mapping Analysis
 
 
-  프로젝트가 효과적인 은유를 사용했는지 분석하세요.
+  Analyze if the project used effective metaphors.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **은유 사용**: 복잡한 개념을 비유로 설명했는가?
+  1. **Metaphor Usage**: Did it explain complex concepts with analogies?
 
-  2. **적절성**: 은유가 개념을 잘 전달하는가?
+  2. **Appropriateness**: Does the metaphor convey the concept well?
 
-  3. **일관성**: 은유가 전체적으로 일관성 있는가?
+  3. **Consistency**: Is the metaphor consistent overall?
 
-  4. **기억성**: 은유가 기억에 남는가?
+  4. **Memorability**: Is the metaphor memorable?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 강력한 핵심 은유, 일관성, 높은 기억성
+  - 5 points: Powerful core metaphor, consistency, high memorability
 
-  - 4점: 효과적인 은유 사용
+  - 4 points: Effective use of metaphor
 
-  - 3점: 일부 비유 사용
+  - 3 points: Some analogies used
 
-  - 2점: 산발적 비유
+  - 2 points: Sporadic analogies
 
-  - 1점: 은유 없음
+  - 1 point: No metaphors
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 강력한 은유, 일관성, 기억성
-    4: 효과적 은유 사용
-    3: 일부 비유
-    2: 산발적 비유
-    1: 은유 없음
+    5: Powerful metaphor, consistency, memorable
+    4: Effective metaphor use
+    3: Some analogies
+    2: Sporadic analogies
+    1: No metaphors
 outputSchema:
   score: number
   coreMetaphors: string[]

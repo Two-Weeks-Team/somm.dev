@@ -1,6 +1,5 @@
 id: triz
 name: TRIZ
-nameKo: 트리즈
 category: palate
 applicableHats:
 - green
@@ -9,54 +8,52 @@ evaluationDimensions:
 - A3
 - B1
 - B2
-description: 'Genrich Altshuller가 200,000+ 특허 분석을 통해 개발한 체계적 발명 방법론.
+description: 'Systematic invention methodology developed by Genrich Altshuller through analysis of 200,000+ patents.
 
-  모순 해결, 40가지 발명 원리, 기술 진화 법칙을 활용하여
-
-  혁신적인 문제 해결을 이끌어내는 공학적 창의성 기법.
+  Engineering creativity technique that derives innovative problem solutions utilizing contradiction resolution, 40 inventive principles, and laws of technical evolution.
 
   '
-promptTemplate: '## TRIZ 분석
+promptTemplate: '## TRIZ Analysis
 
 
-  이 프로젝트가 TRIZ 원리를 얼마나 활용했는지 분석하세요.
+  Analyze how much this project utilized TRIZ principles.
 
 
-  ### TRIZ 핵심 개념:
+  ### TRIZ Core Concepts:
 
-  1. **모순 식별**: 기술적/물리적 모순을 인식했는가?
+  1. **Identify Contradiction**: Did it recognize technical/physical contradictions?
 
-  2. **40가지 발명 원리**: 분할, 추출, 국소적 품질 등 원리 적용?
+  2. **40 Inventive Principles**: Applied principles like segmentation, extraction, local quality?
 
-  3. **이상적 최종 결과**: 이상적인 솔루션을 정의했는가?
+  3. **Ideal Final Result**: Did it define the ideal solution?
 
-  4. **자원 활용**: 기존 자원을 창의적으로 활용했는가?
+  4. **Resource Utilization**: Did it creatively use existing resources?
 
-  5. **기술 진화**: 기술 발전 패턴을 고려했는가?
+  5. **Technical Evolution**: Did it consider technology evolution patterns?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 모순 해결, 다수 발명 원리 적용, 이상적 결과 달성
+  - 5 points: Resolved contradictions, applied multiple principles, achieved ideal result
 
-  - 4점: 명확한 모순 인식, 2-3개 발명 원리 적용
+  - 4 points: Clear contradiction recognition, applied 2-3 principles
 
-  - 3점: 일부 모순 인식, 1개 발명 원리 적용
+  - 3 points: Recognized some contradictions, applied 1 principle
 
-  - 2점: 암묵적 모순 해결 시도
+  - 2 points: Implicit contradiction resolution attempt
 
-  - 1점: TRIZ 개념 미적용
+  - 1 point: TRIZ concepts not applied
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 모순 해결, 다수 원리 적용
-    4: 명확한 모순, 2-3개 원리
-    3: 일부 모순, 1개 원리
-    2: 암묵적 모순 해결
-    1: TRIZ 미적용
+    5: Resolved contradictions, multiple principles
+    4: Clear contradiction, 2-3 principles
+    3: Some contradiction, 1 principle
+    2: Implicit resolution
+    1: TRIZ not applied
 outputSchema:
   score: number
   contradictionsIdentified: string[]
@@ -70,5 +67,5 @@ metadata:
   requiresWebSearch: false
   requiresRAG: false
   source: Genrich Altshuller (1946-1956)
-  academicReference: 200,000+ 특허 분석 기반, Samsung/GE/Intel 도입
+  academicReference: Based on 200,000+ patent analyses, adopted by Samsung/GE/Intel
 requiredSources: both

@@ -1,6 +1,5 @@
 id: evolutionary-pressure
 name: Evolutionary Pressure Analysis
-nameKo: 진화적 압력
 category: balance
 applicableHats:
 - black
@@ -9,52 +8,50 @@ evaluationDimensions:
 - A2
 - B3
 - D1
-description: '시장과 환경의 진화적 압력을 분석하여
+description: 'A technique to assess long-term viability by analyzing evolutionary pressures from the market and environment.
 
-  장기적 생존 가능성을 평가하는 기법.
-
-  적응력과 변화 대응 능력을 검토합니다.
+  Examines adaptability and ability to respond to change.
 
   '
-promptTemplate: '## Evolutionary Pressure Analysis 분석
+promptTemplate: '## Evolutionary Pressure Analysis
 
 
-  프로젝트가 환경 변화에 대한 적응력을 갖추었는지 분석하세요.
+  Analyze if the project has adaptability to environmental changes.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **환경 변화**: 시장/기술 환경의 변화 트렌드를 파악했는가?
+  1. **Environmental Change**: Have trends in market/technology changes been identified?
 
-  2. **적응 전략**: 변화에 대응할 전략이 있는가?
+  2. **Adaptation Strategy**: Is there a strategy to respond to changes?
 
-  3. **유연성**: 피벗이나 조정이 가능한 구조인가?
+  3. **Flexibility**: Is the structure capable of pivoting or adjusting?
 
-  4. **장기 생존**: 장기적 생존 가능성을 고려했는가?
+  4. **Long-term Survival**: Has long-term viability been considered?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 트렌드 예측, 유연한 적응 전략, 장기 비전
+  - 5 points: Trend prediction, flexible adaptation strategy, long-term vision
 
-  - 4점: 환경 변화 인식 및 대응 계획
+  - 4 points: Environmental change recognition and response plan
 
-  - 3점: 일부 변화 요소 고려
+  - 3 points: Some change factors considered
 
-  - 2점: 현재 상황에만 집중
+  - 2 points: Focused only on current situation
 
-  - 1점: 환경 변화 무시
+  - 1 point: Environmental changes ignored
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 트렌드 예측, 유연한 적응, 장기 비전
-    4: 변화 인식 및 대응
-    3: 일부 변화 고려
-    2: 현재만 집중
-    1: 변화 무시
+    5: Trend prediction, flexible adaptation, long-term vision
+    4: Change recognition and response
+    3: Some changes considered
+    2: Focused on current only
+    1: Changes ignored
 outputSchema:
   score: number
   environmentalChanges: string[]

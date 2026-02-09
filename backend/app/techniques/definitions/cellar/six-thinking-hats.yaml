@@ -1,6 +1,5 @@
 id: six-thinking-hats
 name: Six Thinking Hats Integration
-nameKo: 6색 사고모자 통합
 category: cellar
 applicableHats:
 - blue
@@ -8,56 +7,52 @@ evaluationDimensions:
 - A1
 - B2
 - D1
-description: 'Edward de Bono의 Six Thinking Hats를 활용하여
-
-  6가지 관점(사실, 감정, 비판, 낙관, 창의, 통합)에서
-
-  종합적으로 분석하고 통합합니다.
+description: 'Utilizes Edward de Bono''s Six Thinking Hats to comprehensively analyze and integrate from 6 perspectives (Facts, Emotions, Cautions, Benefits, Creativity, Process).
 
   '
-promptTemplate: '## Six Thinking Hats Integration 분석
+promptTemplate: '## Six Thinking Hats Integration Analysis
 
 
-  프로젝트가 다양한 관점을 통합적으로 고려했는지 분석하세요.
+  Analyze if the project considered various perspectives comprehensively.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **White Hat**: 사실과 데이터를 충분히 분석했는가?
+  1. **White Hat**: Analyzed facts and data sufficiently?
 
-  2. **Red Hat**: 감정과 직관을 고려했는가?
+  2. **Red Hat**: Considered emotions and intuition?
 
-  3. **Black Hat**: 위험과 문제점을 검토했는가?
+  3. **Black Hat**: Reviewed risks and problems?
 
-  4. **Yellow Hat**: 긍정적 측면을 탐색했는가?
+  4. **Yellow Hat**: Explored positive aspects?
 
-  5. **Green Hat**: 창의적 대안을 모색했는가?
+  5. **Green Hat**: Sought creative alternatives?
 
-  6. **Blue Hat**: 전체를 통합했는가?
+  6. **Blue Hat**: Integrated the whole?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 6가지 관점 모두 깊이 있게 분석 및 통합
+  - 5 points: Deeply analyzed and integrated all 6 perspectives
 
-  - 4점: 5가지 이상 관점 고려
+  - 4 points: Considered 5+ perspectives
 
-  - 3점: 3-4가지 관점 고려
+  - 3 points: Considered 3-4 perspectives
 
-  - 2점: 1-2가지 관점만 고려
+  - 2 points: Considered only 1-2 perspectives
 
-  - 1점: 단일 관점만 존재
+  - 1 point: Single perspective only
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 6가지 관점 깊이 분석 및 통합
-    4: 5가지+ 관점
-    3: 3-4가지 관점
-    2: 1-2가지 관점
-    1: 단일 관점만
+    5: 6 perspectives deep analysis & integration
+    4: 5+ perspectives
+    3: 3-4 perspectives
+    2: 1-2 perspectives
+    1: Single perspective
 outputSchema:
   score: number
   whiteHat: string

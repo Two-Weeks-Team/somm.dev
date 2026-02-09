@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useSyncExternalStore } from 'react';
 import { Wine, Trophy, Medal, Award, Star, AlertTriangle, Sparkles, ArrowRight, Zap, FileText, Share2, ChevronDown, FolderGit, Code, Shield, Lightbulb, Wrench, ChevronRight, Users, Crown, Github } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -54,22 +54,25 @@ const initialPositions = [
 
 const sizes = [56, 64, 48, 56, 52, 96]; // radius for collision detection
 
+const emptySubscribe = () => () => {};
+const getMounted = () => true;
+const getServerMounted = () => false;
+
 export default function Home() {
   const [activeSommelier, setActiveSommelier] = useState<string | null>(null);
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(emptySubscribe, getMounted, getServerMounted);
   const [positions, setPositions] = useState(initialPositions);
-  const velocitiesRef = useRef(initialPositions.map(() => ({
+  const [velocities] = useState(() => initialPositions.map(() => ({
     x: (Math.random() - 0.5) * 2,
     y: (Math.random() - 0.5) * 2,
   })));
+  const velocitiesRef = useRef(velocities);
 
   useEffect(() => {
-    setMounted(true);
-    
     const animate = () => {
       setPositions(prev => {
         const newPositions = [...prev];
-        const velocities = velocitiesRef.current;
+        const velocities = velocitiesRef.current!;
         const bounds = { x: 180, y: 150 };
         
         // Update positions
@@ -696,7 +699,7 @@ export default function Home() {
           </div>
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-[#722F37]/10">
             <div className="space-y-4">
-              {scoringTiers.map((tier, index) => {
+              {scoringTiers.map((tier) => {
                 const Icon = tier.icon;
                 const isCorked = (tier as { isCorked?: boolean }).isCorked;
                 return (

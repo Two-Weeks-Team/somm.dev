@@ -1,6 +1,5 @@
 id: alien-anthropologist
 name: Alien Anthropologist
-nameKo: 외계인 인류학자
 category: finish
 applicableHats:
 - white
@@ -9,52 +8,50 @@ evaluationDimensions:
 - A1
 - C1
 - D1
-description: '완전한 외부인(외계인)의 시선으로 상황을 관찰하는 기법.
+description: 'Technique to observe situations from the perspective of a complete outsider (alien).
 
-  당연하게 여기는 것들을 낯설게 보면서
-
-  숨겨진 가정과 관행을 발견합니다.
+  Discovers hidden assumptions and practices by looking at taken-for-granted things strangely.
 
   '
-promptTemplate: '## Alien Anthropologist 분석
+promptTemplate: '## Alien Anthropologist Analysis
 
 
-  프로젝트가 외부인의 신선한 시각으로 문제를 바라보았는지 분석하세요.
+  Analyze if the project looked at the problem with a fresh outsider perspective.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **낯설게 보기**: 당연한 것들에 의문을 제기했는가?
+  1. **Making Strange**: Did it question taken-for-granted things?
 
-  2. **문화적 관행 발견**: 숨겨진 관행이나 가정을 발견했는가?
+  2. **Cultural Practice Discovery**: Did it discover hidden practices or assumptions?
 
-  3. **순수한 관찰**: 선입견 없이 현상을 관찰했는가?
+  3. **Pure Observation**: Did it observe phenomena without prejudice?
 
-  4. **새로운 해석**: 기존과 다른 해석을 시도했는가?
+  4. **New Interpretation**: Did it attempt an interpretation different from existing ones?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 근본적 관행에 의문 제기, 혁신적 관점 제시
+  - 5 points: Challenged fundamental practices, presented innovative perspective
 
-  - 4점: 여러 당연한 가정에 도전
+  - 4 points: Challenged several taken-for-granted assumptions
 
-  - 3점: 일부 관행에 의문 제기
+  - 3 points: Questioned some practices
 
-  - 2점: 대부분 기존 시각 유지
+  - 2 points: Maintained most existing views
 
-  - 1점: 순수한 외부 관점 없음
+  - 1 point: No pure outsider perspective
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 근본적 관행 도전, 혁신적 관점
-    4: 여러 가정에 도전
-    3: 일부 관행에 의문
-    2: 기존 시각 유지
-    1: 외부 관점 없음
+    5: Challenged fundamental practices
+    4: Challenged several assumptions
+    3: Questioned some practices
+    2: Maintained existing views
+    1: No outsider perspective
 outputSchema:
   score: number
   takenForGranted: string[]

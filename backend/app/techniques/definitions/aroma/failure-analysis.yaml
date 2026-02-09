@@ -1,6 +1,5 @@
 id: failure-analysis
 name: Failure Analysis (FMEA)
-nameKo: 실패 분석
 category: aroma
 applicableHats:
 - black
@@ -11,50 +10,48 @@ evaluationDimensions:
 - C3
 description: 'Failure Mode and Effects Analysis (FMEA).
 
-  잠재적 실패 모드를 사전에 식별하고
-
-  그 영향과 대응책을 분석합니다.
+  Identifies potential failure modes in advance and analyzes their impact and countermeasures.
 
   '
-promptTemplate: '## Failure Analysis (FMEA) 분석
+promptTemplate: '## Failure Analysis (FMEA)
 
 
-  이 프로젝트가 잠재적 실패 모드를 고려했는지 분석하세요.
+  Analyze if the project considered potential failure modes.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **실패 모드 식별**: 어떤 방식으로 실패할 수 있는지 식별했는가?
+  1. **Failure Mode Identification**: Identified how it could fail?
 
-  2. **영향 분석**: 각 실패의 영향도를 평가했는가?
+  2. **Impact Analysis**: Evaluated the impact of each failure?
 
-  3. **발생 가능성**: 실패 발생 확률을 고려했는가?
+  3. **Occurrence Probability**: Considered probability of failure?
 
-  4. **대응책**: 각 실패에 대한 대응책이 있는가?
+  4. **Countermeasures**: Are there countermeasures for each failure?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 체계적 FMEA 수행, 우선순위화된 대응책 존재
+  - 5 points: Systematic FMEA performed, prioritized countermeasures exist
 
-  - 4점: 주요 실패 모드 식별 및 대응
+  - 4 points: Key failure modes identified and addressed
 
-  - 3점: 일부 위험 인식
+  - 3 points: Some risks recognized
 
-  - 2점: 피상적 위험 언급
+  - 2 points: Superficial risk mention
 
-  - 1점: 위험 분석 없음
+  - 1 point: No risk analysis
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 체계적 FMEA, 우선순위화된 대응책
-    4: 주요 실패 모드 식별 및 대응
-    3: 일부 위험 인식
-    2: 피상적 위험 언급
-    1: 위험 분석 없음
+    5: Systematic FMEA, prioritized countermeasures
+    4: Key failure modes identified
+    3: Some risks recognized
+    2: Superficial risk mention
+    1: No risk analysis
 outputSchema:
   score: number
   failureModes: string[]

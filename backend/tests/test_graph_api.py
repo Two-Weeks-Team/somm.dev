@@ -16,9 +16,9 @@ from unittest.mock import AsyncMock, patch, MagicMock
 from fastapi.testclient import TestClient
 
 from app.main import app
+from app.graph.graph_factory import EvaluationMode
 from app.models.graph import (
     GRAPH_SCHEMA_VERSION,
-    EvaluationMode,
     ReactFlowGraph,
     TraceEvent,
     ModeResponse,
@@ -50,15 +50,15 @@ def mock_token():
 
 
 @pytest.fixture
-def mock_evaluation_six_hats():
-    """Mock evaluation document for six_hats mode."""
+def mock_evaluation_six_sommeliers():
+    """Mock evaluation document for six_sommeliers mode."""
     return {
         "_id": "eval123",
         "user_id": "user123",
         "repo_context": {"repo_url": "https://github.com/test/repo"},
         "criteria": "basic",
         "status": "completed",
-        "mode": "six_hats",
+        "mode": "six_sommeliers",
         "created_at": datetime.now(timezone.utc),
         "updated_at": datetime.now(timezone.utc),
     }
@@ -89,22 +89,38 @@ def auth_headers(mock_token):
 
 
 class TestAuthentication:
-    """Test authentication requirements for graph endpoints."""
+    """Test authentication requirements for graph endpoints.
 
-    def test_get_graph_without_auth_returns_401(self):
-        """Test that graph endpoint requires authentication."""
-        response = client.get("/api/evaluate/eval123/graph")
-        assert response.status_code == 401
+    Note: graph, timeline, and mode endpoints use get_optional_user
+    (not get_current_user) to support public demo evaluations.
+    For non-public evaluations, _check_ownership raises CorkedError
+    when user is None.
+    """
 
-    def test_get_timeline_without_auth_returns_401(self):
-        """Test that timeline endpoint requires authentication."""
-        response = client.get("/api/evaluate/eval123/graph/timeline")
-        assert response.status_code == 401
+    def test_check_ownership_requires_auth_for_non_public(self):
+        """Test that _check_ownership raises CorkedError when user is None for non-public evaluations."""
+        from app.api.routes.graph import _check_ownership
 
-    def test_get_mode_without_auth_returns_401(self):
-        """Test that mode endpoint requires authentication."""
-        response = client.get("/api/evaluate/eval123/graph/mode")
-        assert response.status_code == 401
+        evaluation = {"user_id": "some_user"}
+        with pytest.raises(CorkedError) as exc_info:
+            _check_ownership(evaluation, None, "non_public_eval_id")
+        assert "Authentication required" in str(exc_info.value.detail)
+
+    def test_check_ownership_allows_public_demo_without_auth(self):
+        """Test that public demo evaluations can be accessed without authentication."""
+        from app.api.routes.graph import _check_ownership, PUBLIC_DEMO_EVALUATIONS
+
+        evaluation = {"user_id": "some_user"}
+        demo_id = next(iter(PUBLIC_DEMO_EVALUATIONS))
+        _check_ownership(evaluation, None, demo_id)
+
+    def test_check_ownership_allows_authenticated_owner(self):
+        """Test that authenticated owner can access their evaluation."""
+        from app.api.routes.graph import _check_ownership
+
+        user = MagicMock(id="user123")
+        evaluation = {"user_id": "user123"}
+        _check_ownership(evaluation, user, "any_eval_id")
 
 
 # Authorization Tests
@@ -113,42 +129,28 @@ class TestAuthentication:
 class TestAuthorization:
     """Test authorization checks for graph endpoints."""
 
-    def test_get_graph_wrong_user_returns_403(self):
+    def test_wrong_user_returns_403(self):
         """Test that accessing another user's evaluation returns 403."""
-        # Test the underlying function directly
         from app.api.routes.graph import _check_ownership
 
         evaluation = {"user_id": "different_user"}
         user = MagicMock(id="current_user")
 
         with pytest.raises(CorkedError) as exc_info:
-            _check_ownership(evaluation, user)
+            _check_ownership(evaluation, user, "eval123")
 
         assert "Access denied" in str(exc_info.value.detail)
 
-    def test_get_timeline_wrong_user_returns_403(self):
-        """Test that timeline endpoint checks ownership."""
+    def test_unauthenticated_non_public_returns_auth_error(self):
+        """Test that unauthenticated access to non-public evaluation raises CorkedError."""
         from app.api.routes.graph import _check_ownership
 
-        evaluation = {"user_id": "different_user"}
-        user = MagicMock(id="current_user")
+        evaluation = {"user_id": "some_user"}
 
         with pytest.raises(CorkedError) as exc_info:
-            _check_ownership(evaluation, user)
+            _check_ownership(evaluation, None, "non_public_eval")
 
-        assert "Access denied" in str(exc_info.value.detail)
-
-    def test_get_mode_wrong_user_returns_403(self):
-        """Test that mode endpoint checks ownership."""
-        from app.api.routes.graph import _check_ownership
-
-        evaluation = {"user_id": "different_user"}
-        user = MagicMock(id="current_user")
-
-        with pytest.raises(CorkedError) as exc_info:
-            _check_ownership(evaluation, user)
-
-        assert "Access denied" in str(exc_info.value.detail)
+        assert "Authentication required" in str(exc_info.value.detail)
 
 
 # 404 Not Found Tests
@@ -206,13 +208,13 @@ class TestSchemaValidation:
     def test_react_flow_graph_model_has_required_fields(self):
         """Test that ReactFlowGraph model has all required fields."""
         graph = ReactFlowGraph(
-            mode=EvaluationMode.SIX_HATS.value,
+            mode=EvaluationMode.SIX_SOMMELIERS.value,
             nodes=[],
             edges=[],
         )
 
         assert graph.graph_schema_version == GRAPH_SCHEMA_VERSION
-        assert graph.mode == EvaluationMode.SIX_HATS.value
+        assert graph.mode == EvaluationMode.SIX_SOMMELIERS.value
         assert isinstance(graph.nodes, list)
         assert isinstance(graph.edges, list)
 
@@ -235,11 +237,11 @@ class TestSchemaValidation:
     def test_mode_response_model_has_required_fields(self):
         """Test that ModeResponse model has all required fields."""
         response = ModeResponse(
-            mode=EvaluationMode.SIX_HATS.value,
+            mode=EvaluationMode.SIX_SOMMELIERS.value,
             evaluation_id="eval123",
         )
 
-        assert response.mode == EvaluationMode.SIX_HATS.value
+        assert response.mode == EvaluationMode.SIX_SOMMELIERS.value
         assert response.evaluation_id == "eval123"
 
 
@@ -249,14 +251,14 @@ class TestSchemaValidation:
 class TestGraphBuilder:
     """Test graph builder service functions."""
 
-    def test_build_six_hats_topology_returns_valid_graph(self):
-        """Test that six_hats topology builder returns valid ReactFlowGraph."""
-        from app.services.graph_builder import build_six_hats_topology
+    def test_build_six_sommeliers_topology_returns_valid_graph(self):
+        """Test that six_sommeliers topology builder returns valid ReactFlowGraph."""
+        from app.services.graph_builder import build_six_sommeliers_topology
 
-        graph = build_six_hats_topology()
+        graph = build_six_sommeliers_topology()
 
         assert isinstance(graph, ReactFlowGraph)
-        assert graph.mode == EvaluationMode.SIX_HATS.value
+        assert graph.mode == EvaluationMode.SIX_SOMMELIERS.value
         assert graph.graph_schema_version == GRAPH_SCHEMA_VERSION
         assert len(graph.nodes) > 0
         assert len(graph.edges) > 0
@@ -285,11 +287,14 @@ class TestGraphBuilder:
         assert "technique_group" in node_types or "synthesis" in node_types
         assert "end" in node_types
 
-    def test_six_hats_has_expected_sommelier_nodes(self):
-        """Test that six_hats topology includes all expected sommelier nodes."""
-        from app.services.graph_builder import build_six_hats_topology, SOMMELIER_CONFIG
+    def test_six_sommeliers_has_expected_sommelier_nodes(self):
+        """Test that six_sommeliers topology includes all expected sommelier nodes."""
+        from app.services.graph_builder import (
+            build_six_sommeliers_topology,
+            SOMMELIER_CONFIG,
+        )
 
-        graph = build_six_hats_topology()
+        graph = build_six_sommeliers_topology()
         node_ids = {node.id for node in graph.nodes}
 
         # Check all sommeliers are present
@@ -317,12 +322,12 @@ class TestGraphBuilder:
 class TestSnapshotStability:
     """Test that topology structure is consistent across calls."""
 
-    def test_six_hats_topology_structure_is_stable(self):
-        """Test that six_hats topology produces consistent structure."""
-        from app.services.graph_builder import build_six_hats_topology
+    def test_six_sommeliers_topology_structure_is_stable(self):
+        """Test that six_sommeliers topology produces consistent structure."""
+        from app.services.graph_builder import build_six_sommeliers_topology
 
         # Build multiple graphs
-        graphs = [build_six_hats_topology() for _ in range(3)]
+        graphs = [build_six_sommeliers_topology() for _ in range(3)]
 
         # All graphs should have same structure
         first = graphs[0]
@@ -360,14 +365,23 @@ class TestSnapshotStability:
 class TestModeDetection:
     """Test evaluation mode detection."""
 
-    def test_determine_mode_returns_six_hats_for_six_hats_mode(self):
-        """Test that _determine_mode returns SIX_HATS for six_hats mode."""
+    def test_determine_mode_returns_six_sommeliers_for_six_sommeliers_mode(self):
+        """Test that _determine_mode returns SIX_SOMMELIERS for six_sommeliers mode."""
         from app.api.routes.graph import _determine_mode
 
-        evaluation = {"mode": "six_hats"}
+        evaluation = {"mode": "six_sommeliers"}
         mode = _determine_mode(evaluation)
 
-        assert mode == EvaluationMode.SIX_HATS
+        assert mode == EvaluationMode.SIX_SOMMELIERS
+
+    def test_determine_mode_returns_six_sommeliers_for_evaluation_mode_field(self):
+        """Test that _determine_mode checks evaluation_mode field first."""
+        from app.api.routes.graph import _determine_mode
+
+        evaluation = {"evaluation_mode": "six_sommeliers", "mode": "full_techniques"}
+        mode = _determine_mode(evaluation)
+
+        assert mode == EvaluationMode.SIX_SOMMELIERS
 
     def test_determine_mode_returns_full_techniques_for_full_techniques_mode(self):
         """Test that _determine_mode returns FULL_TECHNIQUES for full_techniques mode."""
@@ -378,11 +392,11 @@ class TestModeDetection:
 
         assert mode == EvaluationMode.FULL_TECHNIQUES
 
-    def test_determine_mode_defaults_to_six_hats(self):
-        """Test that _determine_mode defaults to SIX_HATS when mode not specified."""
+    def test_determine_mode_defaults_to_six_sommeliers(self):
+        """Test that _determine_mode defaults to SIX_SOMMELIERS when mode not specified."""
         from app.api.routes.graph import _determine_mode
 
         evaluation = {}
         mode = _determine_mode(evaluation)
 
-        assert mode == EvaluationMode.SIX_HATS
+        assert mode == EvaluationMode.SIX_SOMMELIERS

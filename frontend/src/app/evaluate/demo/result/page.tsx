@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ArrowLeft, Share2, Download, Check, Copy, Trophy, Wine } from 'lucide-react';
+import { ArrowLeft, Share2, Download, Check, Trophy, Wine } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 

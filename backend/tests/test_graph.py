@@ -113,7 +113,7 @@ class TestGraphStructure:
     """Test cases for graph structure - fan-out and fan-in patterns"""
 
     def test_graph_has_fan_out_from_start_rag_disabled(self):
-        """Test that 5 sommelier nodes are connected from __start__ when RAG disabled"""
+        """Test that enrichment nodes are connected from __start__ when RAG disabled"""
         from app.graph.graph import create_evaluation_graph
 
         with patch("app.graph.graph.get_checkpointer") as mock_checkpointer:
@@ -130,7 +130,11 @@ class TestGraphStructure:
                 all_edges = builder.edges
                 start_edges = [e for e in all_edges if e[0] == "__start__"]
 
-                assert len(start_edges) == 5
+                # When RAG disabled: __start__ -> [code_analysis_enrich, web_search_enrich]
+                assert len(start_edges) == 2
+                start_targets = {e[1] for e in start_edges}
+                assert "code_analysis_enrich" in start_targets
+                assert "web_search_enrich" in start_targets
 
     def test_graph_has_rag_enrich_when_enabled(self):
         """Test that rag_enrich node exists and connects from __start__ when RAG enabled"""
@@ -151,9 +155,14 @@ class TestGraphStructure:
                 all_edges = builder.edges
 
                 start_edges = [e for e in all_edges if e[0] == "__start__"]
-                assert len(start_edges) == 1
-                assert start_edges[0][1] == "rag_enrich"
+                # When RAG enabled: __start__ -> [rag_enrich, code_analysis_enrich, web_search_enrich]
+                assert len(start_edges) == 3
+                start_targets = {e[1] for e in start_edges}
+                assert "rag_enrich" in start_targets
+                assert "code_analysis_enrich" in start_targets
+                assert "web_search_enrich" in start_targets
 
+                # Each enrichment node connects to all 5 sommeliers
                 rag_edges = [e for e in all_edges if e[0] == "rag_enrich"]
                 assert len(rag_edges) == 5
 

@@ -24,6 +24,9 @@ class TestEvaluationMode:
     def test_grand_tasting_value(self):
         assert EvaluationMode.GRAND_TASTING.value == "grand_tasting"
 
+    def test_full_techniques_value(self):
+        assert EvaluationMode.FULL_TECHNIQUES.value == "full_techniques"
+
 
 class TestListAvailableModes:
     def test_returns_both_modes(self):

@@ -20,17 +20,14 @@ class TestGraphTrajectory:
                 all_edges = builder.edges
 
                 start_edges = [e for e in all_edges if e[0] == "__start__"]
-                sommelier_targets = {e[1] for e in start_edges}
+                enrichment_targets = {e[1] for e in start_edges}
 
-                expected_sommeliers = {
-                    "marcel",
-                    "isabella",
-                    "heinrich",
-                    "sofia",
-                    "laurent",
+                expected_enrichments = {
+                    "code_analysis_enrich",
+                    "web_search_enrich",
                 }
-                assert sommelier_targets == expected_sommeliers
-                assert len(start_edges) == 5
+                assert enrichment_targets == expected_enrichments
+                assert len(start_edges) == 2
 
     def test_trajectory_rag_enabled_sequential_then_fan_out(self):
         from app.graph.graph import create_evaluation_graph
@@ -46,8 +43,13 @@ class TestGraphTrajectory:
                 all_edges = builder.edges
 
                 start_edges = [e for e in all_edges if e[0] == "__start__"]
-                assert len(start_edges) == 1
-                assert start_edges[0][1] == "rag_enrich"
+                assert len(start_edges) == 3
+                enrichment_targets = {e[1] for e in start_edges}
+                assert enrichment_targets == {
+                    "rag_enrich",
+                    "code_analysis_enrich",
+                    "web_search_enrich",
+                }
 
                 rag_edges = [e for e in all_edges if e[0] == "rag_enrich"]
                 rag_targets = {e[1] for e in rag_edges}
@@ -113,7 +115,8 @@ class TestGraphTrajectory:
                 builder = getattr(graph, "builder", None)
                 all_edges = builder.edges
 
-                expected_edge_count = 5 + 5 + 1
+                # 2 start->enrichment + 2*5 enrichment->sommelier + 5 sommelier->jeanpierre + 1 jeanpierre->END
+                expected_edge_count = 2 + 10 + 5 + 1
                 assert len(all_edges) == expected_edge_count
 
     def test_complete_trajectory_rag_enabled(self):
@@ -129,7 +132,8 @@ class TestGraphTrajectory:
                 builder = getattr(graph, "builder", None)
                 all_edges = builder.edges
 
-                expected_edge_count = 1 + 5 + 5 + 1
+                # 3 start->enrichment + 3*5 enrichment->sommelier + 5 sommelier->jeanpierre + 1 jeanpierre->END
+                expected_edge_count = 3 + 15 + 5 + 1
                 assert len(all_edges) == expected_edge_count
 
 

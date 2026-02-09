@@ -1,58 +1,57 @@
 id: consensus-building
 name: Consensus Building
-nameKo: 합의 형성
 category: cellar
 applicableHats:
 - blue
 evaluationDimensions:
 - D3
 - D4
-description: '여러 관점과 평가 결과를 종합하여 균형 잡힌 합의점을 도출하는 기법.
+description: 'Technique to synthesize various perspectives and evaluation results to reach a balanced consensus.
 
-  상충되는 의견들 사이에서 최적의 결론을 찾아내는 과정.
+  Process of finding the optimal conclusion among conflicting opinions.
 
   '
-promptTemplate: '## Consensus Building (합의 도출)
+promptTemplate: '## Consensus Building Analysis
 
 
-  여러 평가 관점을 종합하여 균형 잡힌 결론을 도출하세요.
+  Synthesize multiple evaluation perspectives to reach a balanced conclusion.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **공통점 식별**: 모든 관점에서 동의하는 부분은?
+  1. **Common Ground**: What parts do all perspectives agree on?
 
-  2. **갈등 지점**: 관점 간 상충되는 부분은?
+  2. **Conflict Points**: Where do perspectives conflict?
 
-  3. **가중치 결정**: 어떤 관점에 더 무게를 둘 것인가?
+  3. **Weighting**: Which perspective should be weighted more?
 
-  4. **절충안 도출**: 갈등을 해결할 수 있는 절충안은?
+  4. **Compromise**: What compromise can resolve conflicts?
 
-  5. **최종 합의**: 모든 것을 고려한 최종 결론은?
+  5. **Final Consensus**: What is the final conclusion considering everything?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 모든 관점을 균형있게 종합, 명확한 결론
+  - 5 points: Balanced synthesis of all perspectives, clear conclusion
 
-  - 4점: 대부분 관점 종합, 일부 누락
+  - 4 points: Synthesis of most perspectives, some missing
 
-  - 3점: 주요 관점만 종합
+  - 3 points: Synthesis of key perspectives only
 
-  - 2점: 일부 관점만 반영, 편향됨
+  - 2 points: Only some perspectives reflected, biased
 
-  - 1점: 종합 없이 단일 관점만 반영
+  - 1 point: No synthesis, reflects single perspective
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 모든 관점 균형있게 종합
-    4: 대부분 관점 종합
-    3: 주요 관점만 종합
-    2: 편향된 종합
-    1: 단일 관점만 반영
+    5: Balanced synthesis, clear conclusion
+    4: Most perspectives synthesized
+    3: Key perspectives synthesized
+    2: Biased synthesis
+    1: Single perspective only
 outputSchema:
   score: number
   commonGround: string[]

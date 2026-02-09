@@ -1,6 +1,5 @@
 id: pestle-analysis
 name: PESTLE Analysis
-nameKo: PESTLE 분석
 category: aroma
 applicableHats:
 - white
@@ -9,56 +8,54 @@ evaluationDimensions:
 - A1
 - A4
 - B4
-description: 'Francis Aguilar(Harvard Business School)가 개발한 거시환경 분석 프레임워크.
+description: 'Macro-environmental analysis framework developed by Francis Aguilar (Harvard Business School).
 
-  Political(정치), Economic(경제), Social(사회), Technological(기술),
-
-  Legal(법률), Environmental(환경) 6가지 요인으로 외부 환경을 체계적으로 분석.
+  Systematically analyzes external environment with 6 factors: Political, Economic, Social, Technological, Legal, Environmental.
 
   '
-promptTemplate: '## PESTLE 분석
+promptTemplate: '## PESTLE Analysis
 
 
-  이 프로젝트가 PESTLE 6가지 환경 요인을 분석했는지 평가하세요.
+  Evaluate if the project analyzed the 6 PESTLE environmental factors.
 
 
-  ### PESTLE 6가지 요인:
+  ### PESTLE 6 Factors:
 
-  1. **Political (정치)**: 정책, 규제, 정치적 안정성 고려?
+  1. **Political**: Policy, regulation, political stability considered?
 
-  2. **Economic (경제)**: 경제 상황, 시장 동향, 환율 등 분석?
+  2. **Economic**: Economic situation, market trends, exchange rates analyzed?
 
-  3. **Social (사회)**: 인구통계, 문화, 라이프스타일 변화 고려?
+  3. **Social**: Demographics, culture, lifestyle changes considered?
 
-  4. **Technological (기술)**: 기술 트렌드, R&D, 자동화 영향 분석?
+  4. **Technological**: Tech trends, R&D, automation impact analyzed?
 
-  5. **Legal (법률)**: 법적 요구사항, 규제 준수, 지적재산권?
+  5. **Legal**: Legal requirements, compliance, IP?
 
-  6. **Environmental (환경)**: 환경 규제, 지속가능성, 기후 영향?
+  6. **Environmental**: Environmental regulations, sustainability, climate impact?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 6가지 요인 모두 심층 분석, 상호작용 고려
+  - 5 points: In-depth analysis of all 6 factors, interactions considered
 
-  - 4점: 5-6가지 요인 분석, 핵심 영향 식별
+  - 4 points: Analysis of 5-6 factors, key impacts identified
 
-  - 3점: 3-4가지 요인 분석
+  - 3 points: Analysis of 3-4 factors
 
-  - 2점: 1-2가지 요인만 언급
+  - 2 points: Mentioned only 1-2 factors
 
-  - 1점: 거시환경 분석 없음
+  - 1 point: No macro-environmental analysis
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 6가지 심층 분석, 상호작용 고려
-    4: 5-6가지 분석, 핵심 영향 식별
-    3: 3-4가지 요인 분석
-    2: 1-2가지 요인만 언급
-    1: 거시환경 분석 없음
+    5: Deep analysis of 6 factors, interactions
+    4: 5-6 factors, key impacts identified
+    3: 3-4 factors analyzed
+    2: 1-2 factors mentioned
+    1: No macro analysis
 outputSchema:
   score: number
   politicalFactors: string
@@ -74,5 +71,5 @@ metadata:
   requiresWebSearch: false
   requiresRAG: false
   source: Francis Aguilar, Harvard Business School (1967)
-  academicReference: 전략기획 표준 도구, 글로벌 MBA 커리큘럼
+  academicReference: Standard tool for strategic planning, Global MBA curriculum
 requiredSources: either

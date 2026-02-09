@@ -1,6 +1,5 @@
 id: empathy-mapping
 name: Empathy Mapping
-nameKo: 공감 지도
 category: finish
 applicableHats:
 - red
@@ -9,52 +8,50 @@ evaluationDimensions:
 - C1
 - C2
 - D2
-description: '사용자가 생각하고, 느끼고, 말하고, 행동하는 것을
+description: 'Visualization technique mapping what users Say, Think, Do, and Feel into 4 quadrants.
 
-  4사분면으로 매핑하는 시각화 기법.
-
-  사용자의 내면과 외면을 깊이 이해합니다.
+  Deeply understands the user''s inner and outer aspects.
 
   '
-promptTemplate: '## Empathy Mapping 분석
+promptTemplate: '## Empathy Mapping Analysis
 
 
-  프로젝트가 사용자에 대한 깊은 공감을 보여주는지 분석하세요.
+  Analyze if the project shows deep empathy for users.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **Says**: 사용자가 무엇을 말하는지 파악했는가?
+  1. **Says**: Identified what users say?
 
-  2. **Thinks**: 사용자가 무엇을 생각하는지 이해했는가?
+  2. **Thinks**: Understood what users think?
 
-  3. **Does**: 사용자의 행동을 관찰했는가?
+  3. **Does**: Observed user actions?
 
-  4. **Feels**: 사용자의 감정을 파악했는가?
+  4. **Feels**: Grasped user emotions?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 4가지 영역 모두 깊이 있게 파악, 숨겨진 니즈 발견
+  - 5 points: Deeply grasped all 4 areas, discovered hidden needs
 
-  - 4점: 4가지 영역 대부분 파악
+  - 4 points: Grasped most of 4 areas
 
-  - 3점: 2-3가지 영역 파악
+  - 3 points: Grasped 2-3 areas
 
-  - 2점: 1가지 영역만 피상적 파악
+  - 2 points: Superficial grasp of 1 area
 
-  - 1점: 사용자 공감 없음
+  - 1 point: No empathy for users
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 4영역 깊이 파악, 숨겨진 니즈 발견
-    4: 4영역 대부분 파악
-    3: 2-3영역 파악
-    2: 1영역 피상적 파악
-    1: 사용자 공감 없음
+    5: Deep grasp of 4 areas, hidden needs
+    4: Grasped most of 4 areas
+    3: Grasped 2-3 areas
+    2: Superficial grasp 1 area
+    1: No empathy
 outputSchema:
   score: number
   says: string[]

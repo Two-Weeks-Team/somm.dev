@@ -1,63 +1,60 @@
 id: provocation-technique
 name: Provocation Technique
-nameKo: 도발 기법
 category: palate
 applicableHats:
 - green
 evaluationDimensions:
 - A3
 - A4
-description: 'Edward de Bono의 "Po" 기법.
+description: 'Edward de Bono''s "Po" technique.
 
-  의도적으로 불합리하거나 도발적인 아이디어를 제시하여
-
-  새로운 사고의 방향을 유도합니다.
+  Intentionally presents unreasonable or provocative ideas to induce new directions of thinking.
 
   '
-promptTemplate: '## Provocation Technique (Po) 분석
+promptTemplate: '## Provocation Technique (Po) Analysis
 
 
-  이 프로젝트에서 도발적이거나 파격적인 아이디어가 있는지 분석하세요.
+  Analyze if there are provocative or unconventional ideas in this project.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **대담한 아이디어**: 업계에서 "불가능"하다고 여기는 것에 도전했는가?
+  1. **Bold Ideas**: Did it challenge what is considered "impossible" in the industry?
 
-  2. **도발적 제안**: 기존 규범을 깨는 제안이 있는가?
+  2. **Provocative Suggestions**: Are there proposals that break existing norms?
 
-  3. **창의적 도약**: 점진적 개선이 아닌 급진적 변화를 시도했는가?
+  3. **Creative Leap**: Did it attempt radical change rather than incremental improvement?
 
-  4. **Po 수준**: "만약 ~라면?" 수준의 대담함이 있는가?
+  4. **Po Level**: Is there boldness at the level of "What if...?"?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 업계 상식을 완전히 뒤엎는 도발적 아이디어
+  - 5 points: Provocative idea completely overturning industry common sense
 
-  - 4점: 기존 관행에 대한 명확한 도전
+  - 4 points: Clear challenge to existing practices
 
-  - 3점: 약간의 파격적 요소 포함
+  - 3 points: Contains some unconventional elements
 
-  - 2점: 안전한 범위 내 개선
+  - 2 points: Improvement within safe range
 
-  - 1점: 보수적 접근, 도발적 요소 없음
+  - 1 point: Conservative approach, no provocative elements
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 업계 상식을 뒤엎는 도발적 아이디어
-    4: 기존 관행에 대한 명확한 도전
-    3: 약간의 파격적 요소
-    2: 안전한 범위 내 개선
-    1: 보수적 접근
+    5: Overturns industry common sense
+    4: Clear challenge to practices
+    3: Some unconventional elements
+    2: Safe improvement
+    1: Conservative approach
 outputSchema:
   score: number
   provocativeIdeas: string[]
   industryNormsChallenged: string
-  creativeLeapEvidence: string
+  creativeleapEvidence: string
   reasoning: string
 metadata:
   complexity: medium

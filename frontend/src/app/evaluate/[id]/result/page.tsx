@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useEffect, useState, lazy, Suspense, useRef } from 'react';
-import { useParams, useRouter, useSearchParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import { api } from '../../../../lib/api';
 import { EvaluationResult } from '../../../../types';
-import { ArrowLeft, Share2, Download, Check, Copy } from 'lucide-react';
+import { ArrowLeft, Share2, Download, Check } from 'lucide-react';
 import { ResultTabs, useResultTab, ResultTabId } from '../../../../components/ResultTabs';
 import { TastingNotesTab } from '../../../../components/TastingNotesTab';
 import { GraphSkeleton } from '../../../../components/graph/GraphSkeleton';
@@ -50,7 +50,7 @@ export default function ResultPage() {
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
       }
-    } catch (err) {
+    } catch {
       // Fallback to clipboard
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
@@ -445,7 +445,7 @@ export default function ResultPage() {
       try {
         const data = await api.getEvaluationResult(id);
         setResult(data);
-      } catch (err) {
+    } catch (err) {
         setError(err instanceof Error ? err.message : 'Failed to load results');
       } finally {
         setLoading(false);

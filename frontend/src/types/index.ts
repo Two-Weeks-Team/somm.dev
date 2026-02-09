@@ -2,7 +2,7 @@ export type EvaluationStatus = 'pending' | 'processing' | 'completed' | 'failed'
 
 export type CriteriaType = 'basic' | 'hackathon' | 'academic' | 'custom';
 
-export type EvaluationMode = 'six_sommeliers' | 'grand_tasting';
+export type EvaluationMode = 'six_sommeliers' | 'grand_tasting' | 'full_techniques';
 
 export interface EvaluationRequest {
   repoUrl: string;

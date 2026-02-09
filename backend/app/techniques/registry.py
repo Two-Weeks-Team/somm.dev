@@ -5,8 +5,7 @@ with validation, caching, and efficient lookup by ID or category.
 """
 
 import threading
-from pathlib import Path
-from typing import Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional, Set
 
 from app.core.logging import logger
 from app.techniques.loader import DEFAULT_TECHNIQUES_DIR, load_techniques
@@ -146,6 +145,15 @@ class TechniqueRegistry:
 
         Returns:
             List of all technique definitions, sorted by ID.
+        """
+        self._ensure_loaded()
+        return sorted(self._techniques, key=lambda t: t.id)
+
+    def get_all_techniques(self) -> List[TechniqueDefinition]:
+        """Return all loaded techniques without filtering.
+
+        Returns:
+            List of all 75 technique definitions, sorted by ID.
         """
         self._ensure_loaded()
         return sorted(self._techniques, key=lambda t: t.id)
@@ -317,3 +325,50 @@ def list_available_categories() -> List[str]:
         Sorted list of category names.
     """
     return get_registry().list_categories()
+
+
+def get_all_techniques() -> List[TechniqueDefinition]:
+    """Get all techniques from the global registry without filtering.
+
+    Returns:
+        List of all 75 technique definitions, sorted by ID.
+    """
+    return get_registry().get_all_techniques()
+
+
+def has_readme_content(repo_context: Dict[str, Any]) -> bool:
+    """Check if the repository has README content.
+
+    This utility checks if the repo context contains README content,
+    which is used for confidence adjustment in technique evaluation.
+
+    Args:
+        repo_context: The repository context dictionary.
+
+    Returns:
+        True if the repository has README content, False otherwise.
+    """
+    if not repo_context:
+        return False
+
+    # Check for readme content in various possible fields
+    readme_fields = ["readme", "readme_content", "readme_text", "readme_html"]
+    for field in readme_fields:
+        content = repo_context.get(field)
+        if content and isinstance(content, str) and content.strip():
+            return True
+
+    # Check if files list contains a README file
+    files = repo_context.get("files", [])
+    if files and isinstance(files, list):
+        readme_names = {"readme", "readme.md", "readme.rst", "readme.txt"}
+        for file_info in files:
+            if isinstance(file_info, dict):
+                filename = file_info.get("name", "").lower()
+                if filename in readme_names:
+                    return True
+            elif isinstance(file_info, str):
+                if file_info.lower() in readme_names:
+                    return True
+
+    return False

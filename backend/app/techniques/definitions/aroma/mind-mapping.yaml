@@ -1,6 +1,5 @@
 id: mind-mapping
 name: Mind Mapping
-nameKo: 마인드 매핑
 category: aroma
 applicableHats:
 - white
@@ -9,52 +8,50 @@ evaluationDimensions:
 - A1
 - B2
 - D1
-description: 'Tony Buzan이 개발한 시각적 사고 도구.
+description: 'Visual thinking tool developed by Tony Buzan.
 
-  중심 주제에서 방사형으로 아이디어를 확장하여
-
-  개념들 간의 관계를 시각화합니다.
+  Expands ideas radially from a central theme to visualize relationships between concepts.
 
   '
-promptTemplate: '## Mind Mapping 분석
+promptTemplate: '## Mind Mapping Analysis
 
 
-  이 프로젝트가 아이디어를 체계적으로 구조화했는지 분석하세요.
+  Analyze if the project structured ideas systematically.
 
 
-  ### 분석 관점:
+  ### Analysis Perspectives:
 
-  1. **중심 주제**: 핵심 개념이 명확히 정의되었는가?
+  1. **Central Theme**: Is the core concept clearly defined?
 
-  2. **가지 확장**: 관련 개념들이 논리적으로 연결되었는가?
+  2. **Branch Expansion**: Are related concepts logically connected?
 
-  3. **계층 구조**: 주제와 하위 주제의 계층이 명확한가?
+  3. **Hierarchy**: Is the hierarchy of theme and sub-themes clear?
 
-  4. **연결성**: 서로 다른 가지들 간의 관계가 표현되었는가?
+  4. **Connectivity**: Are relationships between different branches expressed?
 
 
-  ### 점수 기준:
+  ### Scoring Criteria:
 
-  - 5점: 체계적인 개념 구조와 명확한 관계 표현
+  - 5 points: Systematic concept structure and clear relationship expression
 
-  - 4점: 잘 조직된 계층 구조
+  - 4 points: Well-organized hierarchy
 
-  - 3점: 기본적인 구조화
+  - 3 points: Basic structuring
 
-  - 2점: 구조가 불명확
+  - 2 points: Structure unclear
 
-  - 1점: 아이디어가 산발적으로 나열
+  - 1 point: Ideas listed sporadically
 
   '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 체계적 개념 구조와 명확한 관계
-    4: 잘 조직된 계층 구조
-    3: 기본적 구조화
-    2: 구조 불명확
-    1: 아이디어 산발적 나열
+    5: Systematic structure, clear relationships
+    4: Well-organized hierarchy
+    3: Basic structuring
+    2: Structure unclear
+    1: Sporadic listing
 outputSchema:
   score: number
   centralConcept: string

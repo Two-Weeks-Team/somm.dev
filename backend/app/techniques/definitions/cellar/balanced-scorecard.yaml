@@ -1,6 +1,5 @@
 id: balanced-scorecard
 name: Balanced Scorecard
-nameKo: 균형성과표
 category: cellar
 applicableHats:
 - blue
@@ -10,32 +9,52 @@ evaluationDimensions:
 - C1
 - C4
 - D1
-description: 'Robert Kaplan & David Norton(Harvard Business School, 1992)이 개발한 전략
-  관리 도구.
+description: 'Strategic management tool developed by Robert Kaplan & David Norton (Harvard Business School, 1992).
 
-  재무(Financial), 고객(Customer), 내부 프로세스(Internal Process),
+  Measures balanced performance from 4 perspectives: Financial, Customer, Internal Process, and Learning & Growth.
 
-  학습과 성장(Learning & Growth) 4가지 관점에서 균형 잡힌 성과 측정.
-
-  HBR "경영 역사상 가장 영향력 있는 75대 아이디어" 선정.
+  Selected as one of HBR''s "75 Most Influential Management Ideas".
 
   '
-promptTemplate: "## Balanced Scorecard 분석\n\n이 프로젝트가 BSC 4가지 관점에서 성과를 측정하는지 평가하세요.\n\
-  \n### BSC 4가지 관점:\n1. **재무 관점**: 주주/투자자에게 어떻게 보여야 하는가?\n   - 수익성, 성장률, ROI 등\n2.\
-  \ **고객 관점**: 고객에게 어떻게 보여야 하는가?\n   - 고객 만족, 시장 점유율, 브랜드 인지도 등\n3. **내부 프로세스 관점**:\
-  \ 어떤 프로세스에서 뛰어나야 하는가?\n   - 운영 효율성, 품질, 혁신 속도 등\n4. **학습과 성장 관점**: 어떻게 변화하고 개선해야\
-  \ 하는가?\n   - 직원 역량, 기술 인프라, 조직 문화 등\n\n### 점수 기준:\n- 5점: 4가지 관점 모두 KPI 정의, 인과관계\
-  \ 명확\n- 4점: 4가지 관점 고려, 대부분 측정 가능\n- 3점: 2-3가지 관점만 정의\n- 2점: 재무 관점만 집중\n- 1점: 성과\
-  \ 측정 체계 없음\n"
+promptTemplate: '## Balanced Scorecard Analysis
+
+
+  Evaluate if the project measures performance from the 4 BSC perspectives.
+
+
+  ### BSC 4 Perspectives:
+
+  1. **Financial**: How should we appear to shareholders/investors? (Profitability, growth, ROI)
+
+  2. **Customer**: How should we appear to customers? (Satisfaction, market share, brand awareness)
+
+  3. **Internal Process**: What processes must we excel at? (Efficiency, quality, innovation speed)
+
+  4. **Learning & Growth**: How will we sustain our ability to change and improve? (Employee capability, infrastructure, culture)
+
+
+  ### Scoring Criteria:
+
+  - 5 points: KPIs defined for all 4 perspectives, clear causal relationships
+
+  - 4 points: 4 perspectives considered, mostly measurable
+
+  - 3 points: Only 2-3 perspectives defined
+
+  - 2 points: Focused only on financial perspective
+
+  - 1 point: No performance measurement system
+
+  '
 scoring:
   min: 1
   max: 5
   criteria:
-    5: 4관점 KPI, 인과관계 명확
-    4: 4관점 고려, 측정 가능
-    3: 2-3관점만 정의
-    2: 재무 관점만
-    1: 성과 측정 없음
+    5: 4 perspective KPIs, clear causality
+    4: 4 perspectives considered, measurable
+    3: 2-3 perspectives defined
+    2: Financial only
+    1: No measurement
 outputSchema:
   score: number
   financialPerspective: string
@@ -51,5 +70,5 @@ metadata:
   requiresWebSearch: false
   requiresRAG: false
   source: Robert Kaplan & David Norton, Harvard Business School (1992)
-  academicReference: HBR '75대 경영 아이디어' 선정, Fortune 1000 기업 50%+ 도입
+  academicReference: Selected as HBR '75 Big Ideas', adopted by 50%+ of Fortune 1000 companies
 requiredSources: either
