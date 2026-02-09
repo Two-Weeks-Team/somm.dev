@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from typing import Optional
 
+import os
+
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
@@ -58,6 +60,7 @@ def resolve_byok(
 
 PROVIDER_DEFAULTS = {
     "gemini": "gemini-3-flash-preview",
+    "vertex": "gemini-3-flash-preview",
     "openai": "gpt-4o-mini",
     "anthropic": "claude-sonnet-4-20250514",
 }
@@ -74,7 +77,7 @@ def build_llm(
     """Build an LLM instance for the specified provider.
 
     Args:
-        provider: Provider name (gemini, openai, anthropic)
+        provider: Provider name (gemini, vertex, openai, anthropic)
         api_key: User-provided API key (BYOK) or None for server-side key
         model: Model name or None for provider default
         temperature: Temperature setting or None for default (0.7)
@@ -107,6 +110,23 @@ def build_llm(
         if "gemini-3" in resolved_model.lower():
             gemini_kwargs["thinking_budget"] = GEMINI3_THINKING_BUDGET
         llm = ChatGoogleGenerativeAI(**gemini_kwargs)
+    elif provider_key == "vertex":
+        resolved_model = model or PROVIDER_DEFAULTS["vertex"]
+        if not settings.GOOGLE_CLOUD_PROJECT:
+            raise ValueError("GOOGLE_CLOUD_PROJECT is required for Vertex AI")
+        os.environ.setdefault("GOOGLE_CLOUD_PROJECT", settings.GOOGLE_CLOUD_PROJECT)
+        os.environ.setdefault("GOOGLE_CLOUD_LOCATION", settings.GOOGLE_CLOUD_LOCATION)
+        if settings.GOOGLE_GENAI_USE_VERTEXAI:
+            os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "true"
+        vertex_kwargs: dict = {
+            "model": resolved_model,
+            "temperature": resolved_temperature,
+            "max_output_tokens": resolved_max_tokens,
+            "timeout": DEFAULT_REQUEST_TIMEOUT,
+        }
+        if "gemini-3" in resolved_model.lower():
+            vertex_kwargs["thinking_budget"] = GEMINI3_THINKING_BUDGET
+        llm = ChatGoogleGenerativeAI(**vertex_kwargs)
     elif provider_key == "openai":
         llm = ChatOpenAI(
             model=model or PROVIDER_DEFAULTS["openai"],
