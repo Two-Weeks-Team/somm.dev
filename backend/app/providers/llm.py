@@ -1,8 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional
 
-import os
-
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_openai import ChatOpenAI
 from langchain_anthropic import ChatAnthropic
@@ -112,17 +110,17 @@ def build_llm(
         llm = ChatGoogleGenerativeAI(**gemini_kwargs)
     elif provider_key == "vertex":
         resolved_model = model or PROVIDER_DEFAULTS["vertex"]
-        if not settings.GOOGLE_CLOUD_PROJECT:
-            raise ValueError("GOOGLE_CLOUD_PROJECT is required for Vertex AI")
-        os.environ.setdefault("GOOGLE_CLOUD_PROJECT", settings.GOOGLE_CLOUD_PROJECT)
-        os.environ.setdefault("GOOGLE_CLOUD_LOCATION", settings.GOOGLE_CLOUD_LOCATION)
-        if settings.GOOGLE_GENAI_USE_VERTEXAI:
-            os.environ["GOOGLE_GENAI_USE_VERTEXAI"] = "true"
+        if not settings.VERTEX_API_KEY:
+            raise ValueError("VERTEX_API_KEY is required for Vertex AI Express")
         vertex_kwargs: dict = {
             "model": resolved_model,
             "temperature": resolved_temperature,
             "max_output_tokens": resolved_max_tokens,
             "timeout": DEFAULT_REQUEST_TIMEOUT,
+            "google_api_key": settings.VERTEX_API_KEY,
+            "vertexai": True,
+            "project": settings.GOOGLE_CLOUD_PROJECT or None,
+            "location": settings.GOOGLE_CLOUD_LOCATION or None,
         }
         if "gemini-3" in resolved_model.lower():
             vertex_kwargs["thinking_budget"] = GEMINI3_THINKING_BUDGET
