@@ -44,15 +44,20 @@ class TestProviderSelection:
         llm = build_llm("google", "test-key", None, 0.1, 128)
         assert isinstance(llm, ChatGoogleGenerativeAI)
 
+    @patch("app.providers.llm.genai.Client")
     @patch("app.providers.llm.ChatGoogleGenerativeAI")
     @patch("app.providers.llm.settings")
-    def test_build_llm_vertex_routing(self, mock_settings, mock_vertex):
+    def test_build_llm_vertex_routing(
+        self, mock_settings, mock_chat, mock_genai_client
+    ):
         mock_settings.VERTEX_API_KEY = "AQ.test-vertex-key"
         build_llm("vertex", None, None, 0.1, 128)
-        mock_vertex.assert_called_once()
-        call_kwargs = mock_vertex.call_args.kwargs
-        assert call_kwargs["api_key"] == "AQ.test-vertex-key"
-        assert call_kwargs["vertexai"] is True
+        mock_genai_client.assert_called_once_with(
+            vertexai=True, api_key="AQ.test-vertex-key"
+        )
+        mock_chat.assert_called_once()
+        call_kwargs = mock_chat.call_args.kwargs
+        assert "client" in call_kwargs
         assert call_kwargs["thinking_level"] == "minimal"
 
     def test_build_llm_vertex_missing_key_raises(self):
@@ -65,11 +70,18 @@ class TestProviderSelection:
         with pytest.raises(ValueError, match="Unsupported provider"):
             build_llm("openai", "test-key", None, 0.1, 128)
 
+    @patch("app.providers.llm.genai.Client")
+    @patch("app.providers.llm.ChatGoogleGenerativeAI")
     @patch("app.providers.llm.settings")
-    def test_build_llm_default_is_vertex(self, mock_settings):
+    def test_build_llm_default_is_vertex(
+        self, mock_settings, mock_chat, mock_genai_client
+    ):
         mock_settings.VERTEX_API_KEY = "server-key"
-        llm = build_llm(None, None, None, 0.1, 128)
-        assert isinstance(llm, ChatGoogleGenerativeAI)
+        build_llm(None, None, None, 0.1, 128)
+        mock_genai_client.assert_called_once_with(vertexai=True, api_key="server-key")
+        mock_chat.assert_called_once()
+        call_kwargs = mock_chat.call_args.kwargs
+        assert "client" in call_kwargs
 
     def test_build_llm_case_insensitive(self):
         llm = build_llm("GOOGLE", "test-key", None, 0.1, 128)
@@ -101,15 +113,18 @@ class TestThinkingLevel:
 
 
 class TestBYOKFallback:
+    @patch("app.providers.llm.genai.Client")
     @patch("app.providers.llm.ChatGoogleGenerativeAI")
-    def test_invalid_byok_uses_server_key(self, mock_chat_google):
+    def test_invalid_byok_uses_server_key(self, mock_chat_google, mock_genai_client):
         with patch("app.providers.llm.settings") as mock_settings:
             mock_settings.VERTEX_API_KEY = "server-side-vertex-key"
             build_llm("google", "   ", None, 0.3, 128)
+            mock_genai_client.assert_called_once_with(
+                vertexai=True, api_key="server-side-vertex-key"
+            )
             mock_chat_google.assert_called_once()
             call_kwargs = mock_chat_google.call_args.kwargs
-            assert call_kwargs["api_key"] == "server-side-vertex-key"
-            assert call_kwargs["vertexai"] is True
+            assert "client" in call_kwargs
 
     def test_model_fallback_enabled(self):
         llm = build_llm(
