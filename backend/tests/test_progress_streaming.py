@@ -213,14 +213,15 @@ class TestProgressTracker:
         assert tracker.eta_seconds is None
 
     def test_eta_seconds_computed_from_average_durations(self):
-        tracker = ProgressTracker(total_techniques=10)
+        tracker = ProgressTracker(total_techniques=10, max_concurrent=5)
         tracker.technique_completed(duration_ms=1000)
         tracker.technique_completed(duration_ms=2000)
         tracker.technique_completed(duration_ms=3000)
 
         avg_duration_ms = (1000 + 2000 + 3000) / 3
         remaining = 10 - 3
-        expected_eta = (remaining * avg_duration_ms) / 1000
+        batches = (remaining + tracker.max_concurrent - 1) // tracker.max_concurrent
+        expected_eta = (batches * avg_duration_ms) / 1000
 
         assert tracker.eta_seconds == pytest.approx(expected_eta, rel=0.01)
 
