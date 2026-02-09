@@ -141,7 +141,23 @@ class TestCategoryNodeEvaluate:
         mock_result.total_token_usage = {"prompt_tokens": 100, "completion_tokens": 50}
         mock_result.total_cost_usd = 0.001
 
-        mock_router.execute_techniques = AsyncMock(return_value=[])
+        async def mock_execute_single(technique_id, state):
+            from app.techniques.base_technique import TechniqueResult
+
+            if technique_id == "tech1":
+                return TechniqueResult(
+                    technique_id="tech1",
+                    success=True,
+                    item_scores={"A1": MagicMock()},
+                )
+            else:
+                return TechniqueResult(
+                    technique_id="tech2",
+                    success=False,
+                    error="Failed",
+                )
+
+        mock_router.execute_single_technique = mock_execute_single
         mock_router.aggregate_results.return_value = mock_result
 
         node.router = mock_router

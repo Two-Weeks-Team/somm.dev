@@ -4,6 +4,7 @@ import React, { useEffect, useMemo } from 'react';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { useEvaluationStream } from '../../../hooks/useEvaluationStream';
+import { FullTechniquesProgress } from '../../../components/evaluation/FullTechniquesProgress';
 import { Sparkles, CheckCircle2, Loader2, AlertTriangle, XCircle, ArrowLeft, WifiOff, Clock } from 'lucide-react';
 import { EvaluationMode } from '../../../types';
 
@@ -33,8 +34,13 @@ export default function ProgressPage() {
   const searchParams = useSearchParams();
   const id = params.id as string;
   const modeParam = searchParams.get('mode');
-  const mode: EvaluationMode = modeParam === 'grand_tasting' ? 'grand_tasting' : 'six_sommeliers';
+  const mode: EvaluationMode = modeParam === 'grand_tasting' ? 'grand_tasting' : 
+                               modeParam === 'full_techniques' ? 'full_techniques' : 'six_sommeliers';
   
+  if (mode === 'full_techniques') {
+    return <FullTechniquesProgress evaluationId={id} />;
+  }
+
   const { completedSommeliers, errors, isComplete, progress, status, connectionStatus, retryInfo } = useEvaluationStream(id);
 
   const evaluators = useMemo(() => {

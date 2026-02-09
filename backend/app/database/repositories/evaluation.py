@@ -129,3 +129,46 @@ class EvaluationRepository(BaseRepository[EvaluationInDB]):
             .limit(limit)
         )
         return await cursor.to_list(length=limit)
+
+    async def save_full_technique_result(self, result: dict) -> str:
+        """Save a full_techniques evaluation result.
+
+        Args:
+            result: Dictionary containing the full_technique result data.
+                   Must include 'evaluation_id' and 'repo_url' fields.
+
+        Returns:
+            The ID of the saved result document as a string.
+
+        Raises:
+            ValueError: If evaluation_id or repo_url is missing from result.
+        """
+        from bson import ObjectId
+
+        if not result.get("evaluation_id"):
+            raise ValueError("evaluation_id is required")
+        if not result.get("repo_url"):
+            raise ValueError("repo_url is required")
+
+        now = datetime.utcnow()
+        document = {
+            "_id": ObjectId(),
+            **result,
+            "created_at": now,
+        }
+
+        result_coll = self.collection.database["full_technique_results"]
+        insert_result = await result_coll.insert_one(document)
+        return str(insert_result.inserted_id)
+
+    async def get_full_technique_result(self, evaluation_id: str) -> dict | None:
+        """Retrieve a full_techniques evaluation result by evaluation ID.
+
+        Args:
+            evaluation_id: The evaluation ID to search for.
+
+        Returns:
+            The result document as a dictionary, or None if not found.
+        """
+        result_coll = self.collection.database["full_technique_results"]
+        return await result_coll.find_one({"evaluation_id": evaluation_id})
