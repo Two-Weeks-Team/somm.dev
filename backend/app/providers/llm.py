@@ -1,4 +1,3 @@
-import os
 from dataclasses import dataclass
 from typing import Optional
 
@@ -124,7 +123,6 @@ def build_llm(
         resolved_model = model or PROVIDER_DEFAULTS["vertex"]
         if not settings.VERTEX_API_KEY:
             raise ValueError("VERTEX_API_KEY is required for Vertex AI Express")
-        os.environ["GOOGLE_API_KEY"] = settings.VERTEX_API_KEY
         vertex_kwargs: dict = {
             "model": resolved_model,
             "temperature": resolved_temperature,

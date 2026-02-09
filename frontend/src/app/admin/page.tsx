@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useRouter } from 'next/navigation';
 import { Shield, Users, Crown, Loader2, AlertCircle, Check } from 'lucide-react';
@@ -42,6 +42,8 @@ export default function AdminPage() {
   const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState<string | null>(null);
   const [saved, setSaved] = useState<string | null>(null);
+  const [accessDenied, setAccessDenied] = useState(false);
+  const savedTimerRef = useRef<ReturnType<typeof setTimeout>>(null);
 
   const fetchUsers = useCallback(async () => {
     if (!token) return;
@@ -52,7 +54,7 @@ export default function AdminPage() {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.status === 403) {
-        setError('관리자 권한이 없습니다.');
+        setAccessDenied(true);
         return;
       }
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -71,6 +73,12 @@ export default function AdminPage() {
     }
     if (isAuthenticated) fetchUsers();
   }, [isAuthenticated, authLoading, fetchUsers, router]);
+
+  useEffect(() => {
+    return () => {
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+    };
+  }, []);
 
   const updateUser = async (userId: string, field: 'role' | 'plan', value: string) => {
     if (!token) return;
@@ -91,7 +99,8 @@ export default function AdminPage() {
       const updated: AdminUser = await res.json();
       setUsers((prev) => prev.map((u) => (u.id === userId ? updated : u)));
       setSaved(userId);
-      setTimeout(() => setSaved(null), 1500);
+      if (savedTimerRef.current) clearTimeout(savedTimerRef.current);
+      savedTimerRef.current = setTimeout(() => setSaved(null), 1500);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Update failed');
     } finally {
@@ -107,7 +116,7 @@ export default function AdminPage() {
     );
   }
 
-  if (error === '관리자 권한이 없습니다.') {
+  if (accessDenied) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
         <Shield className="w-16 h-16 text-red-400" />
@@ -129,7 +138,7 @@ export default function AdminPage() {
         </div>
       </div>
 
-      {error && error !== '관리자 권한이 없습니다.' && (
+      {error && (
         <div className="mb-6 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-4 text-sm text-red-800">
           <AlertCircle size={16} />
           {error}

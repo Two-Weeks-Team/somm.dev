@@ -8,6 +8,8 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from bson import ObjectId
+from bson.errors import InvalidId
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 
@@ -50,6 +52,19 @@ class AdminUserResponse(BaseModel):
     created_at: str | None = None
 
 
+def _to_admin_response(u: dict) -> AdminUserResponse:
+    return AdminUserResponse(
+        id=str(u["_id"]),
+        username=u.get("username", ""),
+        email=u.get("email"),
+        github_id=str(u.get("github_id", "")),
+        avatar_url=u.get("avatar_url"),
+        role=u.get("role", "user"),
+        plan=u.get("plan", "free"),
+        created_at=str(u.get("created_at", "")),
+    )
+
+
 @router.get("/users", response_model=list[AdminUserResponse])
 async def list_users(
     _admin: User = Depends(require_admin),
@@ -57,20 +72,7 @@ async def list_users(
     """List all users with their roles and plans."""
     user_repo = UserRepository()
     users = await user_repo.list(limit=500)
-
-    return [
-        AdminUserResponse(
-            id=str(u["_id"]),
-            username=u.get("username", ""),
-            email=u.get("email"),
-            github_id=str(u.get("github_id", "")),
-            avatar_url=u.get("avatar_url"),
-            role=u.get("role", "user"),
-            plan=u.get("plan", "free"),
-            created_at=str(u.get("created_at", "")),
-        )
-        for u in users
-    ]
+    return [_to_admin_response(u) for u in users]
 
 
 @router.patch("/users/{user_id}", response_model=AdminUserResponse)
@@ -80,6 +82,11 @@ async def update_user_role(
     _admin: User = Depends(require_admin),
 ) -> AdminUserResponse:
     """Update a user's role and/or plan."""
+    try:
+        ObjectId(user_id)
+    except (InvalidId, Exception):
+        raise HTTPException(status_code=400, detail="Invalid user ID format")
+
     update_data: dict[str, Any] = {}
 
     if update.role is not None:
@@ -87,6 +94,11 @@ async def update_user_role(
             raise HTTPException(
                 status_code=400,
                 detail=f"Invalid role: {update.role}. Must be one of {VALID_ROLES}",
+            )
+        if update.role != "admin" and user_id == _admin.id:
+            raise HTTPException(
+                status_code=400,
+                detail="Cannot demote yourself. Ask another admin.",
             )
         update_data["role"] = update.role
 
@@ -107,15 +119,8 @@ async def update_user_role(
     if not updated:
         raise HTTPException(status_code=404, detail="User not found")
 
-    logger.info(f"[Admin] User {user_id} updated: {update_data} by admin {_admin.id}")
-
-    return AdminUserResponse(
-        id=str(updated["_id"]),
-        username=updated.get("username", ""),
-        email=updated.get("email"),
-        github_id=str(updated.get("github_id", "")),
-        avatar_url=updated.get("avatar_url"),
-        role=updated.get("role", "user"),
-        plan=updated.get("plan", "free"),
-        created_at=str(updated.get("created_at", "")),
+    logger.info(
+        "[Admin] User %s updated: %s by admin %s", user_id, update_data, _admin.id
     )
+
+    return _to_admin_response(updated)
