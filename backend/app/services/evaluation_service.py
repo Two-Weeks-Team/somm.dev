@@ -309,6 +309,7 @@ async def save_evaluation_results(
     jeanpierre_result = evaluation_data.get("jeanpierre_result")
 
     is_grand_tasting = evaluation_mode == "grand_tasting"
+    is_full_techniques = evaluation_mode == "full_techniques"
 
     if is_grand_tasting:
         cellar_result = cellar_result or {}
@@ -341,6 +342,58 @@ async def save_evaluation_results(
                         recommendations=technique_names,
                     )
                 )
+    elif is_full_techniques:
+        normalized_score = evaluation_data.get("normalized_score", 0)
+        overall_score = int(normalized_score)
+        rating_tier = get_rating_tier(overall_score)
+        quality_gate = evaluation_data.get("quality_gate", "")
+        coverage = evaluation_data.get("coverage_rate", 0)
+
+        summary = (
+            f"Comprehensive evaluation using 75 techniques. "
+            f"Quality Gate: {quality_gate}. "
+            f"Coverage: {coverage * 100:.1f}%."
+        )
+
+        BMAD_CATEGORY_CONFIG = {
+            "A": ("Problem Definition", 25, ["aroma", "palate"]),
+            "B": ("Technical Design", 25, ["body", "balance"]),
+            "C": ("Implementation", 30, ["vintage", "terroir"]),
+            "D": ("Documentation", 20, ["cellar", "finish"]),
+        }
+
+        category_scores = evaluation_data.get("category_scores", {})
+        trace_metadata = evaluation_data.get("trace_metadata", {})
+
+        sommelier_outputs = []
+        for cat_id, (name, max_score, tasting_cats) in BMAD_CATEGORY_CONFIG.items():
+            cat_data = category_scores.get(cat_id, {})
+            raw_score = cat_data.get("score", 0)
+            scaled_score = int((raw_score / max_score) * 100) if max_score > 0 else 0
+
+            technique_info = []
+            for tasting_cat in tasting_cats:
+                cat_trace = trace_metadata.get(tasting_cat, {})
+                succeeded = cat_trace.get("techniques_succeeded", 0)
+                total = cat_trace.get("techniques_count", 0)
+                if total > 0:
+                    technique_info.append(
+                        f"{tasting_cat.capitalize()}: {succeeded}/{total}"
+                    )
+
+            cat_summary = (
+                f"Category {cat_id} ({name}): Scored {raw_score:.1f}/{max_score} points. "
+                f"Techniques evaluated: {', '.join(technique_info) if technique_info else 'N/A'}."
+            )
+
+            sommelier_outputs.append(
+                SommelierOutput(
+                    sommelier_name=name,
+                    score=scaled_score,
+                    summary=cat_summary,
+                    recommendations=technique_info,
+                )
+            )
     else:
         jeanpierre_result = jeanpierre_result or {}
         overall_score = jeanpierre_result.get("total_score", 0)
