@@ -48,21 +48,15 @@ class TestProviderSelection:
     @patch("app.providers.llm.settings")
     def test_build_llm_vertex_routing(self, mock_settings, mock_vertex):
         mock_settings.VERTEX_API_KEY = "AQ.test-vertex-key"
-        mock_settings.GOOGLE_CLOUD_PROJECT = "test-project"
-        mock_settings.GOOGLE_CLOUD_LOCATION = "us-central1"
         build_llm("vertex", None, None, 0.1, 128)
         mock_vertex.assert_called_once()
         call_kwargs = mock_vertex.call_args.kwargs
-        assert call_kwargs["google_api_key"] == "AQ.test-vertex-key"
+        assert call_kwargs["api_key"] == "AQ.test-vertex-key"
         assert call_kwargs["vertexai"] is True
-        assert call_kwargs["project"] == "test-project"
-        assert call_kwargs["location"] == "us-central1"
 
     def test_build_llm_vertex_missing_key_raises(self):
         with patch("app.providers.llm.settings") as mock_settings:
             mock_settings.VERTEX_API_KEY = ""
-            mock_settings.GOOGLE_CLOUD_PROJECT = "test-project"
-            mock_settings.GOOGLE_CLOUD_LOCATION = "us-central1"
             try:
                 build_llm("vertex", None, None, 0.1, 128)
                 assert False, "Should have raised ValueError"

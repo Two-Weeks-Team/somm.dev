@@ -1,3 +1,4 @@
+import os
 from dataclasses import dataclass
 from typing import Optional
 
@@ -112,15 +113,14 @@ def build_llm(
         resolved_model = model or PROVIDER_DEFAULTS["vertex"]
         if not settings.VERTEX_API_KEY:
             raise ValueError("VERTEX_API_KEY is required for Vertex AI Express")
+        os.environ["GOOGLE_API_KEY"] = settings.VERTEX_API_KEY
         vertex_kwargs: dict = {
             "model": resolved_model,
             "temperature": resolved_temperature,
             "max_output_tokens": resolved_max_tokens,
             "timeout": DEFAULT_REQUEST_TIMEOUT,
-            "google_api_key": settings.VERTEX_API_KEY,
+            "api_key": settings.VERTEX_API_KEY,
             "vertexai": True,
-            "project": settings.GOOGLE_CLOUD_PROJECT or None,
-            "location": settings.GOOGLE_CLOUD_LOCATION or None,
         }
         if "gemini-3" in resolved_model.lower():
             vertex_kwargs["thinking_budget"] = GEMINI3_THINKING_BUDGET
