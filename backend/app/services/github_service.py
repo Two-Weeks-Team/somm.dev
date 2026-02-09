@@ -91,9 +91,7 @@ class GitHubService:
             elif response.status_code == 401:
                 raise CorkedError("GitHub API authentication failed")
             elif not response.is_success:
-                raise CorkedError(
-                    f"GitHub API error: {response.status_code} - {response.text}"
-                )
+                raise CorkedError(f"GitHub API error: {response.status_code}")
 
             return response
 
@@ -246,9 +244,7 @@ class GitHubService:
                 elif response.status_code == 403:
                     raise CorkedError("GitHub API rate limit exceeded or access denied")
                 elif not response.is_success:
-                    raise CorkedError(
-                        f"GitHub API error: {response.status_code} - {response.text}"
-                    )
+                    raise CorkedError(f"GitHub API error: {response.status_code}")
 
                 page_repos = response.json()
 
@@ -333,9 +329,9 @@ class GitHubService:
 async def verify_public_repo(repo_url: str) -> bool:
     """Verify that a repository is publicly accessible via GitHub API.
 
-    Makes an unauthenticated request to the GitHub API to check if the
-    repository exists and is public. Private repositories will return 404
-    or 403 when accessed without authentication.
+    Uses authenticated requests (when GITHUB_TOKEN is configured) to avoid
+    the strict 60 requests/hour unauthenticated rate limit. Checks the
+    repository's "private" field to determine if it's truly public.
 
     Args:
         repo_url: The GitHub repository URL to verify.
@@ -349,22 +345,29 @@ async def verify_public_repo(repo_url: str) -> bool:
     try:
         owner, repo = parse_github_url(repo_url)
     except CorkedError:
-        raise CorkedError("Invalid GitHub repository URL")
+        raise CorkedError("Invalid GitHub repository URL") from None
 
     url = f"{GITHUB_API_BASE}/repos/{owner}/{repo}"
 
+    # Use authenticated request to avoid 60/hr unauthenticated rate limit
+    headers = {"Accept": "application/vnd.github.v3+json"}
+    if settings.GITHUB_TOKEN:
+        headers["Authorization"] = f"Bearer {settings.GITHUB_TOKEN}"
+
     async with httpx.AsyncClient() as client:
-        response = await client.get(url, timeout=10.0)
+        response = await client.get(url, headers=headers, timeout=10.0)
 
     if response.status_code == 200:
+        # Verify the repo is actually public by checking the private field
+        data = response.json()
+        if data.get("private", False):
+            raise CorkedError(
+                "This repository is private. Please login to evaluate private repositories."
+            )
         return True
-    elif response.status_code == 404:
-        raise CorkedError(
-            "Repository not found or is private. Please login to evaluate private repositories."
-        )
-    elif response.status_code == 403:
+    elif response.status_code in (403, 404):
         raise CorkedError(
             "Repository not found or is private. Please login to evaluate private repositories."
         )
     else:
-        raise CorkedError(f"GitHub API error: {response.status_code} - {response.text}")
+        raise CorkedError(f"GitHub API error: {response.status_code}")
