@@ -7,6 +7,7 @@ from langchain_core.runnables import RunnableConfig
 
 from app.core.config import settings
 from app.graph.state import EvaluationState
+from app.services.event_channel import create_sommelier_event, get_event_channel
 
 logger = logging.getLogger(__name__)
 
@@ -101,14 +102,50 @@ async def rag_enrich(
     state: EvaluationState, config: Optional[RunnableConfig] = None
 ) -> Dict[str, Any]:
     started_at = datetime.now(timezone.utc).isoformat()
+    evaluation_id = state.get("evaluation_id")
+    event_channel = get_event_channel()
+
+    if evaluation_id:
+        event_channel.emit_sync(
+            evaluation_id,
+            create_sommelier_event(
+                evaluation_id=evaluation_id,
+                sommelier="rag",
+                event_type="enrichment_start",
+                progress_percent=0,
+                message="RAG context enrichment starting...",
+            ),
+        )
 
     if existing := state.get("rag_context"):
+        if evaluation_id:
+            event_channel.emit_sync(
+                evaluation_id,
+                create_sommelier_event(
+                    evaluation_id=evaluation_id,
+                    sommelier="rag",
+                    event_type="enrichment_complete",
+                    progress_percent=100,
+                    message="RAG context enrichment complete (cached)",
+                ),
+            )
         return {"rag_context": existing}
 
     repo_context = state.get("repo_context", {})
     query = _create_query(state)
 
     if not settings.VERTEX_API_KEY:
+        if evaluation_id:
+            event_channel.emit_sync(
+                evaluation_id,
+                create_sommelier_event(
+                    evaluation_id=evaluation_id,
+                    sommelier="rag",
+                    event_type="enrichment_complete",
+                    progress_percent=100,
+                    message="RAG enrichment skipped (no API key)",
+                ),
+            )
         return {
             "rag_context": {
                 "query": query,
@@ -127,6 +164,17 @@ async def rag_enrich(
     try:
         docs = _build_documents_from_context(repo_context)
         if not docs:
+            if evaluation_id:
+                event_channel.emit_sync(
+                    evaluation_id,
+                    create_sommelier_event(
+                        evaluation_id=evaluation_id,
+                        sommelier="rag",
+                        event_type="enrichment_complete",
+                        progress_percent=100,
+                        message="RAG enrichment complete (no documents)",
+                    ),
+                )
             return {
                 "rag_context": {"query": query, "chunks": [], "error": None},
             }
@@ -145,6 +193,18 @@ async def rag_enrich(
             min(settings.RAG_TOP_K, len(docs)),
         )
 
+        if evaluation_id:
+            event_channel.emit_sync(
+                evaluation_id,
+                create_sommelier_event(
+                    evaluation_id=evaluation_id,
+                    sommelier="rag",
+                    event_type="enrichment_complete",
+                    progress_percent=100,
+                    message=f"RAG enrichment complete ({len(chunks)} chunks)",
+                ),
+            )
+
         return {
             "rag_context": {"query": query, "chunks": chunks, "error": None},
             "trace_metadata": {
@@ -157,6 +217,17 @@ async def rag_enrich(
 
     except Exception as e:
         logger.warning(f"RAG embedding failed: {e}")
+        if evaluation_id:
+            event_channel.emit_sync(
+                evaluation_id,
+                create_sommelier_event(
+                    evaluation_id=evaluation_id,
+                    sommelier="rag",
+                    event_type="enrichment_error",
+                    progress_percent=100,
+                    message="RAG enrichment failed due to an internal error.",
+                ),
+            )
         return {
             "rag_context": {"query": query, "chunks": [], "error": str(e)},
             "errors": [f"rag_enrich failed: {e!s}"],

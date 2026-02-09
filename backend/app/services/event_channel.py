@@ -40,6 +40,7 @@ CRITICAL_EVENT_TYPES = {
     "evaluation_complete",
     "evaluation_error",
     "technique_error",
+    "enrichment_error",
 }
 TRANSFER_LOOP_INTERVAL_SECONDS = 0.01
 TRANSFER_BATCH_SIZE = 10
@@ -66,6 +67,10 @@ class EventType(str, Enum):
     DEEP_SYNTHESIS_COMPLETE = "deep_synthesis_complete"
     QUALITY_GATE_COMPLETE = "quality_gate_complete"
     METRICS_UPDATE = "metrics_update"
+    # Enrichment phase events (RAG, Web Search, Code Analysis)
+    ENRICHMENT_START = "enrichment_start"
+    ENRICHMENT_COMPLETE = "enrichment_complete"
+    ENRICHMENT_ERROR = "enrichment_error"
 
 
 @dataclass
