@@ -570,6 +570,15 @@ async def run_evaluation_pipeline_with_events(
         await save_evaluation_results(evaluation_id, result, evaluation_mode)
         await eval_repo.update_status(evaluation_id, "completed")
 
+        if evaluation_mode == "full_techniques":
+            return {
+                "evaluation_id": evaluation_id,
+                "status": "completed",
+                "score": result.get("normalized_score", 0),
+                "quality_gate": result.get("quality_gate", ""),
+                "coverage_rate": result.get("coverage_rate", 0),
+            }
+
         jeanpierre = result.get("jeanpierre_result") or {}
         return {
             "evaluation_id": evaluation_id,

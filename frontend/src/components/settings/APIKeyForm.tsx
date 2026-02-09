@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Eye, EyeOff, Key, Loader2, AlertCircle, CheckCircle, ArrowRight } from 'lucide-react';
 import { api } from '@/lib/api';
 
@@ -12,6 +12,15 @@ export const APIKeyForm: React.FC<APIKeyFormProps> = ({ onSuccess }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,7 +37,7 @@ export const APIKeyForm: React.FC<APIKeyFormProps> = ({ onSuccess }) => {
       await api.registerKey('google', apiKey);
       setSuccess(true);
       setApiKey('');
-      setTimeout(() => {
+      timeoutRef.current = setTimeout(() => {
         onSuccess();
       }, 1500);
     } catch (err) {
@@ -78,6 +87,7 @@ export const APIKeyForm: React.FC<APIKeyFormProps> = ({ onSuccess }) => {
             <button
               type="button"
               onClick={() => setShowKey(!showKey)}
+              aria-label={showKey ? 'Hide API key' : 'Show API key'}
               className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-[#722F37] transition-colors"
             >
               {showKey ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}

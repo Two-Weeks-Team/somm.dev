@@ -816,8 +816,9 @@ class CodeGraderAgent:
             "codecov.yml",
             ".codecov.yml",
         ]
+        filenames_for_coverage = {path.split("/")[-1].lower() for path in file_tree}
         has_coverage = any(
-            cfg in path.lower() for path in file_tree for cfg in coverage_configs
+            cfg.lower() in filenames_for_coverage for cfg in coverage_configs
         )
         if has_coverage:
             score += 2
