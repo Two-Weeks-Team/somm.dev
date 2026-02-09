@@ -118,7 +118,8 @@ class BaseCategoryNode(ABC):
                     event_type="sommelier_complete",
                     progress_percent=progress_config["complete"],
                     message=f"{self.display_name} complete",
-                    tokens_used=aggregated.total_token_usage.get("total_tokens", 0),
+                    tokens_used=aggregated.total_token_usage.get("prompt_tokens", 0)
+                    + aggregated.total_token_usage.get("completion_tokens", 0),
                 ),
             )
 

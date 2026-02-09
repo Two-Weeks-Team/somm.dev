@@ -158,8 +158,7 @@ def apply_confidence_adjustment_to_scores(item_scores: dict) -> dict:
         # Create a copy to avoid mutating input
         adjusted_item = dict(item_data)
 
-        # Only adjust evaluated items
-        status = item_data.get("status", ItemStatus.EVALUATED)
+        status = item_data.get("status", ItemStatus.DATA_MISSING)
         if status == ItemStatus.EVALUATED:
             raw_score = item_data.get("score", 0.0)
             confidence = item_data.get("confidence", "medium")

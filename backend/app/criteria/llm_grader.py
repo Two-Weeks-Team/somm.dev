@@ -55,14 +55,15 @@ class LLMGrader:
 
                 if self._validate_response(response, item_id, max_score):
                     self._update_usage(response.get("usage", {}))
+                    parsed = response["parsed"]
 
                     return {
                         "item_id": item_id,
-                        "score": float(response["score"]),
+                        "score": float(parsed["score"]),
                         "max_score": float(max_score),
-                        "confidence": response["confidence"],
-                        "evidence": response["evidence"],
-                        "rationale": response["rationale"],
+                        "confidence": parsed["confidence"],
+                        "evidence": parsed["evidence"],
+                        "rationale": parsed["rationale"],
                     }
                 else:
                     if attempt < self._max_retries:

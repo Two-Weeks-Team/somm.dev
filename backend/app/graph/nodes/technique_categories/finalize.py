@@ -46,7 +46,8 @@ async def finalize(
             if cat_id in category_scores:
                 category_scores[cat_id]["score"] += min(score_value, item.max_score)
 
-    coverage = evaluated_count / 17 if evaluated_count > 0 else 0.0
+    total_items = len(list_items())
+    coverage = evaluated_count / total_items if total_items > 0 else 0.0
     normalized = (total_score / max_possible * 100) if max_possible > 0 else 0.0
 
     quality_gate = get_quality_gate(normalized, coverage)

@@ -371,7 +371,7 @@ def format_prompt(item_id: str, context: str) -> str:
         Formatted prompt string ready for LLM consumption
     """
     prompt_template = get_prompt(item_id)["prompt"]
-    return prompt_template.format(context=context)
+    return prompt_template.replace("{context}", context)
 
 
 def get_rubric(item_id: str) -> Dict[int, str]:

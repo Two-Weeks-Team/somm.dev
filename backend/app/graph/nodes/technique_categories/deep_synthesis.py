@@ -4,6 +4,8 @@ from langchain_core.runnables import RunnableConfig
 from app.graph.state import EvaluationState
 from app.models.graph import ItemScore
 
+CONFLICT_SCORE_RANGE_THRESHOLD = 2.0
+
 
 async def deep_synthesis(
     state: EvaluationState, config: Optional[RunnableConfig] = None
@@ -24,7 +26,7 @@ async def deep_synthesis(
         for item_id, scores in item_score_variants.items():
             if len(scores) > 1:
                 score_range = max(scores) - min(scores)
-                if score_range > 2.0:
+                if score_range > CONFLICT_SCORE_RANGE_THRESHOLD:
                     conflicts.append(
                         {
                             "item_id": item_id,
