@@ -8,9 +8,9 @@ interface FullTechniquesResultProps {
 }
 
 export function FullTechniquesResult({ result }: FullTechniquesResultProps) {
-  const successfulTechniquesCount = result.techniquesUsed.length - result.failedTechniques.length;
-  const failedTechniquesCount = result.failedTechniques.length;
   const totalTechniquesCount = result.techniquesUsed.length;
+  const failedTechniquesCount = result.failedTechniques.length;
+  const successfulTechniquesCount = Math.max(0, totalTechniquesCount - failedTechniquesCount);
 
   return (
     <div className="space-y-8 animate-fadeIn">
@@ -74,16 +74,13 @@ export function FullTechniquesResult({ result }: FullTechniquesResultProps) {
 
           <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-gray-200 shadow-sm">
             <div className="w-2 h-2 rounded-full bg-[#722F37]" />
-            <span className="font-bold text-gray-900">{result.techniquesUsed.length}</span>
+            <span className="font-bold text-gray-900">{totalTechniquesCount}</span>
             <span className="text-gray-500 text-sm">Total Evaluated</span>
           </div>
         </div>
       </div>
 
-      <BMADScorecard 
-        itemScores={result.itemScores} 
-        dimensionScores={result.dimensionScores} 
-      />
+      <BMADScorecard dimensionScores={result.dimensionScores} />
     </div>
   );
 }

@@ -1,9 +1,8 @@
-import { DimensionData, ItemData } from '@/types';
+import { DimensionData } from '@/types';
 import { DimensionCard } from './DimensionCard';
 import { ItemTile } from './ItemTile';
 
 interface BMADScorecardProps {
-  itemScores: Record<string, ItemData>;
   dimensionScores: Record<string, DimensionData>;
 }
 
