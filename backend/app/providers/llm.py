@@ -3,8 +3,6 @@ from dataclasses import dataclass
 from typing import Optional
 
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_openai import ChatOpenAI
-from langchain_anthropic import ChatAnthropic
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from app.core.config import settings
@@ -74,8 +72,6 @@ def _resolve_thinking_level(model_name: str) -> Optional[str]:
 PROVIDER_DEFAULTS = {
     "gemini": "gemini-3-flash-preview",
     "vertex": "gemini-3-flash-preview",
-    "openai": "gpt-4o-mini",
-    "anthropic": "claude-sonnet-4-20250514",
 }
 
 
@@ -90,7 +86,7 @@ def build_llm(
     """Build an LLM instance for the specified provider.
 
     Args:
-        provider: Provider name (gemini, vertex, openai, anthropic)
+        provider: Provider name (gemini, vertex)
         api_key: User-provided API key (BYOK) or None for server-side key
         model: Model name or None for provider default
         temperature: Temperature setting or None for default (0.7)
@@ -141,18 +137,6 @@ def build_llm(
         if thinking_level:
             vertex_kwargs["thinking_level"] = thinking_level
         llm = ChatGoogleGenerativeAI(**vertex_kwargs)
-    elif provider_key == "openai":
-        llm = ChatOpenAI(
-            model=model or PROVIDER_DEFAULTS["openai"],
-            temperature=resolved_temperature,
-            api_key=resolved_key or settings.OPENAI_API_KEY,
-        )
-    elif provider_key == "anthropic":
-        llm = ChatAnthropic(
-            model=model or PROVIDER_DEFAULTS["anthropic"],
-            temperature=resolved_temperature,
-            api_key=resolved_key or settings.ANTHROPIC_API_KEY,
-        )
     else:
         raise ValueError(f"Unsupported provider: {provider_key}")
 
