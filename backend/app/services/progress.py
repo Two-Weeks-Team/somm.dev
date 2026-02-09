@@ -8,6 +8,7 @@ class ProgressTracker:
     """Thread-safe progress tracker for full_techniques evaluation."""
 
     total_techniques: int = 75
+    max_concurrent: int = 5
     _completed: int = field(default=0, init=False)
     _in_progress: int = field(default=0, init=False)
     _failed: int = field(default=0, init=False)
@@ -63,7 +64,8 @@ class ProgressTracker:
                 return None
             avg_ms = sum(self._durations) / len(self._durations)
             remaining = self.total_techniques - self._completed - self._failed
-            return (remaining * avg_ms) / 1000
+            batches = (remaining + self.max_concurrent - 1) // self.max_concurrent
+            return (batches * avg_ms) / 1000
 
     def summary(self) -> dict:
         with self._lock:
@@ -75,7 +77,8 @@ class ProgressTracker:
             if self._durations:
                 avg_ms = sum(self._durations) / len(self._durations)
                 remaining = self.total_techniques - done
-                eta = (remaining * avg_ms) / 1000
+                batches = (remaining + self.max_concurrent - 1) // self.max_concurrent
+                eta = (batches * avg_ms) / 1000
             else:
                 eta = None
             return {

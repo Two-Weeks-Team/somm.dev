@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { X, Key, Sparkles, AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 
@@ -9,6 +9,26 @@ interface QuotaExceededModalProps {
 }
 
 export const QuotaExceededModal: React.FC<QuotaExceededModalProps> = ({ isOpen, onClose, reason }) => {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const previousActiveElement = useRef<Element | null>(null);
+
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    if (e.key === 'Escape') {
+      onClose();
+    }
+  }, [onClose]);
+
+  useEffect(() => {
+    if (isOpen) {
+      previousActiveElement.current = document.activeElement;
+      dialogRef.current?.focus();
+      document.addEventListener('keydown', handleKeyDown);
+      return () => document.removeEventListener('keydown', handleKeyDown);
+    } else if (previousActiveElement.current instanceof HTMLElement) {
+      previousActiveElement.current.focus();
+    }
+  }, [isOpen, handleKeyDown]);
+
   if (!isOpen) return null;
 
   const isByokRequired = reason === 'byok_required';
@@ -19,18 +39,34 @@ export const QuotaExceededModal: React.FC<QuotaExceededModalProps> = ({ isOpen, 
     
   const description = isByokRequired
     ? "The Grand Tasting mode uses 75+ evaluation techniques which requires significant processing power. Please register your own Gemini API key to use this mode."
-    : "You've used all your free evaluations for today. To continue evaluating repositories, you can register your own API key or upgrade to a premium plan.";
+    : "You have used all your free evaluations for today. To continue evaluating repositories, you can register your own API key or upgrade to a premium plan.";
+
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose();
+    }
+  };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-      <div className="relative w-full max-w-md bg-white rounded-2xl shadow-xl border border-[#722F37]/10 overflow-hidden animate-in fade-in zoom-in duration-200">
+    <div 
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
+      onClick={handleBackdropClick}
+    >
+      <div 
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="quota-modal-title"
+        aria-describedby="quota-modal-description"
+        tabIndex={-1}
+        className="relative w-full max-w-md bg-white rounded-2xl shadow-xl border border-[#722F37]/10 overflow-hidden animate-in fade-in zoom-in duration-200">
         {/* Header */}
         <div className="p-6 pb-0 flex items-start justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-red-50 text-red-600 rounded-full">
               <AlertCircle size={24} />
             </div>
-            <h3 className="text-xl font-serif font-semibold text-[#722F37]">
+            <h3 id="quota-modal-title" className="text-xl font-serif font-semibold text-[#722F37]">
               {title}
             </h3>
           </div>
@@ -44,7 +80,7 @@ export const QuotaExceededModal: React.FC<QuotaExceededModalProps> = ({ isOpen, 
 
         {/* Body */}
         <div className="p-6">
-          <p className="text-gray-600 mb-6">
+          <p id="quota-modal-description" className="text-gray-600 mb-6">
             {description}
           </p>
 

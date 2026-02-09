@@ -39,8 +39,7 @@ def sanitize_repo_content(content: str) -> str:
         content = content[:MAX_FIELD_LENGTH]
 
     for pattern in INJECTION_PATTERNS:
-        matches = re.findall(pattern, content)
-        if matches:
+        if re.search(pattern, content):
             logger.warning(f"Prompt injection pattern found: {pattern[:50]}")
             content = re.sub(pattern, "[REDACTED]", content)
 
@@ -72,13 +71,25 @@ def validate_repo_content(content: str) -> ContentValidation:
     return result
 
 
+def _escape_delimiter_tags(content: str) -> str:
+    """Escape XML delimiter tags to prevent prompt injection breakout."""
+    return (
+        content.replace("</repo_content>", "&lt;/repo_content&gt;")
+        .replace("<repo_content>", "&lt;repo_content&gt;")
+        .replace("</evaluation_instructions>", "&lt;/evaluation_instructions&gt;")
+        .replace("<evaluation_instructions>", "&lt;evaluation_instructions&gt;")
+    )
+
+
 def wrap_with_delimiters(repo_content: str, instructions: str) -> str:
     """Wrap content in XML-style delimiters for prompt hardening.
     Instructions placed AFTER content (harder to override).
+    Delimiter tags in content are escaped to prevent injection breakout.
     """
+    escaped_content = _escape_delimiter_tags(repo_content)
     return (
         "<repo_content>\n"
-        f"{repo_content}\n"
+        f"{escaped_content}\n"
         "</repo_content>\n\n"
         "<evaluation_instructions>\n"
         f"{instructions}\n"

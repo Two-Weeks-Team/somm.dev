@@ -117,8 +117,8 @@ function reducer(state: FullTechniquesStreamState, action: Action): FullTechniqu
       const { event } = action;
       const newState = { ...state };
       
-      if (event.tokens_used) newState.tokensUsed = event.tokens_used;
-      if (event.cost_usd) newState.costUsd = event.cost_usd;
+      if (event.tokens_used != null) newState.tokensUsed = event.tokens_used;
+      if (event.cost_usd != null) newState.costUsd = event.cost_usd;
 
       if (event.message) {
         newState.ledgerEvents = [
@@ -231,7 +231,7 @@ function reducer(state: FullTechniquesStreamState, action: Action): FullTechniqu
 
         case 'quality_gate_complete':
           newState.currentStage = 'quality_gate';
-          if (event.total_score) newState.totalScore = event.total_score;
+          if (event.total_score != null) newState.totalScore = event.total_score;
           if (event.quality_gate) newState.qualityGate = event.quality_gate;
           break;
 

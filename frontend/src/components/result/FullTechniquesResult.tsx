@@ -34,11 +34,11 @@ export function FullTechniquesResult({ result }: FullTechniquesResultProps) {
                 <div className="flex items-center gap-4 mt-4 text-sm font-medium text-white/70">
                   <div className="flex items-center gap-1.5">
                     <Clock size={16} />
-                    {(result.durationMs / 1000).toFixed(1)}s
+                    {((result.durationMs ?? 0) / 1000).toFixed(1)}s
                   </div>
                   <div className="flex items-center gap-1.5">
                     <Coins size={16} />
-                    ${result.costSummary.estimatedCost.toFixed(4)}
+                    ${(result.costSummary?.estimatedCost ?? 0).toFixed(4)}
                   </div>
                 </div>
               </div>
