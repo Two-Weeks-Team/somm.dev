@@ -21,12 +21,12 @@ class CorkedError(HTTPException):
     analogous to a spoiled or invalid request.
     """
 
-    default_status_code = status.HTTP_400_BAD_REQUEST
+    status_code = status.HTTP_400_BAD_REQUEST
     default_detail = "Invalid request data - the request is corked"
 
     def __init__(self, detail: str = None, status_code: int = None):
         super().__init__(
-            status_code=status_code or self.default_status_code,
+            status_code=status_code or self.__class__.status_code,
             detail=detail or self.default_detail,
         )
 

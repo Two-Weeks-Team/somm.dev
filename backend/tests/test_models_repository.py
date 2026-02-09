@@ -1,7 +1,11 @@
 """Tests for Repository models."""
 
-from datetime import datetime
-from app.models.repository import RepositoryBase, RepositoryCache, RepositoryListResponse
+from datetime import datetime, timezone
+from app.models.repository import (
+    RepositoryBase,
+    RepositoryCache,
+    RepositoryListResponse,
+)
 
 
 class TestRepositoryBaseModel:
@@ -20,8 +24,8 @@ class TestRepositoryBaseModel:
             "stars": 42,
             "forks": 10,
             "language": "Python",
-            "updated_at": datetime.utcnow(),
-            "pushed_at": datetime.utcnow(),
+            "updated_at": datetime.now(timezone.utc),
+            "pushed_at": datetime.now(timezone.utc),
         }
 
         repo = RepositoryBase(**repo_data)
@@ -59,7 +63,7 @@ class TestRepositoryCacheModel:
 
     def test_repository_cache_includes_user_id_and_cached_at(self):
         """Test that RepositoryCache has user_id and cached_at fields."""
-        now = datetime.utcnow()
+        now = datetime.now(timezone.utc)
         repo_data = {
             "id": 123,
             "name": "test-repo",
@@ -86,9 +90,9 @@ class TestRepositoryCacheModel:
             "user_id": "507f1f77bcf86cd799439011",
         }
 
-        before = datetime.utcnow()
+        before = datetime.now(timezone.utc)
         repo = RepositoryCache(**repo_data)
-        after = datetime.utcnow()
+        after = datetime.now(timezone.utc)
 
         assert before <= repo.cached_at <= after
 

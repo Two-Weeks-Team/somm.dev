@@ -51,7 +51,8 @@ class TestEndToEndSmoke:
                 graph = create_evaluation_graph()
                 nodes = graph.nodes
 
-                assert len(nodes) == 8
+                # __start__ + 3 enrichment nodes + 5 sommeliers + jeanpierre = 10
+                assert len(nodes) == 10
 
     def test_graph_has_expected_node_count_rag_disabled(self):
         from app.graph.graph import create_evaluation_graph
@@ -65,7 +66,8 @@ class TestEndToEndSmoke:
                 graph = create_evaluation_graph()
                 nodes = graph.nodes
 
-                assert len(nodes) == 7
+                # __start__ + 2 enrichment nodes + 5 sommeliers + jeanpierre = 9
+                assert len(nodes) == 9
 
 
 class TestNodeInstantiation:
