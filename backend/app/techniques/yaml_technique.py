@@ -1,6 +1,6 @@
 import json
 import logging
-import time
+from datetime import datetime, timezone
 from typing import List
 
 from app.criteria.bmad_items import get_item
@@ -45,17 +45,19 @@ class YAMLTechnique(BaseTechnique):
             parts.append(f"## Evaluation Item: {item_id}")
             parts.append("")
 
-        # 4. Repository context
+        # 4. Repository context (with isolation markers to prevent prompt injection)
         repo_context = state.get("repo_context", {})
         if repo_context:
             parts.append("## Repository Context")
             if repo_context.get("repo_url"):
                 parts.append(f"Repository: {repo_context['repo_url']}")
             if repo_context.get("readme"):
-                parts.append(f"README:\n{repo_context['readme'][:2000]}")
+                parts.append(
+                    f"README:\n<CONTENT_START>\n{repo_context['readme'][:2000]}\n<CONTENT_END>"
+                )
             if repo_context.get("file_structure"):
                 parts.append(
-                    f"File Structure:\n{repo_context['file_structure'][:1000]}"
+                    f"File Structure:\n<CONTENT_START>\n{repo_context['file_structure'][:1000]}\n<CONTENT_END>"
                 )
             parts.append("")
 
@@ -100,7 +102,7 @@ class YAMLTechnique(BaseTechnique):
 
     def _parse_response(self, response: dict, item_id: str) -> dict:
         """Parse LLM response into structured result."""
-        timestamp = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
 
         # Extract score and metadata from response
         score = float(response.get("score", 0))
