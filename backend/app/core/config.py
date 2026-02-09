@@ -102,6 +102,10 @@ class Settings(BaseSettings):
     PORT: int = 8000
     DEBUG: bool = False
 
+    # Proxy settings (for IP-based rate limiting)
+    # Set to True when running behind a trusted reverse proxy (e.g., nginx, Cloudflare)
+    TRUSTED_PROXY: bool = False
+
     @property
     def CORS_ORIGINS(self) -> List[str]:
         origins = [self.FRONTEND_URL]

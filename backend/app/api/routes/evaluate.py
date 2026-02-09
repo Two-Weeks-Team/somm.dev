@@ -13,13 +13,16 @@ import asyncio
 import json
 import logging
 import time
+import traceback
 from typing import Any
 
+from cachetools import TTLCache
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from app.api.deps import get_current_user, get_current_user_token, get_optional_user
+from app.core.config import settings
 from app.core.exceptions import CorkedError, EmptyCellarError
 from app.services.evaluation_service import (
     get_evaluation_progress,
@@ -43,13 +46,18 @@ logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/evaluate", tags=["evaluate"])
 
-_anonymous_rate_limit_store: dict[str, list[float]] = {}
 _ANONYMOUS_RATE_LIMIT = 5
 _ANONYMOUS_RATE_WINDOW = 3600
+# TTL cache with max 10000 entries, auto-expiring after 2x window to handle edge cases
+_anonymous_rate_limit_store: TTLCache = TTLCache(
+    maxsize=10000, ttl=_ANONYMOUS_RATE_WINDOW * 2
+)
 
 
 def _check_anonymous_rate_limit(client_ip: str) -> bool:
     """Check if the client IP has exceeded the anonymous evaluation rate limit.
+
+    Uses a TTL-based cache to prevent unbounded memory growth.
 
     Args:
         client_ip: The client's IP address.
@@ -74,15 +82,20 @@ def _check_anonymous_rate_limit(client_ip: str) -> bool:
 def _get_client_ip(request: Request) -> str:
     """Extract the client IP address from the request.
 
+    Only trusts X-Forwarded-For header when TRUSTED_PROXY is enabled in settings.
+    This prevents IP spoofing attacks to bypass rate limiting.
+
     Args:
         request: The FastAPI request object.
 
     Returns:
         The client's IP address.
     """
-    forwarded = request.headers.get("X-Forwarded-For")
-    if forwarded:
-        return forwarded.split(",")[0].strip()
+    # Only trust X-Forwarded-For when running behind a trusted proxy
+    if getattr(settings, "TRUSTED_PROXY", False):
+        forwarded = request.headers.get("X-Forwarded-For")
+        if forwarded:
+            return forwarded.split(",")[0].strip()
     return request.client.host if request.client else "unknown"
 
 
@@ -259,8 +272,6 @@ async def create_evaluation(
         raise e
     except Exception as e:
         logger.error(f"[Evaluate] Exception: {type(e).__name__}: {str(e)}")
-        import traceback
-
         logger.error(f"[Evaluate] Traceback: {traceback.format_exc()}")
         raise CorkedError(f"Failed to start evaluation: {e!s}") from e
 
@@ -308,7 +319,7 @@ async def create_public_evaluation(
             repo_url=request.repo_url,
             criteria=request.criteria,
             user_id="anonymous",
-            custom_criteria=request.custom_criteria,
+            custom_criteria=None,  # Anonymous users cannot use custom criteria
             evaluation_mode="six_sommeliers",
         )
 
@@ -374,8 +385,6 @@ async def create_public_evaluation(
         raise e
     except Exception as e:
         logger.error(f"[Evaluate Public] Exception: {type(e).__name__}: {str(e)}")
-        import traceback
-
         logger.error(f"[Evaluate Public] Traceback: {traceback.format_exc()}")
         raise CorkedError(f"Failed to start evaluation: {e!s}") from e
 
@@ -406,11 +415,15 @@ async def stream_evaluation(
 
     eval_user_id = progress.get("user_id")
 
-    # Allow access if: authenticated owner OR anonymous evaluation without auth
-    if user is None and eval_user_id != "anonymous":
+    # Access control logic:
+    # 1. Anonymous evaluations are publicly accessible (no auth required)
+    # 2. Authenticated users can access their own evaluations
+    # 3. Authenticated users can also view anonymous evaluations
+    if eval_user_id == "anonymous":
+        pass  # Public access allowed
+    elif user is None:
         raise CorkedError("Authentication required to view this evaluation")
-
-    if user is not None and eval_user_id != user.id:
+    elif user.id != eval_user_id:
         raise CorkedError("Access denied: evaluation belongs to another user")
 
     event_channel = get_event_channel()
@@ -506,11 +519,12 @@ async def get_result(
 
     eval_user_id = progress.get("user_id")
 
-    # Allow access if: authenticated owner OR anonymous evaluation without auth
-    if user is None and eval_user_id != "anonymous":
+    # Access control: same logic as stream_evaluation
+    if eval_user_id == "anonymous":
+        pass  # Public access allowed
+    elif user is None:
         raise CorkedError("Authentication required to view this evaluation")
-
-    if user is not None and eval_user_id != user.id:
+    elif user.id != eval_user_id:
         raise CorkedError("Access denied: evaluation belongs to another user")
 
     result = await get_evaluation_result(evaluation_id)
