@@ -199,6 +199,7 @@ export function TastingNotesTab({ result }: TastingNotesTabProps) {
               feedback={somm.feedback}
               recommendations={somm.recommendations}
               pairingSuggestion={somm.pairingSuggestion}
+              techniqueDetails={somm.techniqueDetails}
               delay={index * 100}
             />
           ))}

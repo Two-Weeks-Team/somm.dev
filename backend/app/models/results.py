@@ -11,7 +11,7 @@ This module contains all Pydantic models related to evaluationTier: Enum for res
 
 from datetime import datetime
 from enum import Enum
-from typing import List
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
 
@@ -63,17 +63,24 @@ def get_rating_tier(score: int) -> RatingTier:
         return RatingTier.Corked
 
 
+class TechniqueDetail(BaseModel):
+    id: str = Field(..., description="Technique ID")
+    name: str = Field(..., description="Technique name")
+    status: str = Field(..., description="success, failed, or skipped")
+    score: Optional[float] = Field(None, description="Score if evaluated")
+    max_score: Optional[float] = Field(None, description="Maximum possible score")
+    error: Optional[str] = Field(None, description="Error message if failed")
+
+
 class SommelierOutput(BaseModel):
-    """Model for individual sommelier AI agent evaluation output.
-
-    Each of the six AI sommeliers produces this output.
-    """
-
     sommelier_name: str = Field(..., description="Name of the sommelier agent")
     score: int = Field(..., ge=0, le=100, description="Score from 0 to 100")
     summary: str = Field(..., description="Brief summary of the evaluation")
     recommendations: List[str] = Field(
         default_factory=list, description="List of recommendations"
+    )
+    technique_details: List[TechniqueDetail] = Field(
+        default_factory=list, description="Detailed technique results"
     )
 
 

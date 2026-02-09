@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import Image from 'next/image';
-import { ChevronDown, ChevronUp, Lightbulb } from 'lucide-react';
+import { ChevronDown, ChevronUp, Lightbulb, CheckCircle2, XCircle, MinusCircle } from 'lucide-react';
 import { getSommelierTheme } from '../lib/sommeliers';
+import { TechniqueDetail } from '../types';
 
 interface SommelierCardProps {
   id: string;
@@ -13,6 +14,7 @@ interface SommelierCardProps {
   feedback: string;
   recommendations?: string[];
   pairingSuggestion?: string;
+  techniqueDetails?: TechniqueDetail[];
   delay?: number;
 }
 
@@ -48,9 +50,11 @@ export function SommelierCard({
   feedback,
   recommendations,
   pairingSuggestion,
+  techniqueDetails,
   delay = 0,
 }: SommelierCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [showTechniques, setShowTechniques] = useState(false);
   const theme = getSommelierTheme(id);
 
   return (
@@ -163,6 +167,59 @@ export function SommelierCard({
           <p className="text-sm font-medium" style={{ color: theme.color }}>
             {pairingSuggestion}
           </p>
+        </div>
+      )}
+
+      {/* Technique Details - Expandable */}
+      {techniqueDetails && techniqueDetails.length > 0 && (
+        <div className="border-t border-gray-100">
+          <button
+            onClick={() => setShowTechniques(!showTechniques)}
+            className="w-full px-5 py-3 flex items-center justify-between hover:bg-gray-50 transition-colors"
+          >
+            <span className="text-xs font-bold uppercase tracking-wider text-gray-500">
+              Technique Details ({techniqueDetails.length})
+            </span>
+            {showTechniques ? (
+              <ChevronUp size={16} className="text-gray-400" />
+            ) : (
+              <ChevronDown size={16} className="text-gray-400" />
+            )}
+          </button>
+
+          {showTechniques && (
+            <div className="px-5 pb-4 space-y-2 max-h-64 overflow-y-auto">
+              {techniqueDetails.map((tech) => (
+                <div
+                  key={tech.id}
+                  className="flex items-center gap-2 py-1.5 px-2 rounded-lg bg-gray-50"
+                >
+                  {tech.status === 'success' && (
+                    <CheckCircle2 size={14} className="text-green-500 flex-shrink-0" />
+                  )}
+                  {tech.status === 'failed' && (
+                    <XCircle size={14} className="text-red-500 flex-shrink-0" />
+                  )}
+                  {tech.status === 'skipped' && (
+                    <MinusCircle size={14} className="text-gray-400 flex-shrink-0" />
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-gray-700 truncate">
+                      {tech.name}
+                    </p>
+                    {tech.error && (
+                      <p className="text-xs text-red-500 truncate">{tech.error}</p>
+                    )}
+                  </div>
+                  {tech.score !== undefined && tech.maxScore !== undefined && (
+                    <span className="text-xs text-gray-500 flex-shrink-0">
+                      {tech.score}/{tech.maxScore}
+                    </span>
+                  )}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
     </div>
