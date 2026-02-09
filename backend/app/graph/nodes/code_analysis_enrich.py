@@ -107,7 +107,7 @@ async def code_analysis_enrich(
                     sommelier="code_analysis",
                     event_type="enrichment_complete",
                     progress_percent=100,
-                    message=f"Code analysis complete ({files_count} files)",
+                    message=f"Code analysis {status} ({files_count} files analyzed)",
                 ),
             )
 
@@ -138,7 +138,7 @@ async def code_analysis_enrich(
                     sommelier="code_analysis",
                     event_type="enrichment_error",
                     progress_percent=100,
-                    message=f"Code analysis failed: {e}",
+                    message="Code analysis failed due to an internal error.",
                 ),
             )
         return {

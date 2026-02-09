@@ -164,6 +164,17 @@ async def rag_enrich(
     try:
         docs = _build_documents_from_context(repo_context)
         if not docs:
+            if evaluation_id:
+                event_channel.emit_sync(
+                    evaluation_id,
+                    create_sommelier_event(
+                        evaluation_id=evaluation_id,
+                        sommelier="rag",
+                        event_type="enrichment_complete",
+                        progress_percent=100,
+                        message="RAG enrichment complete (no documents)",
+                    ),
+                )
             return {
                 "rag_context": {"query": query, "chunks": [], "error": None},
             }
@@ -214,7 +225,7 @@ async def rag_enrich(
                     sommelier="rag",
                     event_type="enrichment_error",
                     progress_percent=100,
-                    message=f"RAG enrichment failed: {e}",
+                    message="RAG enrichment failed due to an internal error.",
                 ),
             )
         return {

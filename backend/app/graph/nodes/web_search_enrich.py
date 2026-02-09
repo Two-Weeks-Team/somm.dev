@@ -160,7 +160,7 @@ async def web_search_enrich(
                     sommelier="web_search",
                     event_type="enrichment_error",
                     progress_percent=100,
-                    message=f"Web search failed: {e}",
+                    message="Web search failed due to an internal error.",
                 ),
             )
         return {
