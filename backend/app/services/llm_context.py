@@ -270,6 +270,7 @@ def get_context_budget(provider: str, model: str | None = None) -> int:
 
     provider_defaults = {
         "gemini": 32000,
+        "vertex": 32000,
         "openai": 32000,
         "anthropic": 64000,
     }
