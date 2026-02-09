@@ -10,6 +10,15 @@ export interface EvaluationRequest {
   evaluationMode: EvaluationMode;
 }
 
+export interface TechniqueDetail {
+  id: string;
+  name: string;
+  status: 'success' | 'failed' | 'skipped';
+  score?: number;
+  maxScore?: number;
+  error?: string;
+}
+
 export interface SommelierResult {
   id: string;
   name: string;
@@ -18,6 +27,7 @@ export interface SommelierResult {
   feedback: string;
   recommendations?: string[];
   pairingSuggestion?: string;
+  techniqueDetails?: TechniqueDetail[];
 }
 
 export interface EvaluationResult {

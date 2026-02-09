@@ -303,7 +303,12 @@ async def save_evaluation_results(
     """
     repo = ResultRepository()
 
-    from app.models.results import get_rating_tier, SommelierOutput, FinalEvaluation
+    from app.models.results import (
+        get_rating_tier,
+        SommelierOutput,
+        FinalEvaluation,
+        TechniqueDetail,
+    )
 
     cellar_result = evaluation_data.get("cellar_result")
     jeanpierre_result = evaluation_data.get("jeanpierre_result")
@@ -343,6 +348,8 @@ async def save_evaluation_results(
                     )
                 )
     elif is_full_techniques:
+        from app.techniques.router import TechniqueRouter
+
         normalized_score = evaluation_data.get("normalized_score", 0)
         overall_score = int(normalized_score)
         rating_tier = get_rating_tier(overall_score)
@@ -355,36 +362,79 @@ async def save_evaluation_results(
             f"Coverage: {coverage * 100:.1f}%."
         )
 
-        BMAD_CATEGORY_CONFIG = {
-            "A": ("Problem Definition", 25, ["aroma", "palate"]),
-            "B": ("Technical Design", 25, ["body", "balance"]),
-            "C": ("Implementation", 30, ["vintage", "terroir"]),
-            "D": ("Documentation", 20, ["cellar", "finish"]),
+        TASTING_NOTE_CONFIG = {
+            "aroma": ("Aroma Notes", "Problem Analysis", 11),
+            "palate": ("Palate Notes", "Innovation", 13),
+            "body": ("Body Notes", "Risk Analysis", 7),
+            "finish": ("Finish Notes", "User-Centricity", 7),
+            "balance": ("Balance Notes", "Feasibility", 8),
+            "vintage": ("Vintage Notes", "Opportunity", 8),
+            "terroir": ("Terroir Notes", "Presentation", 6),
+            "cellar": ("Cellar Notes", "Synthesis", 15),
         }
 
-        category_scores = evaluation_data.get("category_scores", {})
         trace_metadata = evaluation_data.get("trace_metadata", {})
+        techniques_used = set(evaluation_data.get("techniques_used", []))
+
+        router = TechniqueRouter()
 
         sommelier_outputs = []
-        for cat_id, (name, max_score, tasting_cats) in BMAD_CATEGORY_CONFIG.items():
-            cat_data = category_scores.get(cat_id, {})
-            raw_score = cat_data.get("score", 0)
-            scaled_score = int((raw_score / max_score) * 100) if max_score > 0 else 0
+        for cat_key, (name, role, expected_count) in TASTING_NOTE_CONFIG.items():
+            cat_trace = trace_metadata.get(cat_key, {})
+            succeeded = cat_trace.get("techniques_succeeded", 0)
+            total = cat_trace.get("techniques_count", expected_count)
+            failed_list = cat_trace.get("failed_techniques", [])
 
-            technique_info = []
-            for tasting_cat in tasting_cats:
-                cat_trace = trace_metadata.get(tasting_cat, {})
-                succeeded = cat_trace.get("techniques_succeeded", 0)
-                total = cat_trace.get("techniques_count", 0)
-                if total > 0:
-                    technique_info.append(
-                        f"{tasting_cat.capitalize()}: {succeeded}/{total}"
-                    )
+            success_rate = (succeeded / total * 100) if total > 0 else 0
+            scaled_score = int(success_rate)
 
             cat_summary = (
-                f"Category {cat_id} ({name}): Scored {raw_score:.1f}/{max_score} points. "
-                f"Techniques evaluated: {', '.join(technique_info) if technique_info else 'N/A'}."
+                f"{name} ({role}): {succeeded}/{total} techniques succeeded. "
+                f"Success rate: {success_rate:.1f}%."
             )
+
+            technique_info = []
+            if succeeded > 0:
+                technique_info.append(f"{succeeded} passed")
+            if failed_list:
+                technique_info.append(f"{len(failed_list)} failed")
+
+            cat_technique_ids = router.select_techniques(
+                mode="full_techniques", category=cat_key
+            )
+            technique_details = []
+            for tech_id in cat_technique_ids:
+                tech_def = router.get_technique(tech_id)
+                tech_name = tech_def.name if tech_def else tech_id
+
+                failed_entry = next(
+                    (f for f in failed_list if f.get("technique_id") == tech_id), None
+                )
+                if failed_entry:
+                    technique_details.append(
+                        TechniqueDetail(
+                            id=tech_id,
+                            name=tech_name,
+                            status="failed",
+                            error=failed_entry.get("error"),
+                        )
+                    )
+                elif tech_id in techniques_used:
+                    technique_details.append(
+                        TechniqueDetail(
+                            id=tech_id,
+                            name=tech_name,
+                            status="success",
+                        )
+                    )
+                else:
+                    technique_details.append(
+                        TechniqueDetail(
+                            id=tech_id,
+                            name=tech_name,
+                            status="skipped",
+                        )
+                    )
 
             sommelier_outputs.append(
                 SommelierOutput(
@@ -392,6 +442,7 @@ async def save_evaluation_results(
                     score=scaled_score,
                     summary=cat_summary,
                     recommendations=technique_info,
+                    technique_details=technique_details,
                 )
             )
     else:
