@@ -481,7 +481,7 @@ class ItemScore(BaseModel):
     """
 
     item_id: str = Field(description="Unique identifier for the evaluated item")
-    score: float = Field(ge=0, le=100, description="Score value between 0 and 100")
+    score: float = Field(ge=0, description="Score value (0 or greater, no upper limit)")
     evaluated_by: str = Field(
         description="Name of the agent that performed the evaluation"
     )
@@ -491,6 +491,32 @@ class ItemScore(BaseModel):
     )
     notes: Optional[str] = Field(
         default=None, description="Optional notes or comments about the evaluation"
+    )
+
+    # Extended fields for detailed evaluation (backward compatible)
+    item_name: Optional[str] = Field(
+        default=None, description="Human-readable name of the item"
+    )
+    max_score: Optional[float] = Field(
+        default=None, description="Maximum possible score for this item"
+    )
+    status: Optional[str] = Field(
+        default=None, description="Evaluation status (e.g., 'evaluated', 'excluded')"
+    )
+    unevaluated_reason: Optional[str] = Field(
+        default=None, description="Reason if item was not evaluated"
+    )
+    hat_used: Optional[str] = Field(
+        default=None, description="Hat/agent type that performed the evaluation"
+    )
+    evidence: Optional[list[str]] = Field(
+        default=None, description="List of evidence references"
+    )
+    rationale: Optional[str] = Field(
+        default=None, description="Explanation for the score"
+    )
+    confidence: Optional[str] = Field(
+        default=None, description="Confidence level in the evaluation"
     )
 
 
