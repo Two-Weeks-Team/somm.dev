@@ -77,15 +77,18 @@ class TestBaseSommelierNode:
             aspects={},
         )
 
-        with patch.object(ConcreteSommelierNode, "get_prompt") as mock_get_prompt:
-            mock_chain = MagicMock()
-            mock_chain.ainvoke = MagicMock(return_value=mock_result)
+        mock_response = MagicMock()
+        mock_response.content = '{"score": 85, "notes": "Excellent vintage", "confidence": 0.9, "techniques_used": ["analysis"], "aspects": {}}'
+        mock_response.usage_metadata = {
+            "input_tokens": 100,
+            "output_tokens": 50,
+            "total_tokens": 150,
+        }
 
-            mock_prompt = MagicMock()
-            mock_prompt.__or__ = MagicMock(return_value=mock_chain)
+        mock_llm = MagicMock()
+        mock_llm.ainvoke = MagicMock(return_value=mock_response)
 
-            mock_get_prompt.return_value = mock_prompt
-
+        with patch("app.graph.nodes.base.build_llm", return_value=mock_llm):
             node = ConcreteSommelierNode()
             state: EvaluationState = {
                 "repo_url": "https://github.com/example/repo",
@@ -113,13 +116,12 @@ class TestBaseSommelierNode:
     @pytest.mark.asyncio
     async def test_evaluate_error_handling(self):
         """Test error handling in evaluate method"""
-        with patch.object(ConcreteSommelierNode, "get_prompt") as mock_get_prompt:
-            mock_chain = MagicMock()
-            mock_chain.ainvoke = MagicMock(side_effect=Exception("API error"))
-            mock_prompt = MagicMock()
-            mock_prompt.__or__ = MagicMock(return_value=mock_chain)
-            mock_get_prompt.return_value = mock_prompt
+        from unittest.mock import AsyncMock
 
+        mock_llm = MagicMock()
+        mock_llm.ainvoke = AsyncMock(side_effect=Exception("API error"))
+
+        with patch("app.graph.nodes.base.build_llm", return_value=mock_llm):
             node = ConcreteSommelierNode()
             state: EvaluationState = {
                 "repo_url": "https://github.com/example/repo",
