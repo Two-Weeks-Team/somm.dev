@@ -1,14 +1,14 @@
 from unittest.mock import patch
 
-from langchain_anthropic import ChatAnthropic
+import pytest
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_openai import ChatOpenAI
 
 from app.providers.llm import (
     build_llm,
     resolve_byok,
     BYOKValidationError,
     PROVIDER_DEFAULTS,
+    _resolve_thinking_level,
 )
 
 
@@ -44,13 +44,26 @@ class TestProviderSelection:
         llm = build_llm("gemini", "test-key", None, 0.1, 128)
         assert isinstance(llm, ChatGoogleGenerativeAI)
 
-    def test_build_llm_openai_routing(self):
-        llm = build_llm("openai", "test-key", None, 0.1, 128)
-        assert isinstance(llm, ChatOpenAI)
+    @patch("app.providers.llm.ChatGoogleGenerativeAI")
+    @patch("app.providers.llm.settings")
+    def test_build_llm_vertex_routing(self, mock_settings, mock_vertex):
+        mock_settings.VERTEX_API_KEY = "AQ.test-vertex-key"
+        build_llm("vertex", None, None, 0.1, 128)
+        mock_vertex.assert_called_once()
+        call_kwargs = mock_vertex.call_args.kwargs
+        assert call_kwargs["api_key"] == "AQ.test-vertex-key"
+        assert call_kwargs["vertexai"] is True
+        assert call_kwargs["thinking_level"] == "minimal"
 
-    def test_build_llm_anthropic_routing(self):
-        llm = build_llm("anthropic", "test-key", None, 0.1, 128)
-        assert isinstance(llm, ChatAnthropic)
+    def test_build_llm_vertex_missing_key_raises(self):
+        with patch("app.providers.llm.settings") as mock_settings:
+            mock_settings.VERTEX_API_KEY = ""
+            with pytest.raises(ValueError, match="VERTEX_API_KEY"):
+                build_llm("vertex", None, None, 0.1, 128)
+
+    def test_build_llm_unsupported_provider_raises(self):
+        with pytest.raises(ValueError, match="Unsupported provider"):
+            build_llm("openai", "test-key", None, 0.1, 128)
 
     def test_build_llm_default_is_gemini(self):
         llm = build_llm(None, "test-key", None, 0.1, 128)
@@ -62,18 +75,27 @@ class TestProviderSelection:
 
 
 class TestPerNodeModelConfig:
-    def test_custom_model_passed_to_provider(self):
-        llm = build_llm("openai", "test-key", "gpt-4-turbo", 0.5, 1024)
-        assert isinstance(llm, ChatOpenAI)
-        assert llm.model_name == "gpt-4-turbo"
-
-    def test_custom_temperature_applied(self):
-        llm = build_llm("openai", "test-key", None, 0.9, 128)
-        assert llm.temperature == 0.9
+    def test_custom_model_passed_to_gemini(self):
+        llm = build_llm("gemini", "test-key", "gemini-2.5-flash", 0.5, 1024)
+        assert isinstance(llm, ChatGoogleGenerativeAI)
 
     def test_default_model_when_none(self):
-        llm = build_llm("openai", "test-key", None, 0.3, 128)
-        assert llm.model_name == PROVIDER_DEFAULTS["openai"]
+        llm = build_llm("gemini", "test-key", None, 0.3, 128)
+        assert llm.model == PROVIDER_DEFAULTS["gemini"]
+
+
+class TestThinkingLevel:
+    def test_flash_model_gets_minimal(self):
+        assert _resolve_thinking_level("gemini-3-flash-preview") == "minimal"
+
+    def test_pro_model_gets_low(self):
+        assert _resolve_thinking_level("gemini-3-pro-preview") == "low"
+
+    def test_non_gemini3_returns_none(self):
+        assert _resolve_thinking_level("gemini-2.5-flash") is None
+
+    def test_non_gemini_returns_none(self):
+        assert _resolve_thinking_level("gpt-4o-mini") is None
 
 
 class TestBYOKFallback:
@@ -89,10 +111,10 @@ class TestBYOKFallback:
 
     def test_model_fallback_enabled(self):
         llm = build_llm(
-            "openai", "test-key", "gpt-4-turbo", 0.3, 128, enable_fallback=True
+            "gemini", "test-key", "gemini-2.5-flash", 0.3, 128, enable_fallback=True
         )
         assert hasattr(llm, "fallbacks")
 
     def test_model_fallback_not_added_for_default_model(self):
-        llm = build_llm("openai", "test-key", None, 0.3, 128, enable_fallback=True)
+        llm = build_llm("gemini", "test-key", None, 0.3, 128, enable_fallback=True)
         assert not hasattr(llm, "fallbacks")

@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 
@@ -7,23 +8,25 @@ from langchain_core.runnables import RunnableConfig
 from app.core.config import settings
 from app.graph.state import EvaluationState
 
+logger = logging.getLogger(__name__)
+
 _README_MAX_LEN = 2000
 _FILE_TREE_MAX_LEN = 1000
 _METADATA_MAX_LEN = 500
 
-_openai_client = None
+_genai_client = None
 
 
-def _get_openai_client():
-    global _openai_client
-    if _openai_client is None:
-        import openai
+def _get_genai_client():
+    global _genai_client
+    if _genai_client is None:
+        from google import genai
 
-        _openai_client = openai.OpenAI(
-            api_key=settings.SYNTHETIC_API_KEY,
-            base_url=settings.SYNTHETIC_BASE_URL,
-        )
-    return _openai_client
+        if settings.VERTEX_API_KEY:
+            _genai_client = genai.Client(api_key=settings.VERTEX_API_KEY, vertexai=True)
+        else:
+            _genai_client = genai.Client(api_key=settings.GEMINI_API_KEY)
+    return _genai_client
 
 
 def _build_documents_from_context(repo_context: dict) -> List[Dict[str, str]]:
@@ -63,14 +66,12 @@ def _cosine_similarity(vec_a: np.ndarray, vec_b: np.ndarray) -> float:
 
 
 def _get_embeddings(texts: List[str]) -> List[List[float]]:
-    client = _get_openai_client()
-
-    response = client.embeddings.create(
+    client = _get_genai_client()
+    response = client.models.embed_content(
         model=settings.RAG_EMBEDDING_MODEL,
-        input=texts,
+        contents=texts,
     )
-
-    return [data.embedding for data in response.data]
+    return [emb.values for emb in response.embeddings]
 
 
 def _similarity_search(
@@ -107,8 +108,8 @@ async def rag_enrich(
     repo_context = state.get("repo_context", {})
     query = _create_query(state)
 
-    # Skip RAG if no API key configured
-    if not settings.SYNTHETIC_API_KEY:
+    api_key = settings.VERTEX_API_KEY or settings.GEMINI_API_KEY
+    if not api_key:
         return {
             "rag_context": {
                 "query": query,
@@ -156,6 +157,7 @@ async def rag_enrich(
         }
 
     except Exception as e:
+        logger.warning(f"RAG embedding failed: {e}")
         return {
             "rag_context": {"query": query, "chunks": [], "error": str(e)},
             "errors": [f"rag_enrich failed: {e!s}"],

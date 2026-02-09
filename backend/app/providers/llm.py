@@ -2,8 +2,6 @@ from dataclasses import dataclass
 from typing import Optional
 
 from langchain_google_genai import ChatGoogleGenerativeAI
-from langchain_openai import ChatOpenAI
-from langchain_anthropic import ChatAnthropic
 from langchain_core.language_models.chat_models import BaseChatModel
 
 from app.core.config import settings
@@ -12,7 +10,11 @@ from app.core.config import settings
 DEFAULT_TEMPERATURE = 0.7
 DEFAULT_MAX_OUTPUT_TOKENS = 2048
 DEFAULT_REQUEST_TIMEOUT = 60
-GEMINI3_THINKING_BUDGET = 1024
+
+GEMINI3_THINKING_LEVELS = {
+    "flash": "minimal",
+    "pro": "low",
+}
 
 
 @dataclass
@@ -56,10 +58,19 @@ def resolve_byok(
     return api_key, None
 
 
+def _resolve_thinking_level(model_name: str) -> Optional[str]:
+    """Flash→minimal, Pro→low. Pro doesn't support minimal/medium."""
+    name = model_name.lower()
+    if "gemini-3" not in name:
+        return None
+    if "-pro" in name:
+        return GEMINI3_THINKING_LEVELS["pro"]
+    return GEMINI3_THINKING_LEVELS["flash"]
+
+
 PROVIDER_DEFAULTS = {
     "gemini": "gemini-3-flash-preview",
-    "openai": "gpt-4o-mini",
-    "anthropic": "claude-sonnet-4-20250514",
+    "vertex": "gemini-3-flash-preview",
 }
 
 
@@ -74,7 +85,7 @@ def build_llm(
     """Build an LLM instance for the specified provider.
 
     Args:
-        provider: Provider name (gemini, openai, anthropic)
+        provider: Provider name (gemini, vertex)
         api_key: User-provided API key (BYOK) or None for server-side key
         model: Model name or None for provider default
         temperature: Temperature setting or None for default (0.7)
@@ -104,21 +115,26 @@ def build_llm(
             "google_api_key": resolved_key or settings.GEMINI_API_KEY,
             "timeout": DEFAULT_REQUEST_TIMEOUT,
         }
-        if "gemini-3" in resolved_model.lower():
-            gemini_kwargs["thinking_budget"] = GEMINI3_THINKING_BUDGET
+        thinking_level = _resolve_thinking_level(resolved_model)
+        if thinking_level:
+            gemini_kwargs["thinking_level"] = thinking_level
         llm = ChatGoogleGenerativeAI(**gemini_kwargs)
-    elif provider_key == "openai":
-        llm = ChatOpenAI(
-            model=model or PROVIDER_DEFAULTS["openai"],
-            temperature=resolved_temperature,
-            api_key=resolved_key or settings.OPENAI_API_KEY,
-        )
-    elif provider_key == "anthropic":
-        llm = ChatAnthropic(
-            model=model or PROVIDER_DEFAULTS["anthropic"],
-            temperature=resolved_temperature,
-            api_key=resolved_key or settings.ANTHROPIC_API_KEY,
-        )
+    elif provider_key == "vertex":
+        resolved_model = model or PROVIDER_DEFAULTS["vertex"]
+        if not settings.VERTEX_API_KEY:
+            raise ValueError("VERTEX_API_KEY is required for Vertex AI Express")
+        vertex_kwargs: dict = {
+            "model": resolved_model,
+            "temperature": resolved_temperature,
+            "max_output_tokens": resolved_max_tokens,
+            "timeout": DEFAULT_REQUEST_TIMEOUT,
+            "api_key": settings.VERTEX_API_KEY,
+            "vertexai": True,
+        }
+        thinking_level = _resolve_thinking_level(resolved_model)
+        if thinking_level:
+            vertex_kwargs["thinking_level"] = thinking_level
+        llm = ChatGoogleGenerativeAI(**vertex_kwargs)
     else:
         raise ValueError(f"Unsupported provider: {provider_key}")
 
