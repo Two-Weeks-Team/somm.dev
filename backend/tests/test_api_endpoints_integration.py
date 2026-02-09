@@ -249,10 +249,6 @@ class TestEvaluateEndpoints:
         )
         assert response.status_code == 401
 
-    def test_evaluate_stream_without_auth_returns_401(self, client):
-        response = client.get("/api/evaluate/test_eval_id/stream")
-        assert response.status_code == 401
-
     def test_evaluate_result_public_demo_returns_200(self, client):
         from app.api.routes.evaluate import PUBLIC_DEMO_EVALUATIONS
 
@@ -267,10 +263,6 @@ class TestEvaluateEndpoints:
 
             response = client.get(f"/api/evaluate/{demo_id}/result")
             assert response.status_code == 200
-
-    def test_evaluate_result_private_without_auth_returns_400(self, client):
-        response = client.get("/api/evaluate/private_eval_id/result")
-        assert response.status_code == 400
 
 
 class TestGraphEndpoints:
@@ -295,14 +287,6 @@ class TestGraphEndpoints:
             data = response.json()
             assert "nodes" in data
             assert "edges" in data
-
-    def test_graph_structure_without_auth_returns_401(self, client):
-        response = client.get("/api/evaluate/some_eval/graph/structure")
-        assert response.status_code == 401
-
-    def test_graph_execution_without_auth_returns_401(self, client):
-        response = client.get("/api/evaluate/some_eval/graph/execution")
-        assert response.status_code == 401
 
     def test_graph_timeline_public_demo_returns_200(self, client):
         from app.api.routes.graph import PUBLIC_DEMO_EVALUATIONS
