@@ -1,9 +1,3 @@
-"""API key validation service for external providers.
-
-This module provides validation services for API keys from various providers
-like Google Gemini, OpenAI, etc.
-"""
-
 import logging
 from dataclasses import dataclass, field
 from typing import List, Optional
@@ -12,41 +6,23 @@ import httpx
 
 logger = logging.getLogger(__name__)
 
-GEMINI_MODELS_URL = "https://generativelanguage.googleapis.com/v1/models"
+GOOGLE_MODELS_URL = "https://generativelanguage.googleapis.com/v1/models"
+VERTEX_TEST_URL = "https://aiplatform.googleapis.com/v1/projects/vertex-ai-express/locations/us-central1/publishers/google/models"
 VALIDATION_TIMEOUT = 10.0
 
 
 @dataclass
 class ValidationResult:
-    """Result of an API key validation attempt.
-
-    Attributes:
-        valid: Whether the key is valid.
-        error: Error message if validation failed.
-        models_available: List of available models if validation succeeded.
-    """
-
     valid: bool
     error: Optional[str] = None
     models_available: List[str] = field(default_factory=list)
 
 
-async def validate_gemini_key(api_key: str) -> ValidationResult:
-    """Validate a Google Gemini API key.
-
-    Makes a request to the Gemini API to verify the key is valid and
-    retrieves the list of available models.
-
-    Args:
-        api_key: The Gemini API key to validate.
-
-    Returns:
-        ValidationResult containing validation status and available models.
-    """
+async def validate_google_key(api_key: str) -> ValidationResult:
     try:
         async with httpx.AsyncClient(timeout=VALIDATION_TIMEOUT) as client:
             response = await client.get(
-                GEMINI_MODELS_URL, headers={"x-goog-api-key": api_key}
+                GOOGLE_MODELS_URL, headers={"x-goog-api-key": api_key}
             )
             if response.status_code == 200:
                 data = response.json()
@@ -60,6 +36,32 @@ async def validate_gemini_key(api_key: str) -> ValidationResult:
     except httpx.TimeoutException:
         return ValidationResult(valid=False, error="Validation timed out")
     except httpx.HTTPError:
-        return ValidationResult(
-            valid=False, error="Network error occurred during validation"
-        )
+        return ValidationResult(valid=False, error="Network error during validation")
+
+
+async def validate_vertex_key(api_key: str) -> ValidationResult:
+    try:
+        async with httpx.AsyncClient(timeout=VALIDATION_TIMEOUT) as client:
+            response = await client.get(
+                VERTEX_TEST_URL, headers={"x-goog-api-key": api_key}
+            )
+            if response.status_code == 200:
+                return ValidationResult(valid=True, models_available=["vertex-ai"])
+            if response.status_code in (401, 403):
+                return ValidationResult(valid=False, error="Invalid Vertex AI API key")
+            return ValidationResult(
+                valid=False, error=f"Unexpected status: {response.status_code}"
+            )
+    except httpx.TimeoutException:
+        return ValidationResult(valid=False, error="Validation timed out")
+    except httpx.HTTPError:
+        return ValidationResult(valid=False, error="Network error during validation")
+
+
+async def validate_api_key(api_key: str, provider: str) -> ValidationResult:
+    if provider == "google":
+        return await validate_google_key(api_key)
+    elif provider == "vertex":
+        return await validate_vertex_key(api_key)
+    else:
+        return ValidationResult(valid=False, error=f"Unknown provider: {provider}")

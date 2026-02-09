@@ -41,7 +41,7 @@ cp .env.example .env
 
 **Required variables:**
 - `MONGODB_URI`: MongoDB connection string
-- `GEMINI_API_KEY`: Get from https://makersuite.google.com/app/apikey
+- `VERTEX_API_KEY`: Vertex AI Express API key
 - `GITHUB_TOKEN`: Generate at https://github.com/settings/tokens (needs `repo` scope)
 
 ### 2.4 Run Backend
@@ -82,14 +82,14 @@ Set these secrets in your GitHub repository (Settings → Secrets → Actions):
 
 | Secret | Description | How to Get |
 |--------|-------------|------------|
-| `GEMINI_API_KEY` | Gemini API key | https://makersuite.google.com/app/apikey |
+| `VERTEX_API_KEY` | Vertex AI Express API key | Google Cloud Console |
 | `GITHUB_TOKEN` | GitHub PAT | https://github.com/settings/tokens |
 | `FLY_API_TOKEN` | Fly.io token | `flyctl auth token` |
 | `VERCEL_TOKEN` | Vercel token | https://vercel.com/account/tokens |
 
 Set via CLI:
 ```bash
-gh secret set GEMINI_API_KEY
+gh secret set VERTEX_API_KEY
 gh secret set GITHUB_TOKEN
 ```
 
@@ -121,11 +121,12 @@ MONGODB_URI=mongodb+srv://<username>:<password>@<cluster>.mongodb.net/somm_db
 
 ## 6. API Keys
 
-### Gemini API Key
+### Vertex AI Express API Key
 
-1. Go to https://makersuite.google.com/app/apikey
-2. Create a new API key
-3. Copy to `backend/.env`
+1. Go to Google Cloud Console
+2. Enable Vertex AI API
+3. Create API key for Vertex AI Express
+4. Copy to `backend/.env` as `VERTEX_API_KEY`
 
 ### GitHub Personal Access Token
 

@@ -191,7 +191,7 @@ class TestValidationResult:
         """Test ValidationResult for valid key."""
         result = ValidationResult(
             valid=True,
-            models_available=["models/gemini-1.5-flash"],
+            models_available=["models/gemini-3-flash-preview"],
         )
         assert result.valid is True
         assert result.error is None

@@ -43,14 +43,8 @@ class Settings(BaseSettings):
     MONGODB_URI: str = "mongodb://localhost:27017/somm_db"
     MONGO_DB: str = "somm"
 
-    # LLM APIs
-    GEMINI_API_KEY: str = ""
-    OPENAI_API_KEY: str = ""
-
-    # Vertex AI Express (API key auth)
+    # LLM API (Vertex AI Express only)
     VERTEX_API_KEY: str = ""
-    GOOGLE_CLOUD_PROJECT: str = ""
-    GOOGLE_CLOUD_LOCATION: str = "asia-northeast3"
     VERTEX_PREMIUM_USER_IDS: str = ""
     VERTEX_ADMIN_USER_IDS: str = ""
     VERTEX_PREMIUM_EMAILS: str = ""
