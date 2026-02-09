@@ -15,16 +15,16 @@ from app.graph.nodes.sofia import SofiaNode
 from app.graph.nodes.laurent import LaurentNode
 from app.graph.nodes.jeanpierre import JeanPierreNode
 from app.graph.nodes.rag_enrich import rag_enrich
+from app.graph.nodes.web_search_enrich import web_search_enrich
 
 
 def create_evaluation_graph():
     """Create and configure the evaluation graph.
 
     The graph follows a fan-out/fan-in pattern:
-    - Optional: RAG enrichment node runs first (if RAG_ENABLED)
-    - Fan-out: 5 sommelier nodes run in parallel
-    - Fan-in: All must complete before Jean-Pierre synthesis
-    - End: Jean-Pierre connects to END after synthesis
+    - Stage 1: RAG enrichment + Web Search run in parallel
+    - Stage 2: 5 sommelier nodes run in parallel (after both enrichments complete)
+    - Stage 3: Jean-Pierre synthesis (after all sommeliers complete)
 
     Returns:
         Compiled LangGraph with MongoDB checkpointer for state persistence.
@@ -39,9 +39,14 @@ def create_evaluation_graph():
     builder = StateGraph(EvaluationState)
 
     sommelier_nodes = ["marcel", "isabella", "heinrich", "sofia", "laurent"]
+    enrichment_nodes = []
 
     if settings.RAG_ENABLED:
         builder.add_node("rag_enrich", rag_enrich)
+        enrichment_nodes.append("rag_enrich")
+
+    builder.add_node("web_search_enrich", web_search_enrich)
+    enrichment_nodes.append("web_search_enrich")
 
     builder.add_node("marcel", marcel.evaluate)
     builder.add_node("isabella", isabella.evaluate)
@@ -50,13 +55,10 @@ def create_evaluation_graph():
     builder.add_node("laurent", laurent.evaluate)
     builder.add_node("jeanpierre", jeanpierre.evaluate)
 
-    if settings.RAG_ENABLED:
-        builder.add_edge("__start__", "rag_enrich")
-        for node in sommelier_nodes:
-            builder.add_edge("rag_enrich", node)
-    else:
-        for node in sommelier_nodes:
-            builder.add_edge("__start__", node)
+    for enrich_node in enrichment_nodes:
+        builder.add_edge("__start__", enrich_node)
+        for sommelier in sommelier_nodes:
+            builder.add_edge(enrich_node, sommelier)
 
     for node in sommelier_nodes:
         builder.add_edge(node, "jeanpierre")

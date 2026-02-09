@@ -190,6 +190,7 @@ class EvaluationState(TypedDict):
     ]
 
     rag_context: NotRequired[Optional[dict]]
+    web_search_context: NotRequired[Optional[dict]]
 
     aroma_result: NotRequired[Optional[dict]]
     palate_result: NotRequired[Optional[dict]]

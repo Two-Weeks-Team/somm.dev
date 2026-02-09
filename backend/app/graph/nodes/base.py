@@ -107,6 +107,26 @@ class BaseSommelierNode(ABC):
             state["repo_context"], max_tokens=context_budget
         )
 
+        rag_context = state.get("rag_context", {})
+        rag_chunks = rag_context.get("chunks", [])
+        if rag_chunks:
+            rag_section = "\n\n## Retrieved Context (RAG)\n"
+            for chunk in rag_chunks:
+                rag_section += f"\n### [{chunk['source']}]\n{chunk['text']}\n"
+            rendered_context += rag_section
+
+        web_context = state.get("web_search_context", {})
+        web_content = web_context.get("content", "")
+        if web_content:
+            web_section = "\n\n## Latest Industry Context (Web Search)\n"
+            web_section += web_content[:3000]
+            web_sources = web_context.get("sources", [])
+            if web_sources:
+                web_section += "\n\n**Sources:**\n"
+                for src in web_sources[:5]:
+                    web_section += f"- [{src.get('title', '')}]({src.get('uri', '')})\n"
+            rendered_context += web_section
+
         observability = {
             "completed_sommeliers": [self.name],
             "token_usage": {self.name: {}},
