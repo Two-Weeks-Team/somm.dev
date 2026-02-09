@@ -13,7 +13,11 @@ logger = logging.getLogger(__name__)
 def _get_genai_client():
     from google import genai
 
-    return genai.Client(api_key=settings.VERTEX_API_KEY)
+    return genai.Client(
+        api_key=settings.VERTEX_API_KEY,
+        vertexai=True,
+        project=settings.GOOGLE_CLOUD_PROJECT or None,
+    )
 
 
 async def web_search_enrich(
