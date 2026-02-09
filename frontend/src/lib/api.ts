@@ -44,11 +44,21 @@ export interface QuotaStatus {
 const BASE_API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://api.somm.dev';
 const TOKEN_STORAGE_KEY = 'somm_auth_token';
 
+interface BackendTechniqueDetail {
+  id: string;
+  name: string;
+  status: string;
+  score?: number;
+  max_score?: number;
+  error?: string;
+}
+
 interface BackendSommelierOutput {
   sommelier_name?: string;
   score?: number;
   summary?: string;
   recommendations?: string[];
+  technique_details?: BackendTechniqueDetail[];
 }
 
 interface BackendHistoryItem {
@@ -193,6 +203,7 @@ export const api = {
       'Balance Notes': 'Feasibility',
       'Vintage Notes': 'Opportunity',
       'Terroir Notes': 'Presentation',
+      'Cellar Notes': 'Synthesis',
     };
 
     const sommelierOutputs = response.final_evaluation?.sommelier_outputs || [];
@@ -204,6 +215,14 @@ export const api = {
       feedback: output.summary || '',
       recommendations: output.recommendations || [],
       pairingSuggestion: output.recommendations?.[0] || undefined,
+      techniqueDetails: output.technique_details?.map((t: BackendTechniqueDetail) => ({
+        id: t.id,
+        name: t.name,
+        status: t.status as 'success' | 'failed' | 'skipped',
+        score: t.score,
+        maxScore: t.max_score,
+        error: t.error,
+      })),
     }));
 
     return {

@@ -24,6 +24,19 @@ from app.services.provider_routing import decide_provider
 
 logger = logging.getLogger(__name__)
 
+# Module-level constant for full_techniques mode tasting note categories
+# Maps category key -> (display_name, role, expected_technique_count)
+TASTING_NOTE_CONFIG = {
+    "aroma": ("Aroma Notes", "Problem Analysis", 11),
+    "palate": ("Palate Notes", "Innovation", 13),
+    "body": ("Body Notes", "Risk Analysis", 7),
+    "finish": ("Finish Notes", "User-Centricity", 7),
+    "balance": ("Balance Notes", "Feasibility", 8),
+    "vintage": ("Vintage Notes", "Opportunity", 8),
+    "terroir": ("Terroir Notes", "Presentation", 6),
+    "cellar": ("Cellar Notes", "Synthesis", 15),
+}
+
 
 async def _get_stored_key(
     user_id: str, provider: str = "google"
@@ -303,12 +316,18 @@ async def save_evaluation_results(
     """
     repo = ResultRepository()
 
-    from app.models.results import get_rating_tier, SommelierOutput, FinalEvaluation
+    from app.models.results import (
+        get_rating_tier,
+        SommelierOutput,
+        FinalEvaluation,
+        TechniqueDetail,
+    )
 
     cellar_result = evaluation_data.get("cellar_result")
     jeanpierre_result = evaluation_data.get("jeanpierre_result")
 
     is_grand_tasting = evaluation_mode == "grand_tasting"
+    is_full_techniques = evaluation_mode == "full_techniques"
 
     if is_grand_tasting:
         cellar_result = cellar_result or {}
@@ -341,6 +360,93 @@ async def save_evaluation_results(
                         recommendations=technique_names,
                     )
                 )
+    elif is_full_techniques:
+        from app.techniques.router import TechniqueRouter
+
+        normalized_score = evaluation_data.get("normalized_score", 0)
+        overall_score = round(normalized_score)
+        rating_tier = get_rating_tier(overall_score)
+        quality_gate = evaluation_data.get("quality_gate", "")
+        coverage = evaluation_data.get("coverage_rate", 0)
+
+        summary = (
+            f"Comprehensive evaluation using 75 techniques. "
+            f"Quality Gate: {quality_gate}. "
+            f"Coverage: {coverage * 100:.1f}%."
+        )
+
+        trace_metadata = evaluation_data.get("trace_metadata", {})
+        techniques_used = set(evaluation_data.get("techniques_used", []))
+
+        router = TechniqueRouter()
+
+        sommelier_outputs = []
+        for cat_key, (name, role, expected_count) in TASTING_NOTE_CONFIG.items():
+            cat_trace = trace_metadata.get(cat_key, {})
+            succeeded = cat_trace.get("techniques_succeeded", 0)
+            total = cat_trace.get("techniques_count", expected_count)
+            failed_list = cat_trace.get("failed_techniques", [])
+
+            success_rate = (succeeded / total * 100) if total > 0 else 0
+            scaled_score = min(max(int(success_rate), 0), 100)
+
+            cat_summary = (
+                f"{name} ({role}): {succeeded}/{total} techniques succeeded. "
+                f"Success rate: {success_rate:.1f}%."
+            )
+
+            technique_info = []
+            if succeeded > 0:
+                technique_info.append(f"{succeeded} passed")
+            if failed_list:
+                technique_info.append(f"{len(failed_list)} failed")
+
+            cat_technique_ids = router.select_techniques(
+                mode="full_techniques", category=cat_key
+            )
+            technique_details = []
+            for tech_id in cat_technique_ids:
+                tech_def = router.get_technique(tech_id)
+                tech_name = tech_def.name if tech_def else tech_id
+
+                failed_entry = next(
+                    (f for f in failed_list if f.get("technique_id") == tech_id), None
+                )
+                if failed_entry:
+                    technique_details.append(
+                        TechniqueDetail(
+                            id=tech_id,
+                            name=tech_name,
+                            status="failed",
+                            error=failed_entry.get("error"),
+                        )
+                    )
+                elif tech_id in techniques_used:
+                    technique_details.append(
+                        TechniqueDetail(
+                            id=tech_id,
+                            name=tech_name,
+                            status="success",
+                        )
+                    )
+                else:
+                    technique_details.append(
+                        TechniqueDetail(
+                            id=tech_id,
+                            name=tech_name,
+                            status="skipped",
+                        )
+                    )
+
+            sommelier_outputs.append(
+                SommelierOutput(
+                    sommelier_name=name,
+                    score=scaled_score,
+                    summary=cat_summary,
+                    recommendations=technique_info,
+                    technique_details=technique_details,
+                )
+            )
     else:
         jeanpierre_result = jeanpierre_result or {}
         overall_score = jeanpierre_result.get("total_score", 0)
