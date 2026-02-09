@@ -11,8 +11,6 @@ export function BMADScorecard({ dimensionScores }: BMADScorecardProps) {
     .map(id => dimensionScores[id])
     .filter(Boolean);
 
-  const allItems = sortedDimensions.flatMap(dim => dim.items);
-
   return (
     <div className="space-y-8">
       <div>
@@ -27,9 +25,11 @@ export function BMADScorecard({ dimensionScores }: BMADScorecardProps) {
       <div>
         <h3 className="text-lg font-bold text-gray-900 mb-4">Detailed Scorecard</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {allItems.map((item) => (
-            <ItemTile key={item.id} item={item} />
-          ))}
+          {sortedDimensions.flatMap((dim) =>
+            dim.items.map((item) => (
+              <ItemTile key={`${dim.id}-${item.id}`} item={item} />
+            ))
+          )}
         </div>
       </div>
     </div>

@@ -77,6 +77,7 @@ export const FullTechniquesProgress: React.FC<FullTechniquesProgressProps> = ({ 
           <p className="text-gray-600 max-w-2xl mx-auto">
             {state.currentStage === 'deep_synthesis' ? 'Our Master Sommelier is blending the notes from all 75 techniques.' :
              state.currentStage === 'quality_gate' ? 'Verifying final scores and generating the vintage report.' :
+             state.currentStage === 'complete' ? 'Your vintage report is ready for review.' :
              'Analyzing your codebase across 8 dimensions and 75 distinct techniques.'}
           </p>
         </div>
