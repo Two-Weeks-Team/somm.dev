@@ -1,5 +1,6 @@
 import { useReducer, useEffect, useRef } from 'react';
 import { SSEEvent } from '../types';
+import { useAuth } from '../contexts/AuthContext';
 
 interface TechniqueStatus {
   id: string;
@@ -94,10 +95,14 @@ const initialState: FullTechniquesStreamState = {
 type Action =
   | { type: 'CONNECTION_CHANGE'; status: FullTechniquesStreamState['connectionStatus']; retryCount?: number }
   | { type: 'EVENT_RECEIVED'; event: SSEEvent }
-  | { type: 'ERROR'; error: string };
+  | { type: 'ERROR'; error: string }
+  | { type: 'RESET' };
 
 function reducer(state: FullTechniquesStreamState, action: Action): FullTechniquesStreamState {
   switch (action.type) {
+    case 'RESET':
+      return initialState;
+
     case 'CONNECTION_CHANGE':
       return {
         ...state,
@@ -258,12 +263,21 @@ function reducer(state: FullTechniquesStreamState, action: Action): FullTechniqu
 
 export function useFullTechniquesStream(evaluationId: string | null) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const { token } = useAuth();
   const eventSourceRef = useRef<EventSource | null>(null);
   const retryTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const retryCountRef = useRef(0);
+  const prevEvaluationIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!evaluationId || state.isComplete) return;
+    if (!evaluationId) return;
+
+    if (prevEvaluationIdRef.current !== evaluationId) {
+      dispatch({ type: 'RESET' });
+      prevEvaluationIdRef.current = evaluationId;
+    }
+
+    if (state.isComplete) return;
 
     retryCountRef.current = 0;
 
@@ -273,7 +287,10 @@ export function useFullTechniquesStream(evaluationId: string | null) {
       }
 
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || '';
-      const url = `${apiUrl}/api/evaluate/${evaluationId}/stream`;
+      let url = `${apiUrl}/api/evaluate/${evaluationId}/stream`;
+      if (token) {
+        url += `?token=${encodeURIComponent(token)}`;
+      }
       
       dispatch({ type: 'CONNECTION_CHANGE', status: 'connecting' });
       
@@ -330,7 +347,7 @@ export function useFullTechniquesStream(evaluationId: string | null) {
         clearTimeout(retryTimeoutRef.current);
       }
     };
-  }, [evaluationId, state.isComplete]);
+  }, [evaluationId, state.isComplete, token]);
 
   return state;
 }

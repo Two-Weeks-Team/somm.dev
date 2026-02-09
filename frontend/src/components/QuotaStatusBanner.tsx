@@ -40,12 +40,15 @@ export const QuotaStatusBanner: React.FC<QuotaStatusBannerProps> = ({ evaluation
   }
 
   const isGrandTasting = evaluationMode === 'grand_tasting';
+  const isFullTechniques = evaluationMode === 'full_techniques';
+  const requiresByok = isGrandTasting || isFullTechniques;
   const isFree = quota.plan === 'free';
   const hasByok = quota.has_byok;
   const isQuotaExceeded = quota.remaining <= 0;
 
-  // Case: Full Techniques (Grand Tasting) selected + Free + No BYOK
-  if (isGrandTasting && isFree && !hasByok) {
+  // Case: Full Techniques / Grand Tasting selected + Free + No BYOK
+  if (requiresByok && isFree && !hasByok) {
+    const modeName = isFullTechniques ? 'Full Techniques' : 'Grand Tasting';
     return (
       <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 shadow-sm">
         <div className="flex items-start gap-3">
@@ -53,9 +56,9 @@ export const QuotaStatusBanner: React.FC<QuotaStatusBannerProps> = ({ evaluation
             <Key size={20} />
           </div>
           <div className="flex-1">
-            <h4 className="font-medium text-amber-900">API Key Required for Grand Tasting</h4>
+            <h4 className="font-medium text-amber-900">API Key Required for {modeName}</h4>
             <p className="mt-1 text-sm text-amber-700">
-              The Grand Tasting mode uses 75+ evaluation techniques and requires your own Gemini API key.
+              The {modeName} mode uses 75+ evaluation techniques and requires your own Gemini API key.
             </p>
             <Link 
               href="/settings/api-keys"
