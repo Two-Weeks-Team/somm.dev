@@ -40,9 +40,11 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = ""
     OPENAI_API_KEY: str = ""
     ANTHROPIC_API_KEY: str = ""
+
+    # Vertex AI Express (API key auth)
+    VERTEX_API_KEY: str = ""
     GOOGLE_CLOUD_PROJECT: str = ""
     GOOGLE_CLOUD_LOCATION: str = "asia-northeast3"
-    GOOGLE_GENAI_USE_VERTEXAI: bool = True
     VERTEX_PREMIUM_USER_IDS: str = ""
     VERTEX_ADMIN_USER_IDS: str = ""
     VERTEX_PREMIUM_EMAILS: str = ""

@@ -47,11 +47,27 @@ class TestProviderSelection:
     @patch("app.providers.llm.ChatGoogleGenerativeAI")
     @patch("app.providers.llm.settings")
     def test_build_llm_vertex_routing(self, mock_settings, mock_vertex):
+        mock_settings.VERTEX_API_KEY = "AQ.test-vertex-key"
         mock_settings.GOOGLE_CLOUD_PROJECT = "test-project"
         mock_settings.GOOGLE_CLOUD_LOCATION = "us-central1"
-        mock_settings.GOOGLE_GENAI_USE_VERTEXAI = True
         build_llm("vertex", None, None, 0.1, 128)
         mock_vertex.assert_called_once()
+        call_kwargs = mock_vertex.call_args.kwargs
+        assert call_kwargs["google_api_key"] == "AQ.test-vertex-key"
+        assert call_kwargs["vertexai"] is True
+        assert call_kwargs["project"] == "test-project"
+        assert call_kwargs["location"] == "us-central1"
+
+    def test_build_llm_vertex_missing_key_raises(self):
+        with patch("app.providers.llm.settings") as mock_settings:
+            mock_settings.VERTEX_API_KEY = ""
+            mock_settings.GOOGLE_CLOUD_PROJECT = "test-project"
+            mock_settings.GOOGLE_CLOUD_LOCATION = "us-central1"
+            try:
+                build_llm("vertex", None, None, 0.1, 128)
+                assert False, "Should have raised ValueError"
+            except ValueError as e:
+                assert "VERTEX_API_KEY" in str(e)
 
     def test_build_llm_openai_routing(self):
         llm = build_llm("openai", "test-key", None, 0.1, 128)
@@ -90,9 +106,6 @@ class TestBYOKFallback:
     def test_invalid_byok_uses_server_key(self, mock_chat_google):
         with patch("app.providers.llm.settings") as mock_settings:
             mock_settings.GEMINI_API_KEY = "server-side-key"
-            mock_settings.GOOGLE_CLOUD_PROJECT = ""
-            mock_settings.GOOGLE_CLOUD_LOCATION = "us-central1"
-            mock_settings.GOOGLE_GENAI_USE_VERTEXAI = True
             build_llm("gemini", "   ", None, 0.3, 128)
             mock_chat_google.assert_called_once()
             assert (
