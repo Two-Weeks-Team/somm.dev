@@ -1,8 +1,8 @@
 {
   "name": "somm",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "Somm - AI Code Evaluation with Sommelier Sophistication",
+  "description": "Somm.dev - Multi-Agentic AI Code Evaluation Platform with Six Specialized Sommelier Agents",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
