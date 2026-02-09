@@ -155,6 +155,9 @@ function reducer(state: FullTechniquesStreamState, action: Action): FullTechniqu
           if (event.technique_id) {
             const technique = state.techniques[event.technique_id];
             if (technique) {
+              // Skip counter increment if already completed (duplicate event protection)
+              const wasAlreadyComplete = technique.status === 'complete';
+              
               newState.techniques = {
                 ...state.techniques,
                 [event.technique_id]: {
@@ -167,20 +170,23 @@ function reducer(state: FullTechniquesStreamState, action: Action): FullTechniqu
                 },
               };
               
-              newState.completedTechniques = state.completedTechniques + 1;
-              newState.progressPercent = Math.round(
-                (newState.completedTechniques / state.totalTechniques) * 100
-              );
+              // Only increment counters if this is the first completion
+              if (!wasAlreadyComplete) {
+                newState.completedTechniques = state.completedTechniques + 1;
+                newState.progressPercent = Math.round(
+                  (newState.completedTechniques / state.totalTechniques) * 100
+                );
 
-              if (technique.category && newState.categories[technique.category]) {
-                const cat = newState.categories[technique.category];
-                newState.categories = {
-                  ...newState.categories,
-                  [technique.category]: {
-                    ...cat,
-                    completed: cat.completed + 1,
-                  },
-                };
+                if (technique.category && newState.categories[technique.category]) {
+                  const cat = newState.categories[technique.category];
+                  newState.categories = {
+                    ...newState.categories,
+                    [technique.category]: {
+                      ...cat,
+                      completed: cat.completed + 1,
+                    },
+                  };
+                }
               }
             }
           }
@@ -190,6 +196,9 @@ function reducer(state: FullTechniquesStreamState, action: Action): FullTechniqu
           if (event.technique_id) {
             const technique = state.techniques[event.technique_id];
             if (technique) {
+              // Skip counter increment if already in error state (duplicate event protection)
+              const wasAlreadyError = technique.status === 'error';
+              
               newState.techniques = {
                 ...state.techniques,
                 [event.technique_id]: {
@@ -198,7 +207,11 @@ function reducer(state: FullTechniquesStreamState, action: Action): FullTechniqu
                   errorMessage: event.error,
                 },
               };
-              newState.failedTechniques = state.failedTechniques + 1;
+              
+              // Only increment counter if this is the first error
+              if (!wasAlreadyError) {
+                newState.failedTechniques = state.failedTechniques + 1;
+              }
             }
           }
           break;

@@ -28,10 +28,12 @@ export const AnimatedSommeliers = ({
   const [active, setActive] = useState(0);
 
   const handleNext = useCallback(() => {
+    if (sommeliers.length === 0) return;
     setActive((prev) => (prev + 1) % sommeliers.length);
   }, [sommeliers.length]);
 
   const handlePrev = useCallback(() => {
+    if (sommeliers.length === 0) return;
     setActive((prev) => (prev - 1 + sommeliers.length) % sommeliers.length);
   }, [sommeliers.length]);
 

@@ -47,7 +47,7 @@ export function FullTechniquesResult({ result }: FullTechniquesResultProps) {
             <div className="flex flex-col items-end gap-2">
               <div className="text-right">
                 <div className="text-sm text-white/60 uppercase tracking-wider font-medium">Coverage</div>
-                <div className="text-3xl font-bold">{Math.round(result.coverage * 100)}%</div>
+                <div className="text-3xl font-bold">{Math.round((result.coverage ?? 0) * 100)}%</div>
               </div>
               <div className="text-right">
                 <div className="text-sm text-white/60 uppercase tracking-wider font-medium">Techniques</div>

@@ -11,7 +11,9 @@ interface DimensionCardProps {
 
 export function DimensionCard({ dimension, className }: DimensionCardProps) {
   const [isExpanded, setIsExpanded] = useState(false);
-  const percentage = Math.round((dimension.score / dimension.maxScore) * 100);
+  const percentage = dimension.maxScore > 0
+    ? Math.round((dimension.score / dimension.maxScore) * 100)
+    : 0;
 
   const getProgressColor = (percent: number) => {
     if (percent >= 80) return 'bg-green-500';
