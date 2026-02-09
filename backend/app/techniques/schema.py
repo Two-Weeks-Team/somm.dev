@@ -1,6 +1,38 @@
+from enum import Enum
 from typing import Any, Dict, List, Literal, Optional
 
 from pydantic import BaseModel, ConfigDict, Field
+
+
+class TechniqueCategory(str, Enum):
+    AROMA = "aroma"
+    PALATE = "palate"
+    BODY = "body"
+    FINISH = "finish"
+    BALANCE = "balance"
+    VINTAGE = "vintage"
+    TERROIR = "terroir"
+    CELLAR = "cellar"
+
+
+class EvaluationDimension(str, Enum):
+    A1 = "A1"
+    A2 = "A2"
+    A3 = "A3"
+    A4 = "A4"
+    B1 = "B1"
+    B2 = "B2"
+    B3 = "B3"
+    B4 = "B4"
+    C1 = "C1"
+    C2 = "C2"
+    C3 = "C3"
+    C4 = "C4"
+    C5 = "C5"
+    D1 = "D1"
+    D2 = "D2"
+    D3 = "D3"
+    D4 = "D4"
 
 
 class ScoringCriteria(BaseModel):
@@ -25,9 +57,9 @@ class TechniqueDefinition(BaseModel):
 
     id: str
     name: str
-    category: str
+    category: TechniqueCategory
     applicable_hats: List[str] = Field(default_factory=list, alias="applicableHats")
-    evaluation_dimensions: List[str] = Field(
+    evaluation_dimensions: List[EvaluationDimension] = Field(
         default_factory=list, alias="evaluationDimensions"
     )
     description: str = Field(default="")

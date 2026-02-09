@@ -24,12 +24,28 @@ class User:
         username: str,
         email: Optional[str] = None,
         avatar_url: Optional[str] = None,
+        role: str = "user",
+        plan: str = "free",
     ):
         self.id = id
         self.github_id = github_id
         self.username = username
         self.email = email
         self.avatar_url = avatar_url
+        self.role = role
+        self.plan = plan
+
+    @property
+    def is_admin(self) -> bool:
+        return self.role == "admin"
+
+    @property
+    def is_paid(self) -> bool:
+        return self.plan in ("premium", "pro")
+
+    @property
+    def is_free(self) -> bool:
+        return self.plan == "free"
 
 
 def decode_token(token: str) -> dict:
@@ -140,6 +156,8 @@ async def get_current_user(
         username=user_doc.get("username", ""),
         email=user_doc.get("email"),
         avatar_url=user_doc.get("avatar_url"),
+        role=user_doc.get("role", "user"),
+        plan=user_doc.get("plan", "free"),
     )
 
 
