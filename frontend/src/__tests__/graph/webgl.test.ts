@@ -1,14 +1,22 @@
-import { isWebGLAvailable, useWebGLSupport } from '@/lib/webgl';
 import { renderHook } from '@testing-library/react';
+import {
+  isWebGLAvailable,
+  useWebGLSupport,
+  _resetCacheForTesting,
+} from '@/lib/webgl';
 
 const originalCreateElement = document.createElement.bind(document);
 
 describe('WebGL Detection', () => {
-  describe('isWebGLAvailable', () => {
-    afterEach(() => {
-      document.createElement = originalCreateElement;
-    });
+  beforeEach(() => {
+    _resetCacheForTesting();
+  });
 
+  afterEach(() => {
+    document.createElement = originalCreateElement;
+  });
+
+  describe('isWebGLAvailable', () => {
     it('returns true when WebGL2 is available', () => {
       const mockCanvas = {
         getContext: jest.fn((type: string) => {
@@ -68,10 +76,6 @@ describe('WebGL Detection', () => {
   });
 
   describe('useWebGLSupport', () => {
-    afterEach(() => {
-      document.createElement = originalCreateElement;
-    });
-
     it('returns true when WebGL is available', () => {
       const mockCanvas = {
         getContext: jest.fn(() => ({})),
