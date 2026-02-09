@@ -45,6 +45,7 @@ class Settings(BaseSettings):
 
     # LLM API (Vertex AI Express only)
     VERTEX_API_KEY: str = ""
+    GOOGLE_CLOUD_PROJECT: str = ""
     VERTEX_PREMIUM_USER_IDS: str = ""
     VERTEX_ADMIN_USER_IDS: str = ""
     VERTEX_PREMIUM_EMAILS: str = ""

@@ -119,6 +119,8 @@ def build_llm(
     if use_vertex:
         llm_kwargs["api_key"] = final_key
         llm_kwargs["vertexai"] = True
+        if settings.GOOGLE_CLOUD_PROJECT:
+            llm_kwargs["project"] = settings.GOOGLE_CLOUD_PROJECT
     else:
         llm_kwargs["google_api_key"] = final_key
 
