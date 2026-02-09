@@ -40,6 +40,13 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: str = ""
     OPENAI_API_KEY: str = ""
     ANTHROPIC_API_KEY: str = ""
+    GOOGLE_CLOUD_PROJECT: str = ""
+    GOOGLE_CLOUD_LOCATION: str = "us-central1"
+    GOOGLE_GENAI_USE_VERTEXAI: bool = True
+    VERTEX_PREMIUM_USER_IDS: str = ""
+    VERTEX_ADMIN_USER_IDS: str = ""
+    VERTEX_PREMIUM_EMAILS: str = ""
+    VERTEX_ADMIN_EMAILS: str = ""
 
     # LangSmith Tracing (optional - enables LangGraph monitoring)
     LANGSMITH_API_KEY: str = ""
