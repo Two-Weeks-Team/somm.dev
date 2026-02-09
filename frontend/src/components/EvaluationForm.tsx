@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { CriteriaType, EvaluationMode } from '../types';
 import { CriteriaSelector } from './CriteriaSelector';
 import { EvaluationModeSelector } from './EvaluationModeSelector';
@@ -33,13 +33,7 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
   const { isAuthenticated, token, login } = useAuth();
   const { validation, validateRepo, clearValidation } = useRepoValidation(500);
 
-  useEffect(() => {
-    if (activeTab === 'repos' && isAuthenticated && token) {
-      loadRepositories();
-    }
-  }, [activeTab, isAuthenticated, token]);
-
-  const loadRepositories = async () => {
+  const loadRepositories = useCallback(async () => {
     if (!token) return;
 
     setIsLoadingRepos(true);
@@ -53,7 +47,13 @@ export const EvaluationForm: React.FC<EvaluationFormProps> = ({ onSubmit, isLoad
     } finally {
       setIsLoadingRepos(false);
     }
-  };
+  }, [token]);
+
+  useEffect(() => {
+    if (activeTab === 'repos' && isAuthenticated && token) {
+      loadRepositories();
+    }
+  }, [activeTab, isAuthenticated, token, loadRepositories]);
 
   const handleRefresh = async () => {
     if (!token) return;

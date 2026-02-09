@@ -497,6 +497,7 @@ const GraphView3D: React.FC<GraphView3DProps> = ({
   const handleViewModeChange = useCallback((mode: Graph3DViewMode) => {
     setViewMode(mode);
     initialFitDone.current = false;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   if (!webglSupported && viewMode !== '2d') {

@@ -18,7 +18,7 @@ import { nodeTypes } from './nodes';
 import { getLayoutedElements } from '@/lib/graphLayout';
 import { AlertCircle, RefreshCw, Loader2 } from 'lucide-react';
 import { getAgentColor, getCategoryColor } from '@/lib/graphColors';
-import { GraphEvaluationMode, ReactFlowNodeData } from '@/types/graph';
+import { ReactFlowNodeData } from '@/types/graph';
 import { cn } from '@/lib/utils';
 
 type GraphViewType = 'structure' | 'execution';
@@ -31,11 +31,7 @@ interface InteractiveGraphViewProps {
   onNodeClick?: (nodeId: string, nodeData: ReactFlowNodeData) => void;
 }
 
-interface _SelectedNode {
-  id: string;
-  type: string;
-  data: ReactFlowNodeData;
-}
+
 
 export function InteractiveGraphView({
   evaluationId,
@@ -48,8 +44,6 @@ export function InteractiveGraphView({
   const [edges, setEdges, onEdgesChange] = useEdgesState<Edge>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [_mode, setMode] = useState<GraphEvaluationMode | string>('six_hats');
-  const [_maxStep, setMaxStep] = useState(0);
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -59,14 +53,6 @@ export function InteractiveGraphView({
         view === 'structure'
           ? await api.getGraphStructure(evaluationId)
           : await api.getGraphExecution(evaluationId);
-
-      setMode(graphData.mode);
-
-      const maxNodeStep = Math.max(
-        ...graphData.nodes.map((n) => (n.data.step as number) || 0),
-        0
-      );
-      setMaxStep(maxNodeStep);
 
       const initialNodes: Node[] = graphData.nodes.map((node) => {
         let nodeColor = node.data.color as string;

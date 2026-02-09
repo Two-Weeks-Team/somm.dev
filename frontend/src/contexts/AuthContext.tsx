@@ -53,7 +53,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const onAuthError = useCallback(() => {
     logout();
     setShowReAuthModal(true);
-  }, []);
+  }, [logout]);
 
   const closeReAuthModal = useCallback(() => {
     setShowReAuthModal(false);
