@@ -30,6 +30,8 @@ from app.graph.nodes.tasting_notes import (
     CellarNotesNode,
 )
 from app.graph.nodes.rag_enrich import rag_enrich
+from app.graph.nodes.web_search_enrich import web_search_enrich
+from app.graph.nodes.code_analysis_enrich import code_analysis_enrich
 
 
 def create_grand_tasting_graph():
@@ -54,8 +56,17 @@ def create_grand_tasting_graph():
         "terroir",
     ]
 
+    enrichment_nodes = []
+
     if settings.RAG_ENABLED:
         builder.add_node("rag_enrich", rag_enrich)
+        enrichment_nodes.append("rag_enrich")
+
+    builder.add_node("web_search_enrich", web_search_enrich)
+    enrichment_nodes.append("web_search_enrich")
+
+    builder.add_node("code_analysis_enrich", code_analysis_enrich)
+    enrichment_nodes.append("code_analysis_enrich")
 
     builder.add_node("aroma", aroma.evaluate)
     builder.add_node("palate", palate.evaluate)
@@ -66,13 +77,10 @@ def create_grand_tasting_graph():
     builder.add_node("terroir", terroir.evaluate)
     builder.add_node("cellar", cellar.evaluate)
 
-    if settings.RAG_ENABLED:
-        builder.add_edge("__start__", "rag_enrich")
+    for enrich_node in enrichment_nodes:
+        builder.add_edge("__start__", enrich_node)
         for node in parallel_nodes:
-            builder.add_edge("rag_enrich", node)
-    else:
-        for node in parallel_nodes:
-            builder.add_edge("__start__", node)
+            builder.add_edge(enrich_node, node)
 
     for node in parallel_nodes:
         builder.add_edge(node, "cellar")

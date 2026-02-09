@@ -15,6 +15,7 @@ from typing import Any, Dict, Optional
 from app.core.exceptions import CorkedError, EmptyCellarError
 from app.database.repositories.evaluation import EvaluationRepository
 from app.database.repositories.result import ResultRepository
+from app.database.repositories.user import UserRepository
 from app.graph.state import EvaluationState
 from app.services.github_service import GitHubService, parse_github_url
 from app.techniques import (
@@ -23,6 +24,7 @@ from app.techniques import (
     load_techniques,
 )
 from app.providers.llm import resolve_byok
+from app.services.provider_routing import decide_provider
 
 logger = logging.getLogger(__name__)
 
@@ -59,6 +61,19 @@ async def _prepare_repo_context(
         repo_context["byok_error"] = byok_error
 
     return repo_context, resolved_key
+
+
+async def _get_user_doc(user_id: str | None) -> dict | None:
+    if not user_id:
+        return None
+    try:
+        user_repo = UserRepository()
+        return await user_repo.get_by_id(user_id)
+    except Exception:
+        logger.warning(
+            "Failed to fetch user doc for provider routing", extra={"user_id": user_id}
+        )
+        return None
 
 
 def _create_initial_state(
@@ -201,6 +216,7 @@ async def start_evaluation(
 async def run_evaluation_pipeline(
     repo_url: str,
     criteria: str,
+    user_id: Optional[str] = None,
     provider: Optional[str] = None,
     model: Optional[str] = None,
     temperature: Optional[float] = None,
@@ -216,8 +232,19 @@ async def run_evaluation_pipeline(
     repo_context, resolved_key = await _prepare_repo_context(
         repo_url, api_key, github_token
     )
-    state = _create_initial_state(repo_url, repo_context, criteria)
-    config = _create_graph_config(resolved_key, provider, model, temperature)
+    user_doc = await _get_user_doc(user_id)
+    provider_decision = decide_provider(
+        user_doc, provider, resolved_key if api_key else None
+    )
+    state = _create_initial_state(
+        repo_url, repo_context, criteria, user_id=user_id or ""
+    )
+    config = _create_graph_config(
+        resolved_key,
+        provider_decision.provider,
+        model,
+        temperature,
+    )
 
     from app.graph.graph import get_evaluation_graph
 
@@ -424,6 +451,7 @@ async def run_full_evaluation(
         result = await run_evaluation_pipeline(
             repo_url,
             criteria,
+            user_id=user_id,
             provider=provider,
             model=model,
             temperature=temperature,
@@ -472,6 +500,10 @@ async def run_evaluation_pipeline_with_events(
         repo_context, resolved_key = await _prepare_repo_context(
             repo_url, api_key, github_token
         )
+        user_doc = await _get_user_doc(user_id)
+        provider_decision = decide_provider(
+            user_doc, provider, resolved_key if api_key else None
+        )
         state = _create_initial_state(
             repo_url,
             repo_context,
@@ -480,7 +512,12 @@ async def run_evaluation_pipeline_with_events(
             evaluation_id=evaluation_id,
             include_progress=True,
         )
-        config = _create_graph_config(resolved_key, provider, model, temperature)
+        config = _create_graph_config(
+            resolved_key,
+            provider_decision.provider,
+            model,
+            temperature,
+        )
 
         from app.graph.graph_factory import get_evaluation_graph
 

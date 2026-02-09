@@ -4,7 +4,7 @@ import asyncio
 import logging
 import random
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Any, Callable, TypeVar
 
 from langchain_core.language_models.chat_models import BaseChatModel
@@ -66,14 +66,12 @@ _semaphore_lock = asyncio.Lock()
 
 PROVIDER_CONCURRENCY_LIMITS = {
     "gemini": 3,
-    "openai": 10,
-    "anthropic": 5,
+    "vertex": 3,
 }
 
 PROVIDER_RPM_LIMITS = {
     "gemini": 10,
-    "openai": 60,
-    "anthropic": 20,
+    "vertex": 10,
 }
 
 
@@ -127,7 +125,7 @@ async def invoke_with_policy(
     Args:
         llm: The LangChain LLM instance
         messages: Messages to send to the LLM
-        provider: Provider name (gemini, openai, anthropic)
+        provider: Provider name (gemini, vertex)
         config: Retry configuration (defaults to RetryConfig())
         langchain_config: Optional config to pass to llm.ainvoke()
         on_retry: Optional callback(attempt, delay, message) for logging

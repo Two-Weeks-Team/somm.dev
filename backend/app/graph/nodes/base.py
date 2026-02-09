@@ -107,6 +107,66 @@ class BaseSommelierNode(ABC):
             state["repo_context"], max_tokens=context_budget
         )
 
+        rag_context = state.get("rag_context", {})
+        rag_chunks = rag_context.get("chunks", [])
+        if rag_chunks:
+            rag_section = "\n\n## Retrieved Context (RAG)\n"
+            for chunk in rag_chunks:
+                rag_section += f"\n### [{chunk['source']}]\n{chunk['text']}\n"
+            rendered_context += rag_section
+
+        web_context = state.get("web_search_context", {})
+        web_content = web_context.get("content", "")
+        if web_content:
+            web_section = "\n\n## Latest Industry Context (Web Search)\n"
+            web_section += web_content[:3000]
+            web_sources = web_context.get("sources", [])
+            if web_sources:
+                web_section += "\n\n**Sources:**\n"
+                for src in web_sources[:5]:
+                    web_section += f"- [{src.get('title', '')}]({src.get('uri', '')})\n"
+            rendered_context += web_section
+
+        code_analysis = state.get("code_analysis", {})
+        if code_analysis and code_analysis.get("status") != "skipped":
+            code_section = "\n\n## Source Code Analysis\n"
+            if metrics := code_analysis.get("code_metrics"):
+                code_section += f"\n**Quality Metrics:**\n"
+                code_section += f"- Files: {metrics.get('total_files', 0)}\n"
+                code_section += f"- Functions: {metrics.get('total_functions', 0)}\n"
+                code_section += f"- Classes: {metrics.get('total_classes', 0)}\n"
+                code_section += (
+                    f"- Avg Complexity: {metrics.get('avg_cyclomatic_complexity', 0)}\n"
+                )
+                code_section += (
+                    f"- Max Complexity: {metrics.get('max_cyclomatic_complexity', 0)}\n"
+                )
+                code_section += (
+                    f"- Maintainability: {metrics.get('maintainability_index', 0)}\n"
+                )
+                if high_cc := metrics.get("high_complexity_functions", []):
+                    code_section += (
+                        f"\n**High Complexity Functions ({len(high_cc)}):**\n"
+                    )
+                    for fn in high_cc[:5]:
+                        code_section += f"- `{fn['file_path']}:{fn['name']}` CC={fn['cyclomatic_complexity']}\n"
+                if large := metrics.get("large_functions", []):
+                    code_section += f"\n**Large Functions ({len(large)}):**\n"
+                    for fn in large[:5]:
+                        code_section += f"- `{fn['file_path']}:{fn['name']}` {fn['lines_of_code']} LOC\n"
+
+            main_files = code_analysis.get("main_files", [])
+            if main_files:
+                code_section += f"\n**Source Files ({len(main_files)} analyzed):**\n"
+                for f in main_files[:20]:
+                    code_section += f"\n### {f['path']}\n```{f.get('language', '')}\n"
+                    code_section += f["content"][:2000]
+                    if len(f["content"]) > 2000:
+                        code_section += "\n... (truncated)"
+                    code_section += "\n```\n"
+
+            rendered_context += code_section
+
         observability = {
             "completed_sommeliers": [self.name],
             "token_usage": {self.name: {}},

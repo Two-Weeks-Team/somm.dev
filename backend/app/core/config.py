@@ -38,8 +38,15 @@ class Settings(BaseSettings):
 
     # LLM APIs
     GEMINI_API_KEY: str = ""
-    OPENAI_API_KEY: str = ""
-    ANTHROPIC_API_KEY: str = ""
+
+    # Vertex AI Express (API key auth)
+    VERTEX_API_KEY: str = ""
+    GOOGLE_CLOUD_PROJECT: str = ""
+    GOOGLE_CLOUD_LOCATION: str = "asia-northeast3"
+    VERTEX_PREMIUM_USER_IDS: str = ""
+    VERTEX_ADMIN_USER_IDS: str = ""
+    VERTEX_PREMIUM_EMAILS: str = ""
+    VERTEX_ADMIN_EMAILS: str = ""
 
     # LangSmith Tracing (optional - enables LangGraph monitoring)
     LANGSMITH_API_KEY: str = ""
@@ -56,14 +63,10 @@ class Settings(BaseSettings):
     # Optional: Rate Limiting
     RATE_LIMIT_PER_MINUTE: int = 60
 
-    # RAG Enrichment (adds context retrieval before evaluation)
+    # RAG Enrichment (Gemini embeddings + Google Search grounding)
     RAG_ENABLED: bool = True
     RAG_TOP_K: int = 4
-    RAG_EMBEDDING_MODEL: str = "hf:nomic-ai/nomic-embed-text-v1.5"
-
-    # Synthetic API (for embeddings - free tier)
-    SYNTHETIC_API_KEY: str = ""
-    SYNTHETIC_BASE_URL: str = "https://api.synthetic.new/openai/v1"
+    RAG_EMBEDDING_MODEL: str = "gemini-embedding-001"
 
     # Server settings
     PORT: int = 8000
