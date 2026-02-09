@@ -67,7 +67,7 @@ class TestGitHubServiceListUserRepositories:
                 "description": None,
                 "private": True,
                 "html_url": "https://github.com/owner/repo2",
-                "default_branch": "master",
+                "default_branch": "main",
                 "stargazers_count": 0,
                 "forks_count": 0,
                 "language": None,
@@ -77,7 +77,9 @@ class TestGitHubServiceListUserRepositories:
         ]
 
     @pytest.mark.asyncio
-    async def test_list_user_repositories_returns_repos(self, github_service, sample_repo_response):
+    async def test_list_user_repositories_returns_repos(
+        self, github_service, sample_repo_response
+    ):
         """Test that list_user_repositories returns list of repos."""
         mock_response = MagicMock()
         mock_response.status_code = 200
@@ -114,13 +116,43 @@ class TestGitHubServiceListUserRepositories:
     @pytest.mark.asyncio
     async def test_list_user_repositories_handles_pagination(self, github_service):
         """Test pagination handling via Link header."""
-        page1_repos = [{"id": 1, "name": "repo1", "full_name": "owner/repo1", "private": False, "html_url": "https://github.com/owner/repo1", "default_branch": "main", "stargazers_count": 0, "forks_count": 0, "language": None, "updated_at": None, "pushed_at": None}]
-        page2_repos = [{"id": 2, "name": "repo2", "full_name": "owner/repo2", "private": False, "html_url": "https://github.com/owner/repo2", "default_branch": "main", "stargazers_count": 0, "forks_count": 0, "language": None, "updated_at": None, "pushed_at": None}]
+        page1_repos = [
+            {
+                "id": 1,
+                "name": "repo1",
+                "full_name": "owner/repo1",
+                "private": False,
+                "html_url": "https://github.com/owner/repo1",
+                "default_branch": "main",
+                "stargazers_count": 0,
+                "forks_count": 0,
+                "language": None,
+                "updated_at": None,
+                "pushed_at": None,
+            }
+        ]
+        page2_repos = [
+            {
+                "id": 2,
+                "name": "repo2",
+                "full_name": "owner/repo2",
+                "private": False,
+                "html_url": "https://github.com/owner/repo2",
+                "default_branch": "main",
+                "stargazers_count": 0,
+                "forks_count": 0,
+                "language": None,
+                "updated_at": None,
+                "pushed_at": None,
+            }
+        ]
 
         mock_response1 = MagicMock()
         mock_response1.status_code = 200
         mock_response1.json.return_value = page1_repos
-        mock_response1.headers = {"link": '<https://api.github.com/user/repos?page=2>; rel="next"'}
+        mock_response1.headers = {
+            "link": '<https://api.github.com/user/repos?page=2>; rel="next"'
+        }
 
         mock_response2 = MagicMock()
         mock_response2.status_code = 200
