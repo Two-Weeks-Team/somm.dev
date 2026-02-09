@@ -13,9 +13,9 @@ logger = logging.getLogger(__name__)
 def _get_genai_client():
     from google import genai
 
-    if settings.VERTEX_API_KEY:
-        return genai.Client(api_key=settings.VERTEX_API_KEY, vertexai=True)
-    return genai.Client(api_key=settings.GEMINI_API_KEY)
+    # Always use Gemini API (not Vertex AI) - Vertex AI requires OAuth2, not API keys
+    api_key = settings.GEMINI_API_KEY or settings.VERTEX_API_KEY
+    return genai.Client(api_key=api_key)
 
 
 async def web_search_enrich(

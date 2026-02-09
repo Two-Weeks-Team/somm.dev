@@ -22,10 +22,9 @@ def _get_genai_client():
     if _genai_client is None:
         from google import genai
 
-        if settings.VERTEX_API_KEY:
-            _genai_client = genai.Client(api_key=settings.VERTEX_API_KEY, vertexai=True)
-        else:
-            _genai_client = genai.Client(api_key=settings.GEMINI_API_KEY)
+        # Always use Gemini API (not Vertex AI) - Vertex AI requires OAuth2, not API keys
+        api_key = settings.GEMINI_API_KEY or settings.VERTEX_API_KEY
+        _genai_client = genai.Client(api_key=api_key)
     return _genai_client
 
 
