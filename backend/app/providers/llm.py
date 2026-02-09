@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from typing import Optional
 
+from google import genai
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.language_models.chat_models import BaseChatModel
 
@@ -117,10 +118,10 @@ def build_llm(
     }
 
     if use_vertex:
-        llm_kwargs["api_key"] = final_key
-        llm_kwargs["vertexai"] = True
-        if settings.GOOGLE_CLOUD_PROJECT:
-            llm_kwargs["project"] = settings.GOOGLE_CLOUD_PROJECT
+        # Use pre-configured genai.Client for Vertex AI Express mode
+        # This bypasses LangChain's ADC requirement when vertexai=True
+        vertex_client = genai.Client(vertexai=True, api_key=final_key)
+        llm_kwargs["client"] = vertex_client
     else:
         llm_kwargs["google_api_key"] = final_key
 
