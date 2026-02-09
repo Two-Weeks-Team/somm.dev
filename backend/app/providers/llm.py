@@ -106,37 +106,27 @@ def build_llm(
     )
     resolved_max_tokens = max_output_tokens or DEFAULT_MAX_OUTPUT_TOKENS
 
-    if provider_key == "gemini":
-        resolved_model = model or PROVIDER_DEFAULTS["gemini"]
-        gemini_kwargs: dict = {
-            "model": resolved_model,
-            "temperature": resolved_temperature,
-            "max_output_tokens": resolved_max_tokens,
-            "google_api_key": resolved_key or settings.GEMINI_API_KEY,
-            "timeout": DEFAULT_REQUEST_TIMEOUT,
-        }
-        thinking_level = _resolve_thinking_level(resolved_model)
-        if thinking_level:
-            gemini_kwargs["thinking_level"] = thinking_level
-        llm = ChatGoogleGenerativeAI(**gemini_kwargs)
-    elif provider_key == "vertex":
-        resolved_model = model or PROVIDER_DEFAULTS["vertex"]
-        if not settings.VERTEX_API_KEY:
-            raise ValueError("VERTEX_API_KEY is required for Vertex AI Express")
-        vertex_kwargs: dict = {
-            "model": resolved_model,
-            "temperature": resolved_temperature,
-            "max_output_tokens": resolved_max_tokens,
-            "timeout": DEFAULT_REQUEST_TIMEOUT,
-            "api_key": settings.VERTEX_API_KEY,
-            "vertexai": True,
-        }
-        thinking_level = _resolve_thinking_level(resolved_model)
-        if thinking_level:
-            vertex_kwargs["thinking_level"] = thinking_level
-        llm = ChatGoogleGenerativeAI(**vertex_kwargs)
-    else:
+    if provider_key not in ("gemini", "vertex"):
         raise ValueError(f"Unsupported provider: {provider_key}")
+
+    if not settings.VERTEX_API_KEY:
+        raise ValueError("VERTEX_API_KEY is required")
+
+    resolved_model = model or PROVIDER_DEFAULTS.get(
+        provider_key, "gemini-3-flash-preview"
+    )
+    llm_kwargs: dict = {
+        "model": resolved_model,
+        "temperature": resolved_temperature,
+        "max_output_tokens": resolved_max_tokens,
+        "timeout": DEFAULT_REQUEST_TIMEOUT,
+        "api_key": resolved_key or settings.VERTEX_API_KEY,
+        "vertexai": True,
+    }
+    thinking_level = _resolve_thinking_level(resolved_model)
+    if thinking_level:
+        llm_kwargs["thinking_level"] = thinking_level
+    llm = ChatGoogleGenerativeAI(**llm_kwargs)
 
     if enable_fallback and model and model != PROVIDER_DEFAULTS.get(provider_key):
         fallback_llm = build_llm(
