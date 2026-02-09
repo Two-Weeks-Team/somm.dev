@@ -63,7 +63,7 @@ class EvaluateRequest(BaseModel):
     )
     provider: str | None = Field(
         default=None,
-        description="LLM provider (gemini, openai, anthropic)",
+        description="LLM provider (gemini, vertex, openai, anthropic)",
     )
     model: str | None = Field(
         default=None,
@@ -296,11 +296,11 @@ async def get_result(
     """
     # Check if this is a public demo evaluation
     is_public_demo = evaluation_id in PUBLIC_DEMO_EVALUATIONS
-    
+
     # Require auth for non-public evaluations
     if not is_public_demo and user is None:
         raise CorkedError("Authentication required to view this evaluation")
-    
+
     try:
         result = await get_evaluation_result(evaluation_id)
     except EmptyCellarError:
