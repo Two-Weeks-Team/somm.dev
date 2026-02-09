@@ -1,8 +1,8 @@
 import abc
 import asyncio
 import logging
-import time
 from dataclasses import dataclass, field
+from datetime import datetime, timezone
 from typing import Dict, List, Optional
 
 from app.models.graph import ItemScore, TraceEvent
@@ -65,7 +65,7 @@ class BaseTechnique(abc.ABC):
                 score=0,
                 evaluated_by=self.id,
                 technique_id=self.id,
-                timestamp=time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+                timestamp=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
                 status="error",
                 unevaluated_reason=str(last_error),
             )

@@ -45,7 +45,9 @@ async def validate_gemini_key(api_key: str) -> ValidationResult:
     """
     try:
         async with httpx.AsyncClient(timeout=VALIDATION_TIMEOUT) as client:
-            response = await client.get(f"{GEMINI_MODELS_URL}?key={api_key}")
+            response = await client.get(
+                GEMINI_MODELS_URL, headers={"x-goog-api-key": api_key}
+            )
             if response.status_code == 200:
                 data = response.json()
                 models = [m.get("name", "") for m in data.get("models", [])]
@@ -57,5 +59,7 @@ async def validate_gemini_key(api_key: str) -> ValidationResult:
             )
     except httpx.TimeoutException:
         return ValidationResult(valid=False, error="Validation timed out")
-    except httpx.HTTPError as e:
-        return ValidationResult(valid=False, error=f"Network error: {str(e)}")
+    except httpx.HTTPError:
+        return ValidationResult(
+            valid=False, error="Network error occurred during validation"
+        )
