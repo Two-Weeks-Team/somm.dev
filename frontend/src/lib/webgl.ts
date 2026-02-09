@@ -14,8 +14,11 @@ export function isWebGLAvailable(): boolean {
   }
 }
 
-// Cache the result since WebGL support doesn't change
 let cachedSupport: boolean | null = null;
+
+export function _resetCacheForTesting(): void {
+  cachedSupport = null;
+}
 
 function getWebGLSnapshot(): boolean {
   if (cachedSupport === null) {
