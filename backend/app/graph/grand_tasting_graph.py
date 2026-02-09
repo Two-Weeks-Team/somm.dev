@@ -31,6 +31,7 @@ from app.graph.nodes.tasting_notes import (
 )
 from app.graph.nodes.rag_enrich import rag_enrich
 from app.graph.nodes.web_search_enrich import web_search_enrich
+from app.graph.nodes.code_analysis_enrich import code_analysis_enrich
 
 
 def create_grand_tasting_graph():
@@ -63,6 +64,9 @@ def create_grand_tasting_graph():
 
     builder.add_node("web_search_enrich", web_search_enrich)
     enrichment_nodes.append("web_search_enrich")
+
+    builder.add_node("code_analysis_enrich", code_analysis_enrich)
+    enrichment_nodes.append("code_analysis_enrich")
 
     builder.add_node("aroma", aroma.evaluate)
     builder.add_node("palate", palate.evaluate)
