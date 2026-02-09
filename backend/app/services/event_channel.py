@@ -40,6 +40,7 @@ CRITICAL_EVENT_TYPES = {
     "evaluation_complete",
     "evaluation_error",
     "technique_error",
+    "enrichment_error",
 }
 TRANSFER_LOOP_INTERVAL_SECONDS = 0.01
 TRANSFER_BATCH_SIZE = 10
