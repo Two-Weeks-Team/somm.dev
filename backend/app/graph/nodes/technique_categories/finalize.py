@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional
 from langchain_core.runnables import RunnableConfig
@@ -5,6 +6,9 @@ from app.graph.state import EvaluationState
 from app.criteria.bmad_items import list_items, get_category, get_category_max
 from app.constants import get_quality_gate
 from app.models.graph import ItemScore
+from app.services.event_channel import create_sommelier_event, get_event_channel
+
+logger = logging.getLogger(__name__)
 
 
 async def finalize(
@@ -51,6 +55,35 @@ async def finalize(
     normalized = (total_score / max_possible * 100) if max_possible > 0 else 0.0
 
     quality_gate = get_quality_gate(normalized, coverage)
+
+    evaluation_id = state.get("evaluation_id", "")
+    if evaluation_id:
+        try:
+            event_channel = get_event_channel()
+            event_channel.emit_sync(
+                evaluation_id,
+                create_sommelier_event(
+                    evaluation_id=evaluation_id,
+                    sommelier="finalize",
+                    event_type="quality_gate_complete",
+                    progress_percent=95,
+                    message=f"Quality gate: {quality_gate}, score: {round(normalized, 2)}",
+                ),
+            )
+            event_channel.emit_sync(
+                evaluation_id,
+                create_sommelier_event(
+                    evaluation_id=evaluation_id,
+                    sommelier="system",
+                    event_type="evaluation_complete",
+                    progress_percent=100,
+                    message="Evaluation complete!",
+                ),
+            )
+        except Exception:
+            logger.warning(
+                "Failed to emit finalize events for %s", evaluation_id, exc_info=True
+            )
 
     return {
         "trace_metadata": {
