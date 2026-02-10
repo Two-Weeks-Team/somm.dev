@@ -83,10 +83,18 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
           setCurrentSommelier(event.sommelier);
         }
         setStatus('processing');
-        setCompletedSommeliers((prev) => {
-          updateProgressFromCompleted(prev.length, true);
-          return prev;
-        });
+        if (event.progress_percent != null && event.progress_percent >= 0) {
+          const newProgress = event.progress_percent;
+          if (newProgress > progressRef.current) {
+            progressRef.current = newProgress;
+            setProgress(newProgress);
+          }
+        } else {
+          setCompletedSommeliers((prev) => {
+            updateProgressFromCompleted(prev.length, true);
+            return prev;
+          });
+        }
         break;
 
       case 'sommelier_complete':
@@ -108,7 +116,15 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
                 feedback: event.message || `${sommelierInfo.name} analysis complete`,
               },
             ];
-            updateProgressFromCompleted(newList.length, false);
+            if (event.progress_percent != null && event.progress_percent >= 0) {
+              const newProgress = event.progress_percent;
+              if (newProgress > progressRef.current) {
+                progressRef.current = newProgress;
+                setProgress(newProgress);
+              }
+            } else {
+              updateProgressFromCompleted(newList.length, false);
+            }
             return newList;
           });
           setCurrentSommelier(null);
@@ -128,6 +144,7 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
         break;
 
       case 'evaluation_complete':
+        isCompleteRef.current = true;
         setIsComplete(true);
         setStatus('completed');
         progressRef.current = 100;
@@ -136,6 +153,7 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
         break;
 
       case 'evaluation_error':
+        isCompleteRef.current = true;
         setIsComplete(true);
         setStatus('failed');
         setCurrentSommelier(null);
