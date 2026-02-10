@@ -95,69 +95,77 @@ export const FullTechniquesProgress: React.FC<FullTechniquesProgressProps> = ({ 
           ))}
         </div>
 
-        {(state.currentStage === 'deep_synthesis' || state.currentStage === 'quality_gate' || state.currentStage === 'complete') && (
-          <div className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40 flex items-center justify-center p-4 animate-in fade-in duration-500">
-            <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center border border-[#722F37]/20 relative overflow-hidden">
-              
-              <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#722F37] via-[#DAA520] to-[#722F37]" />
-              
-              {state.currentStage === 'complete' ? (
-                <div className="space-y-6">
-                  <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <CheckCircle2 className="w-10 h-10 text-emerald-600" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold text-[#722F37] mb-2">Analysis Complete</h2>
-                    <p className="text-gray-600">Your vintage report is ready.</p>
-                  </div>
-                  {state.totalScore !== undefined && (
-                    <div className="py-4">
-                      <span className={`text-5xl font-bold ${getScoreColor(state.totalScore)}`}>
-                        {state.totalScore}
-                      </span>
-                      <span className="text-gray-400 text-xl">/100</span>
-                    </div>
-                  )}
-                  <button 
-                    onClick={() => router.push(`/evaluate/${evaluationId}/result`)}
-                    className="w-full py-3 bg-[#722F37] text-white rounded-lg font-semibold hover:bg-[#5A252C] transition-colors"
-                  >
-                    View Report
-                  </button>
+        <div 
+          className={`fixed inset-0 bg-black/20 backdrop-blur-sm z-40 flex items-center justify-center p-4 transition-opacity duration-500 ${
+            (state.currentStage === 'deep_synthesis' || state.currentStage === 'quality_gate' || state.currentStage === 'complete') 
+              ? 'opacity-100' 
+              : 'opacity-0 pointer-events-none'
+          }`}
+          style={{ visibility: (state.currentStage === 'deep_synthesis' || state.currentStage === 'quality_gate' || state.currentStage === 'complete') ? 'visible' : 'hidden' }}
+        >
+          <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-md w-full text-center border border-[#722F37]/20 relative overflow-hidden">
+            
+            <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#722F37] via-[#DAA520] to-[#722F37]" />
+            
+            <div className={state.currentStage === 'complete' ? 'block' : 'hidden'}>
+              <div className="space-y-6">
+                <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <CheckCircle2 className="w-10 h-10 text-emerald-600" />
                 </div>
-              ) : (
-                <div className="space-y-6">
-                  <div className="w-20 h-20 bg-[#FAF4E8] rounded-full flex items-center justify-center mx-auto mb-4 relative">
-                    <Sparkles className="w-10 h-10 text-[#DAA520] animate-pulse" />
-                    <div className="absolute inset-0 border-4 border-[#DAA520]/30 rounded-full border-t-[#DAA520] animate-spin" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl font-bold text-[#722F37] mb-2">
-                      {state.currentStage === 'deep_synthesis' ? 'Deep Synthesis' : 'Quality Gate'}
-                    </h2>
-                    <p className="text-gray-600">
-                      {state.currentStage === 'deep_synthesis' 
-                        ? 'Connecting patterns across categories...' 
-                        : 'Finalizing scores and recommendations...'}
-                    </p>
-                  </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-[#722F37] mb-2">Analysis Complete</h2>
+                  <p className="text-gray-600">Your vintage report is ready.</p>
                 </div>
-              )}
+                <div className={`py-4 ${state.totalScore !== undefined ? 'block' : 'hidden'}`}>
+                  <span className={`text-5xl font-bold ${getScoreColor(state.totalScore ?? 0)}`}>
+                    {state.totalScore ?? 0}
+                  </span>
+                  <span className="text-gray-400 text-xl">/100</span>
+                </div>
+                <button 
+                  onClick={() => router.push(`/evaluate/${evaluationId}/result`)}
+                  className="w-full py-3 bg-[#722F37] text-white rounded-lg font-semibold hover:bg-[#5A252C] transition-colors"
+                >
+                  View Report
+                </button>
+              </div>
             </div>
-          </div>
-        )}
-
-        {state.error && (
-          <div className="fixed bottom-4 right-4 max-w-md bg-white border-l-4 border-red-500 shadow-lg rounded-r-lg p-4 animate-in slide-in-from-right">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="text-red-500 flex-shrink-0" />
-              <div>
-                <h3 className="font-bold text-gray-900">Error</h3>
-                <p className="text-sm text-gray-600">{state.error}</p>
+            
+            <div className={state.currentStage !== 'complete' ? 'block' : 'hidden'}>
+              <div className="space-y-6">
+                <div className="w-20 h-20 bg-[#FAF4E8] rounded-full flex items-center justify-center mx-auto mb-4 relative">
+                  <Sparkles className="w-10 h-10 text-[#DAA520] animate-pulse" />
+                  <div className="absolute inset-0 border-4 border-[#DAA520]/30 rounded-full border-t-[#DAA520] animate-spin" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold text-[#722F37] mb-2">
+                    {state.currentStage === 'deep_synthesis' ? 'Deep Synthesis' : 'Quality Gate'}
+                  </h2>
+                  <p className="text-gray-600">
+                    {state.currentStage === 'deep_synthesis' 
+                      ? 'Connecting patterns across categories...' 
+                      : 'Finalizing scores and recommendations...'}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
-        )}
+        </div>
+
+        <div 
+          className={`fixed bottom-4 right-4 max-w-md bg-white border-l-4 border-red-500 shadow-lg rounded-r-lg p-4 transition-all duration-300 ${
+            state.error ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-full pointer-events-none'
+          }`}
+          style={{ visibility: state.error ? 'visible' : 'hidden' }}
+        >
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="text-red-500 flex-shrink-0" />
+            <div>
+              <h3 className="font-bold text-gray-900">Error</h3>
+              <p className="text-sm text-gray-600">{state.error || ''}</p>
+            </div>
+          </div>
+        </div>
 
       </main>
     </div>
