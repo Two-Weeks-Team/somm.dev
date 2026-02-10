@@ -84,6 +84,9 @@ TECHNIQUE_CATEGORIES = {
     },
 }
 
+# Backward compatibility alias for tests
+TECHNIQUE_GROUPS = TECHNIQUE_CATEGORIES
+
 
 def build_six_sommeliers_topology() -> ReactFlowGraph:
     """Build ReactFlow graph for six_sommeliers mode.
