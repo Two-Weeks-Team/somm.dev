@@ -51,7 +51,7 @@ exports[`ModeIndicatorBadge matches snapshot for full_techniques mode 1`] = `
     <span
       class="text-xs text-amber-700 font-medium"
     >
-      Sommelier Masterclass · 75 techniques · ~5min
+      Sommelier Masterclass · 75 techniques · ~10min
     </span>
   </div>
 </div>

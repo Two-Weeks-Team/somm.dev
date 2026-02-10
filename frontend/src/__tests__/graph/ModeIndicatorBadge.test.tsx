@@ -24,7 +24,7 @@ describe('ModeIndicatorBadge', () => {
   it('renders description text for Grand Tasting', () => {
     render(<ModeIndicatorBadge mode="full_techniques" />);
 
-    expect(screen.getByText('Sommelier Masterclass · 75 techniques · ~5min')).toBeInTheDocument();
+    expect(screen.getByText('Sommelier Masterclass · 75 techniques · ~10min')).toBeInTheDocument();
   });
 
   it('renders Wine icon for six_hats mode', () => {
