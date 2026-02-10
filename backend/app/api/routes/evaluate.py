@@ -260,7 +260,12 @@ async def create_evaluation(
 
         logger.info(f"[Evaluate] Background task started: {eval_id}")
 
-        estimated = 30 if request.evaluation_mode == "six_sommeliers" else 60
+        ETA_SECONDS = {
+            "six_sommeliers": 30,
+            "grand_tasting": 60,
+            "full_techniques": 600,
+        }
+        estimated = ETA_SECONDS.get(request.evaluation_mode, 60)
         return EvaluateResponse(
             evaluation_id=eval_id,
             status="pending",

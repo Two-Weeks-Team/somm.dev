@@ -17,7 +17,7 @@ export function ModeIndicatorBadge({ mode }: ModeIndicatorBadgeProps) {
         </div>
         <div className="flex flex-col">
           <span className="text-xs font-bold text-amber-800 uppercase tracking-wider">Grand Tasting</span>
-          <span className="text-xs text-amber-700 font-medium">Sommelier Masterclass · 75 techniques · ~5min</span>
+          <span className="text-xs text-amber-700 font-medium">Sommelier Masterclass · 75 techniques · ~10min</span>
         </div>
       </div>
     );
