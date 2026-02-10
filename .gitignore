@@ -111,3 +111,6 @@ backend/.env.production
 # Local demo assets (not for deployment)
 _local/
 backend/.env.test
+
+# Local deploy config (sensitive)
+.claude/remote-deploy.json
