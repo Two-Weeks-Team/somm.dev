@@ -22,6 +22,15 @@ interface CategoryStatus {
   status: 'pending' | 'running' | 'complete';
 }
 
+type EnrichmentPhase = 'idle' | 'code_analysis' | 'rag' | 'web_search' | 'complete';
+type EnrichmentStepStatus = 'pending' | 'running' | 'complete' | 'error';
+
+interface EnrichmentStatus {
+  code_analysis: EnrichmentStepStatus;
+  rag: EnrichmentStepStatus;
+  web_search: EnrichmentStepStatus;
+}
+
 interface FullTechniquesStreamState {
   connectionStatus: 'connecting' | 'open' | 'retrying' | 'failed' | 'closed';
   retryCount: number;
@@ -31,7 +40,7 @@ interface FullTechniquesStreamState {
   failedTechniques: number;
   progressPercent: number;
   
-  currentStage: 'categories' | 'deep_synthesis' | 'quality_gate' | 'complete' | 'error';
+  currentStage: 'enrichment' | 'categories' | 'deep_synthesis' | 'quality_gate' | 'complete' | 'error';
   
   categories: Record<string, CategoryStatus>;
   
@@ -49,6 +58,10 @@ interface FullTechniquesStreamState {
   
   startedAt?: string;
   etaSeconds?: number;
+  
+  enrichmentPhase: EnrichmentPhase;
+  enrichmentMessage: string | null;
+  enrichmentStatus: EnrichmentStatus;
 }
 
 const CATEGORIES: Record<string, { name: string; total: number }> = {
@@ -83,13 +96,20 @@ const initialState: FullTechniquesStreamState = {
   completedTechniques: 0,
   failedTechniques: 0,
   progressPercent: 0,
-  currentStage: 'categories',
+  currentStage: 'enrichment',
   categories: INITIAL_CATEGORIES,
   techniques: {},
   ledgerEvents: [],
   isComplete: false,
   tokensUsed: 0,
   costUsd: 0,
+  enrichmentPhase: 'idle',
+  enrichmentMessage: null,
+  enrichmentStatus: {
+    code_analysis: 'pending',
+    rag: 'pending',
+    web_search: 'pending',
+  },
 };
 
 type Action =
@@ -139,6 +159,11 @@ function reducer(state: FullTechniquesStreamState, action: Action): FullTechniqu
       switch (event.event_type) {
         case 'technique_start':
           if (event.technique_id && event.technique_name && event.category_id) {
+            if (state.currentStage === 'enrichment') {
+              newState.currentStage = 'categories';
+              newState.enrichmentPhase = 'complete';
+              newState.enrichmentMessage = null;
+            }
             newState.techniques = {
               ...state.techniques,
               [event.technique_id]: {
@@ -263,6 +288,46 @@ function reducer(state: FullTechniquesStreamState, action: Action): FullTechniqu
           newState.isComplete = true;
           newState.currentStage = 'error';
           newState.error = event.error || event.message || 'Unknown error';
+          break;
+
+        case 'enrichment_start':
+          if (event.sommelier) {
+            const phase = event.sommelier as EnrichmentPhase;
+            newState.enrichmentPhase = phase;
+            newState.enrichmentMessage = event.message || `${event.sommelier} starting...`;
+            newState.currentStage = 'enrichment';
+            newState.enrichmentStatus = {
+              ...state.enrichmentStatus,
+              [event.sommelier]: 'running' as EnrichmentStepStatus,
+            };
+          }
+          break;
+
+        case 'enrichment_complete':
+          if (event.sommelier) {
+            newState.enrichmentStatus = {
+              ...state.enrichmentStatus,
+              [event.sommelier]: 'complete' as EnrichmentStepStatus,
+            };
+            const allComplete = Object.values(newState.enrichmentStatus).every(
+              s => s === 'complete'
+            );
+            if (allComplete) {
+              newState.enrichmentPhase = 'complete';
+              newState.enrichmentMessage = null;
+              newState.currentStage = 'categories';
+            }
+          }
+          break;
+
+        case 'enrichment_error':
+          if (event.sommelier) {
+            newState.enrichmentStatus = {
+              ...state.enrichmentStatus,
+              [event.sommelier]: 'error' as EnrichmentStepStatus,
+            };
+            newState.enrichmentMessage = event.message || `${event.sommelier} failed`;
+          }
           break;
       }
 

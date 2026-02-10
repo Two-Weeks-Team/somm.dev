@@ -70,7 +70,10 @@ export type SSEEventType =
   | 'deep_synthesis_start'
   | 'deep_synthesis_complete'
   | 'quality_gate_complete'
-  | 'metrics_update';
+  | 'metrics_update'
+  | 'enrichment_start'
+  | 'enrichment_complete'
+  | 'enrichment_error';
 
 export interface SSEEvent {
   event_type: SSEEventType;
