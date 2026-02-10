@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wifi, WifiOff, Clock, GitBranch } from 'lucide-react';
+import { Wifi, WifiOff, Clock, GitBranch, Loader2 } from 'lucide-react';
 
 interface ProgressTopBarProps {
   repoName: string;
@@ -8,6 +8,7 @@ interface ProgressTopBarProps {
   etaSeconds?: number;
   totalTechniques: number;
   completedTechniques: number;
+  enrichmentMessage?: string | null;
 }
 
 export const ProgressTopBar: React.FC<ProgressTopBarProps> = ({
@@ -17,6 +18,7 @@ export const ProgressTopBar: React.FC<ProgressTopBarProps> = ({
   etaSeconds,
   totalTechniques,
   completedTechniques,
+  enrichmentMessage,
 }) => {
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -59,6 +61,12 @@ export const ProgressTopBar: React.FC<ProgressTopBarProps> = ({
         </div>
 
         <div className="flex items-center gap-4 text-sm">
+          {enrichmentMessage && (
+            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 text-xs font-medium">
+              <Loader2 size={12} className="animate-spin" />
+              <span className="truncate max-w-[150px]">{enrichmentMessage}</span>
+            </div>
+          )}
           <div className="hidden md:block text-gray-600 font-medium">
             <span className="text-[#722F37] font-bold">{completedTechniques}</span>
             <span className="text-gray-400 mx-1">/</span>
