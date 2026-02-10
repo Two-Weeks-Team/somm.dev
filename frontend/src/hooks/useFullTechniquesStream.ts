@@ -89,6 +89,8 @@ const INITIAL_CATEGORIES: Record<string, CategoryStatus> = Object.entries(CATEGO
   {}
 );
 
+const ESTIMATED_TOTAL_SECONDS = 600;
+
 const initialState: FullTechniquesStreamState = {
   connectionStatus: 'connecting',
   retryCount: 0,
@@ -103,6 +105,8 @@ const initialState: FullTechniquesStreamState = {
   isComplete: false,
   tokensUsed: 0,
   costUsd: 0,
+  startedAt: new Date().toISOString(),
+  etaSeconds: ESTIMATED_TOTAL_SECONDS,
   enrichmentPhase: 'idle',
   enrichmentMessage: null,
   enrichmentStatus: {
@@ -116,7 +120,8 @@ type Action =
   | { type: 'CONNECTION_CHANGE'; status: FullTechniquesStreamState['connectionStatus']; retryCount?: number }
   | { type: 'EVENT_RECEIVED'; event: SSEEvent }
   | { type: 'ERROR'; error: string }
-  | { type: 'RESET' };
+  | { type: 'RESET' }
+  | { type: 'UPDATE_ETA'; elapsedSeconds: number };
 
 function reducer(state: FullTechniquesStreamState, action: Action): FullTechniquesStreamState {
   switch (action.type) {
@@ -334,6 +339,23 @@ function reducer(state: FullTechniquesStreamState, action: Action): FullTechniqu
       return newState;
     }
 
+    case 'UPDATE_ETA': {
+      if (state.isComplete || state.completedTechniques === 0) {
+        return state;
+      }
+      
+      const { elapsedSeconds } = action;
+      const completionRatio = state.completedTechniques / state.totalTechniques;
+      
+      if (completionRatio > 0 && completionRatio < 1) {
+        const estimatedTotalTime = elapsedSeconds / completionRatio;
+        const remainingSeconds = Math.max(0, Math.ceil(estimatedTotalTime - elapsedSeconds));
+        return { ...state, etaSeconds: remainingSeconds };
+      }
+      
+      return state;
+    }
+
     default:
       return state;
   }
@@ -426,6 +448,19 @@ export function useFullTechniquesStream(evaluationId: string | null) {
       }
     };
   }, [evaluationId, state.isComplete, token]);
+
+  useEffect(() => {
+    if (!evaluationId || state.isComplete) return;
+
+    const startTime = state.startedAt ? new Date(state.startedAt).getTime() : Date.now();
+    
+    const interval = setInterval(() => {
+      const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+      dispatch({ type: 'UPDATE_ETA', elapsedSeconds });
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [evaluationId, state.isComplete, state.startedAt]);
 
   return state;
 }

@@ -61,12 +61,13 @@ export const ProgressTopBar: React.FC<ProgressTopBarProps> = ({
         </div>
 
         <div className="flex items-center gap-4 text-sm">
-          {enrichmentMessage && (
-            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 text-xs font-medium">
-              <Loader2 size={12} className="animate-spin" />
-              <span className="truncate max-w-[150px]">{enrichmentMessage}</span>
-            </div>
-          )}
+          <div 
+            className={`flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-700 text-xs font-medium transition-opacity duration-300 ${enrichmentMessage ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+            style={{ visibility: enrichmentMessage ? 'visible' : 'hidden' }}
+          >
+            <Loader2 size={12} className="animate-spin" />
+            <span className="truncate max-w-[150px]">{enrichmentMessage || 'Loading...'}</span>
+          </div>
           <div className="hidden md:block text-gray-600 font-medium">
             <span className="text-[#722F37] font-bold">{completedTechniques}</span>
             <span className="text-gray-400 mx-1">/</span>

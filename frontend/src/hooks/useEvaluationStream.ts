@@ -155,6 +155,22 @@ export const useEvaluationStream = (evaluationId: string): UseEvaluationStreamRe
       case 'error':
         break;
 
+      // Full techniques mode events - handled by useFullTechniquesStream
+      // Silently ignore here to prevent console warnings
+      case 'technique_start':
+      case 'technique_complete':
+      case 'technique_error':
+      case 'category_start':
+      case 'category_complete':
+      case 'deep_synthesis_start':
+      case 'deep_synthesis_complete':
+      case 'quality_gate_complete':
+      case 'enrichment_start':
+      case 'enrichment_complete':
+      case 'enrichment_error':
+      case 'metrics_update':
+        break;
+
       default:
         console.warn('Unknown event type:', eventType);
     }
