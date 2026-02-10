@@ -111,8 +111,8 @@ export function SommelierCard({
       {/* Feedback content */}
       <div className="p-5">
         <div 
-          className={`text-gray-700 leading-relaxed transition-all duration-300 overflow-hidden ${
-            isExpanded ? 'max-h-none' : 'max-h-36'
+          className={`text-gray-700 leading-relaxed transition-[max-height] duration-300 ease-in-out overflow-hidden ${
+            isExpanded ? 'max-h-[2000px]' : 'max-h-36'
           }`}
         >
           {formatFeedback(feedback)}
