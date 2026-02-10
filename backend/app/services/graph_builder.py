@@ -25,17 +25,67 @@ SOMMELIER_CONFIG = {
     },
 }
 
-# Technique group configurations for full_techniques mode
-TECHNIQUE_GROUPS = {
-    "structure": {"name": "Structure Analysis", "color": "#8B7355"},
-    "quality": {"name": "Quality Assessment", "color": "#C41E3A"},
-    "security": {"name": "Security Review", "color": "#2F4F4F"},
-    "innovation": {"name": "Innovation Scan", "color": "#DAA520"},
-    "implementation": {"name": "Implementation Check", "color": "#228B22"},
-    "documentation": {"name": "Documentation Review", "color": "#9370DB"},
-    "testing": {"name": "Testing Analysis", "color": "#FF6347"},
-    "performance": {"name": "Performance Audit", "color": "#20B2AA"},
+TECHNIQUE_CATEGORIES = {
+    "aroma": {
+        "name": "Aroma",
+        "description": "Problem Analysis",
+        "color": "#9B59B6",
+        "total": 11,
+        "sommelier_origin": "marcel",
+    },
+    "palate": {
+        "name": "Palate",
+        "description": "Innovation",
+        "color": "#E74C3C",
+        "total": 13,
+        "sommelier_origin": "isabella",
+    },
+    "body": {
+        "name": "Body",
+        "description": "Risk Analysis",
+        "color": "#F39C12",
+        "total": 8,
+        "sommelier_origin": "heinrich",
+    },
+    "finish": {
+        "name": "Finish",
+        "description": "User-Centricity",
+        "color": "#1ABC9C",
+        "total": 12,
+        "sommelier_origin": "sofia",
+    },
+    "balance": {
+        "name": "Balance",
+        "description": "Feasibility",
+        "color": "#3498DB",
+        "total": 8,
+        "sommelier_origin": "laurent",
+    },
+    "vintage": {
+        "name": "Vintage",
+        "description": "Opportunity",
+        "color": "#27AE60",
+        "total": 10,
+        "sommelier_origin": "laurent",
+    },
+    "terroir": {
+        "name": "Terroir",
+        "description": "Presentation",
+        "color": "#E67E22",
+        "total": 5,
+        "sommelier_origin": "jeanpierre",
+    },
+    "cellar": {
+        "name": "Cellar",
+        "description": "Synthesis",
+        "color": "#34495E",
+        "total": 8,
+        "sommelier_origin": "jeanpierre",
+    },
 }
+
+# Backward compatibility alias for tests
+TECHNIQUE_GROUPS = TECHNIQUE_CATEGORIES
 
 
 def build_six_sommeliers_topology() -> ReactFlowGraph:
@@ -172,59 +222,62 @@ def build_full_techniques_topology() -> ReactFlowGraph:
         )
     )
 
-    # Technique groups (8 groups in two rows, steps 1-8)
-    group_ids = list(TECHNIQUE_GROUPS.keys())
+    category_ids = list(TECHNIQUE_CATEGORIES.keys())
     spacing_x = 120
     start_x = 140
 
-    # First row (4 groups, steps 1-4)
-    for i, group_id in enumerate(group_ids[:4]):
-        config = TECHNIQUE_GROUPS[group_id]
+    for i, category_id in enumerate(category_ids[:4]):
+        config = TECHNIQUE_CATEGORIES[category_id]
         x_pos = start_x + (i * spacing_x)
         nodes.append(
             ReactFlowNode(
-                id=group_id,
+                id=category_id,
                 type="technique_group",
                 position={"x": x_pos, "y": 100},
                 data={
                     "label": config["name"],
+                    "description": config["description"],
                     "color": config["color"],
-                    "group": group_id,
+                    "category": category_id,
+                    "total": config["total"],
+                    "sommelier_origin": config["sommelier_origin"],
                     "step": i + 1,
                 },
             )
         )
         edges.append(
             ReactFlowEdge(
-                id=f"edge-start-{group_id}",
+                id=f"edge-start-{category_id}",
                 source="start",
-                target=group_id,
+                target=category_id,
                 animated=True,
             )
         )
 
-    # Second row (4 groups, steps 5-8)
-    for i, group_id in enumerate(group_ids[4:]):
-        config = TECHNIQUE_GROUPS[group_id]
+    for i, category_id in enumerate(category_ids[4:]):
+        config = TECHNIQUE_CATEGORIES[category_id]
         x_pos = start_x + (i * spacing_x)
         nodes.append(
             ReactFlowNode(
-                id=group_id,
+                id=category_id,
                 type="technique_group",
                 position={"x": x_pos, "y": 220},
                 data={
                     "label": config["name"],
+                    "description": config["description"],
                     "color": config["color"],
-                    "group": group_id,
+                    "category": category_id,
+                    "total": config["total"],
+                    "sommelier_origin": config["sommelier_origin"],
                     "step": i + 5,
                 },
             )
         )
         edges.append(
             ReactFlowEdge(
-                id=f"edge-start-{group_id}",
+                id=f"edge-start-{category_id}",
                 source="start",
-                target=group_id,
+                target=category_id,
                 animated=True,
             )
         )
@@ -244,11 +297,11 @@ def build_full_techniques_topology() -> ReactFlowGraph:
         )
     )
 
-    for group_id in group_ids:
+    for category_id in category_ids:
         edges.append(
             ReactFlowEdge(
-                id=f"edge-{group_id}-synthesis",
-                source=group_id,
+                id=f"edge-{category_id}-synthesis",
+                source=category_id,
                 target="synthesis",
                 animated=True,
             )

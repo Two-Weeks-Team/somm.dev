@@ -18,6 +18,7 @@ from app.models.graph import (
     ExcludedVisualization,
     ExcludedTechnique,
 )
+from app.techniques.registry import get_registry
 
 
 LAYER_START = 0
@@ -44,13 +45,33 @@ SOMMELIER_AGENTS = [
     ("laurent", "Laurent", "#228B22"),
 ]
 
-DEFAULT_TECHNIQUES = [
-    ("tech_1", "Code Structure Analysis", "structure"),
-    ("tech_2", "Quality Assessment", "quality"),
-    ("tech_3", "Security Scan", "security"),
-    ("tech_4", "Innovation Check", "innovation"),
-    ("tech_5", "Implementation Review", "implementation"),
+TASTING_NOTE_CATEGORIES = [
+    ("aroma", "Aroma", "#9B59B6", 11),
+    ("palate", "Palate", "#E74C3C", 13),
+    ("body", "Body", "#F39C12", 8),
+    ("finish", "Finish", "#1ABC9C", 12),
+    ("balance", "Balance", "#3498DB", 8),
+    ("vintage", "Vintage", "#27AE60", 10),
+    ("terroir", "Terroir", "#E67E22", 5),
+    ("cellar", "Cellar", "#34495E", 8),
 ]
+
+ENRICHMENT_STEPS = [
+    ("code_analysis", "Code Analysis", "#9370DB"),
+    ("rag", "RAG Context", "#6C3483"),
+    ("web_search", "Web Search", "#8E44AD"),
+]
+
+DEFAULT_TECHNIQUES: list[tuple[str, str, str]] = []
+
+
+def _get_category_counts() -> dict[str, int]:
+    """Get technique counts per category from registry, with fallback to static values."""
+    try:
+        registry = get_registry()
+        return registry.count_by_category()
+    except Exception:
+        return {cat_id: total for cat_id, _, _, total in TASTING_NOTE_CATEGORIES}
 
 
 def _build_start_node(step_number: int = 0) -> Graph3DNode:
@@ -66,7 +87,7 @@ def _build_start_node(step_number: int = 0) -> Graph3DNode:
 
 
 def _build_rag_node(step_number: int = 1) -> Graph3DNode:
-    """Build the RAG enrichment node at layer 100."""
+    """Build the RAG enrichment node at layer 100 (legacy single node)."""
     return Graph3DNode(
         node_id="rag_enrich",
         node_type="rag",
@@ -75,6 +96,28 @@ def _build_rag_node(step_number: int = 1) -> Graph3DNode:
         color="#9370DB",
         step_number=step_number,
     )
+
+
+def _build_enrichment_nodes(start_step: int = 1) -> list[Graph3DNode]:
+    """Build 3 enrichment nodes (code_analysis, rag, web_search) at layer 100."""
+    nodes = []
+    num_steps = len(ENRICHMENT_STEPS)
+    spacing = 100
+    start_x = CENTER_X - (num_steps - 1) * spacing / 2
+
+    for i, (step_id, label, color) in enumerate(ENRICHMENT_STEPS):
+        x_pos = start_x + i * spacing
+        nodes.append(
+            Graph3DNode(
+                node_id=step_id,
+                node_type="enrichment",
+                label=label,
+                position=Position3D(x=x_pos, y=0, z=LAYER_RAG),
+                color=color,
+                step_number=start_step + i,
+            )
+        )
+    return nodes
 
 
 def _build_agent_nodes(
@@ -121,6 +164,33 @@ def _build_agent_nodes(
                     )
                 )
 
+    return nodes
+
+
+def _build_category_nodes(start_step: int = 4) -> list[Graph3DNode]:
+    """Build 8 tasting note category nodes at layer 200 for full_techniques mode."""
+    nodes = []
+    num_categories = len(TASTING_NOTE_CATEGORIES)
+    total_width = (num_categories - 1) * AGENT_SPACING
+    start_x = CENTER_X - total_width / 2
+
+    dynamic_counts = _get_category_counts()
+
+    for i, (cat_id, label, color, static_total) in enumerate(TASTING_NOTE_CATEGORIES):
+        x_pos = start_x + i * AGENT_SPACING
+        technique_count = dynamic_counts.get(cat_id, static_total)
+        nodes.append(
+            Graph3DNode(
+                node_id=cat_id,
+                node_type="category",
+                label=label,
+                position=Position3D(x=x_pos, y=0, z=LAYER_AGENTS),
+                color=color,
+                step_number=start_step + i,
+                category=cat_id,
+                metadata={"total_techniques": technique_count},
+            )
+        )
     return nodes
 
 
@@ -351,6 +421,70 @@ def build_3d_graph(
     return Graph3DPayload.create(
         evaluation_id=evaluation_id,
         mode=mode,
+        nodes=nodes,
+        edges=edges,
+    )
+
+
+def build_3d_graph_full_techniques(
+    evaluation_id: str,
+    methodology_trace: list | None = None,
+) -> Graph3DPayload:
+    """Build 3D graph for full_techniques mode with 8 categories and 3 enrichment steps.
+
+    Layered layout (z-axis):
+    - Layer 0 (z=0): Start node
+    - Layer 1 (z=100): 3 enrichment nodes (code_analysis, rag, web_search)
+    - Layer 2 (z=200): 8 tasting note categories
+    - Layer 3 (z=300): Synthesis node
+    - Layer 4 (z=400): End node
+    """
+    nodes: list[Graph3DNode] = []
+    edges: list[Graph3DEdge] = []
+
+    nodes.append(_build_start_node(step_number=0))
+
+    enrichment_nodes = _build_enrichment_nodes(start_step=1)
+    nodes.extend(enrichment_nodes)
+
+    category_nodes = _build_category_nodes(start_step=4)
+    nodes.extend(category_nodes)
+
+    nodes.append(_build_synthesis_node(step_number=12))
+    nodes.append(_build_end_node(step_number=13))
+
+    edge_id = 0
+    for enrich in enrichment_nodes:
+        edges.append(
+            _create_styled_edge(f"edge_{edge_id}", "start", enrich.node_id, "flow", 0)
+        )
+        edge_id += 1
+
+    last_enrich = enrichment_nodes[-1]
+    for cat in category_nodes:
+        edges.append(
+            _create_styled_edge(
+                f"edge_{edge_id}", last_enrich.node_id, cat.node_id, "parallel", 3
+            )
+        )
+        edge_id += 1
+
+    for cat in category_nodes:
+        edges.append(
+            _create_styled_edge(
+                f"edge_{edge_id}", cat.node_id, "synthesis", "flow", cat.step_number
+            )
+        )
+        edge_id += 1
+
+    edges.append(_create_styled_edge(f"edge_{edge_id}", "synthesis", "end", "flow", 12))
+
+    if methodology_trace:
+        assign_step_numbers(nodes, edges, methodology_trace)
+
+    return Graph3DPayload.create(
+        evaluation_id=evaluation_id,
+        mode="full_techniques",
         nodes=nodes,
         edges=edges,
     )
