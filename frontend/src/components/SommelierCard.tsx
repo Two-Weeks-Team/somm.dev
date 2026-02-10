@@ -19,7 +19,8 @@ interface SommelierCardProps {
 }
 
 // Format feedback: split into paragraphs
-function formatFeedback(text: string): React.ReactNode[] {
+// Uses stable keys based on content hash to prevent React DOM reconciliation errors
+function formatFeedback(text: string): React.ReactNode {
   // Split into sentences - but only at sentence boundaries
   // A sentence ends with .!? followed by space and uppercase letter
   // This avoids breaking "Next.js", "e.g.", "i.e.", etc.
@@ -39,9 +40,16 @@ function formatFeedback(text: string): React.ReactNode[] {
     }
   });
   
-  return paragraphs.map((p, idx) => (
-    <p key={idx} className={idx > 0 ? 'mt-3' : ''}>{p}</p>
-  ));
+  // Wrap in a single container to avoid DOM reconciliation issues when toggling expansion
+  // This prevents the "insertBefore" error caused by React trying to reconcile
+  // multiple paragraph elements when the parent's className changes
+  return (
+    <div className="space-y-3">
+      {paragraphs.map((p, idx) => (
+        <p key={`feedback-${idx}-${p.slice(0, 20).replace(/\s/g, '')}`}>{p}</p>
+      ))}
+    </div>
+  );
 }
 
 export function SommelierCard({
@@ -102,7 +110,11 @@ export function SommelierCard({
 
       {/* Feedback content */}
       <div className="p-5">
-        <div className={`text-gray-700 leading-relaxed ${isExpanded ? '' : 'line-clamp-6'}`}>
+        <div 
+          className={`text-gray-700 leading-relaxed transition-all duration-300 overflow-hidden ${
+            isExpanded ? 'max-h-none' : 'max-h-36'
+          }`}
+        >
           {formatFeedback(feedback)}
         </div>
         
