@@ -63,19 +63,22 @@ export const FullTechniquesProgress: React.FC<FullTechniquesProgressProps> = ({ 
         etaSeconds={state.etaSeconds}
         totalTechniques={state.totalTechniques}
         completedTechniques={state.completedTechniques}
+        enrichmentMessage={state.enrichmentMessage}
       />
 
       <main className="flex-1 max-w-7xl w-full mx-auto p-4 md:p-6 space-y-8">
         
         <div className="text-center space-y-2 py-4">
           <h1 className="text-3xl md:text-4xl font-serif font-bold text-[#722F37] animate-fade-in">
-            {state.currentStage === 'deep_synthesis' ? 'Synthesizing Insights...' :
+            {state.currentStage === 'enrichment' ? 'Preparing Analysis...' :
+             state.currentStage === 'deep_synthesis' ? 'Synthesizing Insights...' :
              state.currentStage === 'quality_gate' ? 'Final Quality Gate...' :
              state.currentStage === 'complete' ? 'Evaluation Complete' :
              'Tasting Flight in Progress'}
           </h1>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            {state.currentStage === 'deep_synthesis' ? 'Our Master Sommelier is blending the notes from all 75 techniques.' :
+            {state.currentStage === 'enrichment' ? 'Gathering context through code analysis, RAG, and web search.' :
+             state.currentStage === 'deep_synthesis' ? 'Our Master Sommelier is blending the notes from all 75 techniques.' :
              state.currentStage === 'quality_gate' ? 'Verifying final scores and generating the vintage report.' :
              state.currentStage === 'complete' ? 'Your vintage report is ready for review.' :
              'Analyzing your codebase across 8 dimensions and 75 distinct techniques.'}
